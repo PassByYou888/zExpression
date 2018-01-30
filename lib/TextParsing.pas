@@ -1,13 +1,21 @@
+{ ***************************************************************************** }
+{ * parsing library,writen by QQ 600585@qq.com                                * }
+{ * https://github.com/PassByYou888/CoreCipher                                * }
+(* https://github.com/PassByYou888/ZServer4D *)
+{ ***************************************************************************** }
+
 unit TextParsing;
+
+{$I zDefine.inc}
 
 interface
 
-uses SysUtils, Types, CoreClasses, UnicodeMixedLib;
+uses SysUtils, Types, CoreClasses, UnicodeMixedLib, PascalStrings;
 
 type
   TTextStyle = (tsPascal, tsText);
 
-  TTokenType = (ttTextDecl, ttComment, ttNumber, ttSymbol, ttAscii, ttUnknow);
+  TTokenType       = (ttTextDecl, ttComment, ttNumber, ttSymbol, ttAscii, ttUnknow);
   TTokenStatistics = array [TTokenType] of Integer;
 
   TTextPos = record
@@ -41,8 +49,8 @@ type
   protected
     FTextStyle: TTextStyle;
   public
-    ParsingData: TTextParsingData;
-    SymbolTable: umlString;
+    ParsingData    : TTextParsingData;
+    SymbolTable    : umlString;
     TokenStatistics: TTokenStatistics;
 
     property TextStyle: TTextStyle read FTextStyle;
@@ -144,15 +152,14 @@ type
 
 const
   NullTokenStatistics: TTokenStatistics = (0, 0, 0, 0, 0, 0);
-  DefaultSymbol = ',.+-*/();:=#@^&%!"[]<>?{}'#39;
+  // DefaultSymbol                         = ',.+-*/();:=#@^&%!"[]<>?{}'#39;
+  DefaultSymbol = #44#46#43#45#42#47#40#41#59#58#61#35#64#94#38#37#33#34#91#93#60#62#63#123#125#39;
 
 implementation
 
-uses PascalStrings;
-
 function TTextParsing.ComparePosStr(charPos: Integer; t: umlString): Boolean;
 var
-  i, l: Integer;
+  i, l              : Integer;
   sourChar, destChar: umlChar;
 begin
   Result := False;
@@ -224,7 +231,7 @@ end;
 
 function TTextParsing.CompareTextDeclGetEndPos(charPos: Integer): Integer;
 var
-  l: Integer;
+  l     : Integer;
   tmpPos: Integer;
 begin
   l := ParsingData.Len;
@@ -286,8 +293,8 @@ end;
 procedure TTextParsing.RebuildParsingCache;
 var
   i, l, bPos, ePos: Integer;
-  textPosPtr: PTextPos;
-  LastTokenData: PTokenData;
+  textPosPtr      : PTextPos;
+  LastTokenData   : PTokenData;
 begin
   if ParsingData.Cache.CommentData <> nil then
     begin
@@ -517,7 +524,7 @@ end;
 function TTextParsing.GetContextBeginPos(const charPos: Integer): Integer;
 var
   cPos: Integer;
-  l: Integer;
+  l   : Integer;
 begin
   cPos := charPos;
   l := ParsingData.Len;
@@ -560,7 +567,7 @@ end;
 function TTextParsing.GetContextEndPos(const charPos: Integer): Integer;
 var
   cPos: Integer;
-  l: Integer;
+  l   : Integer;
 begin
   cPos := charPos;
   l := ParsingData.Len;
@@ -604,7 +611,7 @@ end;
 
 function TTextParsing.IsNumber(const charPos: Integer): Boolean;
 var
-  tmp: Integer;
+  tmp  : Integer;
   IsHex: Boolean;
 begin
   Result := IsNumber(charPos, tmp, IsHex);
@@ -612,8 +619,8 @@ end;
 
 function TTextParsing.IsNumber(const charPos: Integer; var NumberBegin: Integer; var IsHex: Boolean): Boolean;
 var
-  c: umlChar;
-  l: Integer;
+  c   : umlChar;
+  l   : Integer;
   cPos: Integer;
 begin
   Result := False;
@@ -636,7 +643,7 @@ begin
   else if CharIn(c, '+-.$') then
     begin
       IsHex := c = '$';
-      if CharIn(c, ['.']) then
+      if CharIn(c, '.') then
         begin
           while True do
             begin
@@ -692,11 +699,11 @@ end;
 
 function TTextParsing.GetNumberEndPos(charPos: Integer): Integer;
 var
-  IsHex: Boolean;
-  l: Integer;
-  c: umlChar;
-  dotCount: Integer;
-  eCnt: Integer;
+  IsHex       : Boolean;
+  l           : Integer;
+  c           : umlChar;
+  dotCount    : Integer;
+  eCnt        : Integer;
   AddSubSymCnt: Integer;
 begin
   l := ParsingData.Len;
@@ -733,9 +740,9 @@ begin
                 begin
                   Inc(AddSubSymCnt);
                 end
-              else if (not IsHex) and (dotCount = 0) and (eCnt <= 1) and (AddSubSymCnt <= 1) and (CharIn(c, ['.'])) then
+              else if (not IsHex) and (dotCount = 0) and (eCnt <= 1) and (AddSubSymCnt <= 1) and (CharIn(c, '.')) then
                 begin
-                  if (CharIn(c, ['.'])) and ((Result + 1 = l) or (not CharIn(ParsingData.Text[Result + 1], [c0to9]))) then
+                  if ((Result + 1 > l) or (not CharIn(ParsingData.Text[Result + 1], [c0to9]))) then
                       Exit
                   else
                       Inc(dotCount);
@@ -1012,7 +1019,7 @@ end;
 
 function TTextParsing.GetWordBeginPos(charPos: Integer; BeginDefaultChar: Boolean; SplitCharSet: umlString): Integer;
 var
-  l: Integer;
+  l    : Integer;
   tbPos: Integer;
 begin
   l := ParsingData.Len;
@@ -1129,7 +1136,7 @@ end;
 function TTextParsing.GetTokenIndex(t: TTokenType; idx: Integer): PTokenData;
 var
   i, c: Integer;
-  p: PTokenData;
+  p   : PTokenData;
 begin
   Result := nil;
   c := 0;
@@ -1193,10 +1200,10 @@ type
   TLastSym = (lsBody, lsNone);
 
 var
-  l, newCharPos: Integer;
-  c: umlChar;
+  l         : Integer;
+  c         : umlChar;
   bPos, ePos: Integer;
-  LastSym: TLastSym;
+  LastSym   : TLastSym;
 begin
   SetLength(Result, 0);
   l := ParsingData.Len;
@@ -1324,7 +1331,7 @@ end;
 
 function TTextParsing.SearchWordInBody(initPos: Integer; wordInfo: umlString; var OutPos: TTextPos): Boolean;
 var
-  cp: Integer;
+  cp  : Integer;
   ePos: Integer;
 begin
   Result := False;
@@ -1399,7 +1406,7 @@ var
 
   // ext decl begin flag
   VIsTextDecl: Boolean;
-  nText: umlString;
+  nText      : umlString;
 begin
   cPos := 1;
   VIsTextDecl := False;
@@ -1445,10 +1452,10 @@ end;
 
 class function TTextParsing.TranslateTextToPascalDecl(Text: umlString): umlString;
 var
-  cPos: Integer;
-  c: umlChar;
+  cPos         : Integer;
+  c            : umlChar;
   LastIsOrdChar: Boolean;
-  ordCharInfo: umlString;
+  ordCharInfo  : umlString;
 begin
   if Text.Len = 0 then
     begin
