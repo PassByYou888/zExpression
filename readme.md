@@ -1,46 +1,50 @@
-program console;
+## zExpression 句法编译器+解释器，脚本引擎内核
 
-{$APPTYPE CONSOLE}
 
-{
-  zExpression已经经过严格测试，稳定，安全，能全面侦错和缩进处理
-  如果结合TTextParsing引擎，能将zExpression轻松封装成你自己的脚本引擎（你只需要定义好脚本的语法结构即可）
-  此Demo的书写范式可以放在手机和fpc所支持的各平台去运行
-  
-  编译此Demo请将系统的搜索路径设置到库目录
-}
+## 技术体系解释：
+在编译原理的技术体系中，凡是处理文本化的代码前，都需要做一次预处理，其中我们常说的语法，语法糖，都是一种预处理程序
 
-uses
-  System.SysUtils,
-  Variants,
-  Cadencer in '..\lib\Cadencer.pas',
-  CoreClasses in '..\lib\CoreClasses.pas',
-  CoreCompress in '..\lib\CoreCompress.pas',
-  DataFrameEngine in '..\lib\DataFrameEngine.pas',
-  DoStatusIO in '..\lib\DoStatusIO.pas',
-  Fast_MD5 in '..\lib\Fast_MD5.pas',
-  Geometry2DUnit in '..\lib\Geometry2DUnit.pas',
-  Geometry3DUnit in '..\lib\Geometry3DUnit.pas',
-  GeometryLib in '..\lib\GeometryLib.pas',
-  GeometryRotationUnit in '..\lib\GeometryRotationUnit.pas',
-  JsonDataObjects in '..\lib\JsonDataObjects.pas',
-  ListEngine in '..\lib\ListEngine.pas',
-  MemoryStream64 in '..\lib\MemoryStream64.pas',
-  opCode in '..\lib\opCode.pas',
-  PascalStrings in '..\lib\PascalStrings.pas',
-  TextDataEngine in '..\lib\TextDataEngine.pas',
-  TextParsing in '..\lib\TextParsing.pas',
-  TextTable in '..\lib\TextTable.pas',
-  UnicodeMixedLib in '..\lib\UnicodeMixedLib.pas',
-  zExpression in '..\lib\zExpression.pas';
+词法：词法是对文本关键字，数字，符号，进行分类整理，最后形成词法树，并且严格遵循顺序化处理原则
 
-// 基本使用
-procedure Demo1;
+申明：在预处理代码中，申明部分，叫做申明树，申明树又依赖于词法顺序预处理，因为对词法预处理是一种简化手段
+
+句法：在经过了申明预处理以后，是对代码表达式的单行逻辑操作进行处理，这一步叫句法，取为zExpression句法编译器是我从曾经撰写的编译器中特意剥离出来的解决方案，它可以独立出来分发和使用，可以实用数字化预处理，图形图像，科学计算等等领域，也可以作为学习提高自己的手段
+
+
+## 核心思路
+
+实现zExpression采用的是对等复杂化原则，面向解决编译器问题而编写，复杂度相比于常规程序会高许多，因为解决了最终问题，代码在命名和堆结构上也看不出漏洞，所以它是成熟句法解释器方案
+
+## zExpression特点
+
+完整的单步原子化操作
+
+完整的符号优先级后处理
+
+能预处理字面错误，并反馈错误发生在哪
+
+能识别浮点和整数的自然数写法
+
+支持函数调用
+
+支持自定义脚本语法的
+
+逆波兰2.0符号优先级处理
+
+自带使用Demo
+
+在编译以后，能形成原子化op代码，可以通过stream高速载入并运行，不限制cpu类型，可以兼容手机程序
+
+OP代码可以轻松译码成ARMv7 ARMx64 x64 x86等平台的机器码
+
+
+## 基本用法演示
+
+```Delphi
 var
   rt: TOpCustomRunTime;
   v : Variant;
 begin
-  DoStatus('基本使用demo');
   // rt为ze的运行函数支持库
   rt := TOpCustomRunTime.Create;
   rt.RegOp('myAddFunction', function(var Param: TOpParam): Variant
@@ -68,15 +72,17 @@ begin
   disposeObject(rt);
 end;
 
-// 高速载入与执行
-procedure Demo2;
+```
+
+## 基于二进制Stream的高速读取与执行
+
+```delphi
 var
   tmpSym: TSymbolExpression;
   op    : TOpCode;
   rt    : TOpCustomRunTime;
   m64   : TMemoryStream64;
 begin
-  DoStatus('高速载入与执行demo');
   // rt为ze的运行函数支持库
   rt := TOpCustomRunTime.Create;
   rt.RegOp('myAddFunction', function(var Param: TOpParam): Variant
@@ -114,10 +120,10 @@ begin
 
   DoStatus('高速载入与执行demo，运行完毕');
 end;
+```
 
-// 高级demo，脚本语法，脚本词法引擎演示，将zExpression表达式应用于if结构
-// 正规词法流程程序范例，没有减懒，参照下列流程编写自己的脚本解析流程是地球级的，不会有人异议这套范式
-procedure Demo3;
+## 实现if结构体
+```delphi
 type
   TState = (sUnknow, sIF, sTrue, sFalse); // 解析用的简单状态机
 label gFillStruct;
@@ -251,135 +257,16 @@ begin
 
   disposeObject(t);
 end;
+```
 
-// 高级Demo，将zExpression表达式应用于文本解析器
-procedure Demo4;
-var
-  rt: TOpCustomRunTime;
 
-  function Macro(var AText: string; const HeadToken, TailToken: string): TPascalString;
-  var
-    sour      : TPascalString;
-    ht, tt    : TPascalString;
-    bPos, ePos: Integer;
-    KeyText   : SystemString;
-    i         : Integer;
-    tmpSym    : TSymbolExpression;
-    op        : TOpCode;
-  begin
-    Result := '';
-    sour.Text := AText;
-    ht.Text := HeadToken;
-    tt.Text := TailToken;
 
-    i := 1;
+## 更新日志
 
-    while i <= sour.Len do
-      begin
-        if sour.ComparePos(i, @ht) then
-          begin
-            bPos := i;
-            ePos := sour.GetPos(tt, i + ht.Len);
-            if ePos > 0 then
-              begin
-                KeyText := sour.copy(bPos + ht.Len, ePos - (bPos + ht.Len)).Text;
+首发代码创建 于2004年 创建人qq600585
 
-                // 在TPascalString中，使用Append方法，要比string:=string+string效率更高
-                Result.Append(VarToStr(EvaluateExpressionValue(KeyText, rt)));
-                i := ePos + tt.Len;
-                continue;
-              end;
-          end;
+最后更新于2014年 可以兼容fpc编译器和最新的delphi xe，包括ios,osx,android,linux,win32
 
-        // 在TPascalString中，使用Append方法，要比string:=string+string效率更高
-        Result.Append(sour[i]);
-        inc(i);
-      end;
-  end;
 
-var
-  n: string;
-  i: Integer;
-  t: TTimeTick;
-begin
-  DoStatus('简单演示用脚本来封装zExpression');
-  // rt为ze的运行函数支持库
-  rt := TOpCustomRunTime.Create;
-  rt.RegOp('OverFunction', function(var Param: TOpParam): Variant
-    begin
-      Result := '谢谢';
-    end);
-
-  // 我们这里使用宏处理将1+1以表达式来翻译
-  n := '这是1+1=<begin>1+1<end>，这是一个UInt48位整形:<begin>1<<48<end>，结束 <begin>OverFunction<end>';
-
-  DoStatus('原型:' + n);
-  DoStatus('计算结果' + Macro(n, '<begin>', '<end>').Text);
-
-  DoStatus('zExpression正在测试性能，对上列原型做100万次处理');
-
-  t := GetTimeTick;
-
-  // 重复做100万次句法表达式解析和处理
-  for i := 1 to 100 * 10000 do
-      Macro(n, '<begin>', '<end>');
-
-  DoStatus('zExpression性能测试完成，耗时:%dms', [GetTimeTick - t]);
-
-  disposeObject([rt]);
-end;
-
-var
-  sym1, sym2: TSymbolExpression;
-  op        : TOpCode;
-
-begin
-  try
-    { TODOoUsercConsole Main : Insert code here }
-
-    // 预处理一二三步以后输出opCode 并且运行opCode 最后返回一个值
-    // 该函数会消耗一定的硬件资源，高效运行建议一次性BuildAsOpCode，然后再用SaveToStream将opcode以二进制方式保存，使用时用LoadOpFromStream载入
-    DoStatus('Value:' + VarToStr(EvaluateExpressionValue(TTextParsing, '(1+1)*2/3.14', nil)));
-    DoStatus('');
-
-    // 核心函数：将文本表达式解析成符号表达式
-    // 核心思路：采用双原子化处理，以蚂蚁化推进法处理字符和符号，这里有两个原子点 其中 符号在前 字符在后 是一种情况，这是其中的原子1，第二种情况是字符在前，而符号再后，这是第二种原子2，两种情况相辅相成
-    // 此函数复杂度偏高，遵循理论+学术所编写，无递归元素，且高效解析
-    // zExpression 运行步骤的第一步就是得到一套符号表达，从而为下一步逻辑处理做出简化准备
-    // TextEngClass 可以选择普通文本引擎，pascal文本引擎，c/c++文本引擎，它主要影响的是字符串的表达式，c的表示以"表示字符串，pascal表达式以'表示字符串
-    // uName 是为上层编译器准备的，单元说明，类似unit name; include name; 编译时可以知道哪个原文件，便于编译预处理时查错和报错
-    // ExpressionText 是表达式的文本内容
-    // OnGetValue 在申明了常量和函数时，常量的值以此事件获取
-    // 返回：符号表达式的TSymbolExpression类
-    sym1 := ParseTextExpressionAsSymbol(TTextParsing, '', '(1+1)*2/3.14', nil, DefaultOpRT);
-    sym1.PrintDebug(True);
-
-    // zExpression 的核心逻辑第三步，在符号缩进预处理完成以后，重新拆开表达式数据结构，并且重建一个带有缩进的严谨TSymbolExpression的缩进顺序，该步骤带侦错功能
-    // RebuildAllSymbol可以直接处理完成第二步和第三步
-    sym2 := RebuildAllSymbol(sym1);
-    sym2.PrintDebug(True);
-
-    // zExpression 的核心逻辑第四步，根据RebuildAllSymbol后的严谨TSymbolExpression符号顺序，创建单步原子化执行
-    // 单步原子化执行的实现请参考opCode内容
-    op := BuildAsOpCode(True, sym2);
-    if op <> nil then
-      begin
-        DoStatus('Value:' + VarToStr(op.Execute));
-        DoStatus('');
-        FreeObject(op);
-      end;
-
-    FreeObject([sym1, sym2]);
-
-    Demo1;
-    Demo2;
-    Demo3;
-    Demo4;
-
-    readln;
-  except
-    on E: Exception do
-        Writeln(E.ClassName, ': ', E.Message);
-  end;
-
-end.
+有问题请来信
+by600585 qq邮箱

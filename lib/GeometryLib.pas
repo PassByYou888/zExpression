@@ -1,10 +1,14 @@
+{ ****************************************************************************** }
+{ * geometry 3D library writen by QQ 600585@qq.com                             * }
+{ * https://github.com/PassByYou888/CoreCipher                                 * }
+(* https://github.com/PassByYou888/ZServer4D *)
+{ ****************************************************************************** }
+
 unit GeometryLib;
 
+{$I zDefine.inc}
+
 interface
-
-{$DEFINE INLINE_ASM}
-{$DEFINE INLINE_ASM_VICE_ASM}
-
 
 type
   THalfFloat = type Word;
@@ -325,11 +329,11 @@ procedure MakeVector(out v: TAffineVector; const x, y, z: single); overload; {$I
 procedure MakeVector(out v: TVector; const x, y, z: single); overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 procedure MakeVector(out v: TVector; const av: TAffineVector); overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 procedure MakeVector(out v: TVector; const av: TVector); overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
-procedure RstVector(var v: TAffineVector); overload; {$IFDEF INLINE_ASM_VICE_ASM}inline; {$ENDIF}
-procedure RstVector(var v: TVector); overload; {$IFDEF INLINE_ASM_VICE_ASM}inline; {$ENDIF}
+procedure RstVector(var v: TAffineVector); overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
+procedure RstVector(var v: TVector); overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 
 // 2
-function VectorEquals(const V1, V2: TVector2f): Boolean; overload; {$IFDEF INLINE_ASM_VICE_ASM}inline; {$ENDIF}
+function VectorEquals(const V1, V2: TVector2f): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 function VectorEquals(const V1, V2: TVector2i): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 function VectorEquals(const V1, V2: TVector2d): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 function VectorEquals(const V1, V2: TVector2s): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
@@ -784,11 +788,11 @@ function VectorDivide(const v: TAffineVector; const divider: TAffineVector): TAf
 function TexpointEquals(const p1, p2: TTexPoint): Boolean; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 // : True if all components are equal.
 // : True if all components are equal.
-function VectorEquals(const V1, V2: TVector): Boolean; overload; {$IFDEF INLINE_ASM_VICE_ASM}inline; {$ENDIF}
+function VectorEquals(const V1, V2: TVector): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 // : True if all components are equal.
-function VectorEquals(const V1, V2: TAffineVector): Boolean; overload; {$IFDEF INLINE_ASM_VICE_ASM}inline; {$ENDIF}
+function VectorEquals(const V1, V2: TAffineVector): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 // : True if X, Y and Z components are equal.
-function AffineVectorEquals(const V1, V2: TVector): Boolean; overload; {$IFDEF INLINE_ASM_VICE_ASM}inline; {$ENDIF}
+function AffineVectorEquals(const V1, V2: TVector): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 // : True if x=y=z=0, w ignored
 function VectorIsNull(const v: TVector): Boolean; overload; {$IFDEF INLINE_ASM}inline; {$ENDIF}
 // : True if x=y=z=0, w ignored
@@ -1481,14 +1485,6 @@ function UnPackRotationMatrix(const packedMatrix: TPackedRotationMatrix): TMatri
   If this is not the case, the function will not work correctly! }
 function BarycentricCoordinates(const V1, V2, V3, p: TAffineVector; var u, v: single): Boolean;
 
-{ : Calculates angles for the Camera.MoveAroundTarget(pitch, turn) procedure.
-  Initially from then GLCameraColtroller unit, requires AOriginalUpVector to contain only -1, 0 or 1.
-  Result contains pitch and turn angles. }
-function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
-  ATargetPosition, AMoveAroundTargetCenter: TVector): TVector2f; overload;
-function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
-  ATargetPosition, AMoveAroundTargetCenter: TAffineVector): TVector2f; overload;
-
 { : Extracted from Camera.MoveAroundTarget(pitch, turn). }
 function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
   pitchDelta, turnDelta: single): TVector;
@@ -1960,7 +1956,7 @@ procedure TexPointArrayAdd(const src: PTexPointArray; const delta: TTexPoint;
 var
   i: Integer;
 begin
-  for i          := 0 to nb - 1 do begin
+  for i := 0 to nb - 1 do begin
       dest^[i].S := src^[i].S + delta.S;
       dest^[i].T := src^[i].T + delta.T;
     end;
@@ -1974,7 +1970,7 @@ procedure TexPointArrayScaleAndAdd(const src: PTexPointArray; const delta: TTexP
 var
   i: Integer;
 begin
-  for i          := 0 to nb - 1 do begin
+  for i := 0 to nb - 1 do begin
       dest^[i].S := src^[i].S * scale.S + delta.S;
       dest^[i].T := src^[i].T * scale.T + delta.T;
     end;
@@ -1987,7 +1983,7 @@ procedure VectorArrayAdd(const src: PAffineVectorArray; const delta: TAffineVect
 var
   i: Integer;
 begin
-  for i           := 0 to nb - 1 do begin
+  for i := 0 to nb - 1 do begin
       dest^[i][0] := src^[i][0] + delta[0];
       dest^[i][1] := src^[i][1] + delta[1];
       dest^[i][2] := src^[i][2] + delta[2];
@@ -2374,8 +2370,8 @@ var
   d: single;
 begin
   start := NormalizeAngle(start);
-  stop  := NormalizeAngle(stop);
-  d     := stop - start;
+  stop := NormalizeAngle(stop);
+  d := stop - start;
   if d > PI then begin
       // positive d, angle on opposite side, becomes negative i.e. changes direction
       d := -d - c2PI;
@@ -2459,7 +2455,7 @@ begin
       q1 := QuaternionFromEuler(GeometryLib.RadToDeg(V1[0]), GeometryLib.RadToDeg(V1[1]), GeometryLib.RadToDeg(V1[2]), eulZYX);
       q2 := QuaternionFromEuler(GeometryLib.RadToDeg(V2[0]), GeometryLib.RadToDeg(V2[1]), GeometryLib.RadToDeg(V2[2]), eulZYX);
       qR := QuaternionSlerp(q1, q2, T);
-      M  := QuaternionToMatrix(qR);
+      M := QuaternionToMatrix(qR);
       MatrixDecompose(M, Tran);
       result[0] := Tran[ttRotateX];
       result[1] := Tran[ttRotateY];
@@ -2480,7 +2476,7 @@ procedure VectorArrayLerp(const src1, src2: PVectorArray; T: single; n: Integer;
 var
   i: Integer;
 begin
-  for i           := 0 to n - 1 do begin
+  for i := 0 to n - 1 do begin
       dest^[i][0] := src1^[i][0] + (src2^[i][0] - src1^[i][0]) * T;
       dest^[i][1] := src1^[i][1] + (src2^[i][1] - src1^[i][1]) * T;
       dest^[i][2] := src1^[i][2] + (src2^[i][2] - src1^[i][2]) * T;
@@ -2494,7 +2490,7 @@ procedure VectorArrayLerp(const src1, src2: PAffineVectorArray; T: single; n: In
 var
   i: Integer;
 begin
-  for i           := 0 to n - 1 do begin
+  for i := 0 to n - 1 do begin
       dest^[i][0] := src1^[i][0] + (src2^[i][0] - src1^[i][0]) * T;
       dest^[i][1] := src1^[i][1] + (src2^[i][1] - src1^[i][1]) * T;
       dest^[i][2] := src1^[i][2] + (src2^[i][2] - src1^[i][2]) * T;
@@ -2505,7 +2501,7 @@ procedure VectorArrayLerp(const src1, src2: PTexPointArray; T: single; n: Intege
 var
   i: Integer;
 begin
-  for i          := 0 to n - 1 do begin
+  for i := 0 to n - 1 do begin
       dest^[i].S := src1^[i].S + (src2^[i].S - src1^[i].S) * T;
       dest^[i].T := src1^[i].T + (src2^[i].T - src1^[i].T) * T;
     end;
@@ -2517,12 +2513,12 @@ function InterpolateCombined(const start, stop, delta: single; const DistortionD
 begin
   case InterpolationType of
     itLinear: result := Lerp(start, stop, delta);
-    itPower: result  := InterpolatePower(start, stop, delta, DistortionDegree);
-    itSin: result    := InterpolateSin(start, stop, delta);
+    itPower: result := InterpolatePower(start, stop, delta, DistortionDegree);
+    itSin: result := InterpolateSin(start, stop, delta);
     itSinAlt: result := InterpolateSinAlt(start, stop, delta);
-    itTan: result    := InterpolateTan(start, stop, delta);
-    itLn: result     := InterpolateLn(start, stop, delta, DistortionDegree);
-    itExp: result    := InterpolateExp(start, stop, delta, DistortionDegree);
+    itTan: result := InterpolateTan(start, stop, delta);
+    itLn: result := InterpolateLn(start, stop, delta, DistortionDegree);
+    itExp: result := InterpolateExp(start, stop, delta, DistortionDegree);
     else
       begin
         result := -1;
@@ -2549,7 +2545,7 @@ begin
   else
     begin
       ChangeDelta := (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart);
-      result      := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
+      result := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
     end;
 end;
 
@@ -2560,7 +2556,7 @@ var
   ChangeDelta: single;
 begin
   ChangeDelta := (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart);
-  result      := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
+  result := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
 end;
 
 // InterpolateLn
@@ -2614,8 +2610,8 @@ function MatrixLerp(const m1, m2: TMatrix; const delta: single): TMatrix;
 var
   i, J: Integer;
 begin
-  for J              := 0 to 3 do
-    for i            := 0 to 3 do
+  for J := 0 to 3 do
+    for i := 0 to 3 do
         result[i][J] := m1[i][J] + (m2[i][J] - m1[i][J]) * delta;
 end;
 
@@ -2625,10 +2621,10 @@ function VectorLength(const v: array of single): single;
 var
   i: Integer;
 begin
-  result     := 0;
-  for i      := low(v) to high(v) do
+  result := 0;
+  for i := low(v) to high(v) do
       result := result + Sqr(v[i]);
-  result     := Sqrt(result);
+  result := Sqrt(result);
 end;
 
 // VectorLength  (x, y)
@@ -2693,8 +2689,8 @@ function VectorNorm(var v: array of single): single;
 var
   i: Integer;
 begin
-  result     := 0;
-  for i      := low(v) to high(v) do
+  result := 0;
+  for i := low(v) to high(v) do
       result := result + v[i] * v[i];
 end;
 
@@ -2708,8 +2704,8 @@ begin
   vn := VectorNorm(v);
   if vn > 0 then begin
       invLen := RSqrt(vn);
-      v[0]   := v[0] * invLen;
-      v[1]   := v[1] * invLen;
+      v[0] := v[0] * invLen;
+      v[1] := v[1] * invLen;
     end;
 end;
 
@@ -2723,9 +2719,9 @@ begin
   vn := VectorNorm(v);
   if vn > 0 then begin
       invLen := RSqrt(vn);
-      v[0]   := v[0] * invLen;
-      v[1]   := v[1] * invLen;
-      v[2]   := v[2] * invLen;
+      v[0] := v[0] * invLen;
+      v[1] := v[1] * invLen;
+      v[2] := v[2] * invLen;
     end;
 end;
 
@@ -2740,7 +2736,7 @@ begin
   if vn = 0 then
       result := v
   else begin
-      invLen    := RSqrt(vn);
+      invLen := RSqrt(vn);
       result[0] := v[0] * invLen;
       result[1] := v[1] * invLen;
     end;
@@ -2757,7 +2753,7 @@ begin
   if vn = 0 then
       SetVector(result, v)
   else begin
-      invLen    := RSqrt(vn);
+      invLen := RSqrt(vn);
       result[0] := v[0] * invLen;
       result[1] := v[1] * invLen;
       result[2] := v[2] * invLen;
@@ -2784,9 +2780,9 @@ begin
   vn := VectorNorm(v);
   if vn > 0 then begin
       invLen := RSqrt(vn);
-      v[0]   := v[0] * invLen;
-      v[1]   := v[1] * invLen;
-      v[2]   := v[2] * invLen;
+      v[0] := v[0] * invLen;
+      v[1] := v[1] * invLen;
+      v[2] := v[2] * invLen;
     end;
   v[3] := 0;
 end;
@@ -2802,7 +2798,7 @@ begin
   if vn = 0 then
       SetVector(result, v)
   else begin
-      invLen    := RSqrt(vn);
+      invLen := RSqrt(vn);
       result[0] := v[0] * invLen;
       result[1] := v[1] * invLen;
       result[2] := v[2] * invLen;
@@ -2868,7 +2864,7 @@ procedure NegateVector(var v: array of single);
 var
   i: Integer;
 begin
-  for i    := low(v) to high(v) do
+  for i := low(v) to high(v) do
       v[i] := -v[i];
 end;
 
@@ -3127,7 +3123,7 @@ function VectorPerpendicular(const v, n: TAffineVector): TAffineVector;
 var
   dot: single;
 begin
-  dot       := VectorDotProduct(v, n);
+  dot := VectorDotProduct(v, n);
   result[x] := v[x] - dot * n[x];
   result[y] := v[y] - dot * n[y];
   result[z] := v[z] - dot * n[z];
@@ -3147,7 +3143,7 @@ var
   rotMatrix: TMatrix4f;
 begin
   rotMatrix := CreateRotationMatrix(axis, angle);
-  Vector    := VectorTransform(Vector, rotMatrix);
+  Vector := VectorTransform(Vector, rotMatrix);
 end;
 
 // RotateVector
@@ -3157,7 +3153,7 @@ var
   rotMatrix: TMatrix4f;
 begin
   rotMatrix := CreateRotationMatrix(PAffineVector(@axis)^, angle);
-  Vector    := VectorTransform(Vector, rotMatrix);
+  Vector := VectorTransform(Vector, rotMatrix);
 end;
 
 // RotateVectorAroundY
@@ -3167,7 +3163,7 @@ var
   c, S, v0: single;
 begin
   GeometryLib.SinCos(alpha, S, c);
-  v0   := v[0];
+  v0 := v[0];
   v[0] := c * v0 + S * v[2];
   v[2] := c * v[2] - S * v0;
 end;
@@ -3264,9 +3260,9 @@ function IsColinear(const V1, V2: TVector2f): Boolean; overload;
 var
   a, b, c: single;
 begin
-  a      := VectorDotProduct(V1, V1);
-  b      := VectorDotProduct(V1, V2);
-  c      := VectorDotProduct(V2, V2);
+  a := VectorDotProduct(V1, V1);
+  b := VectorDotProduct(V1, V2);
+  c := VectorDotProduct(V2, V2);
   result := (a * c - b * b) < cColinearBias;
 end;
 
@@ -3276,9 +3272,9 @@ function IsColinear(const V1, V2: TAffineVector): Boolean; overload;
 var
   a, b, c: single;
 begin
-  a      := VectorDotProduct(V1, V1);
-  b      := VectorDotProduct(V1, V2);
-  c      := VectorDotProduct(V2, V2);
+  a := VectorDotProduct(V1, V1);
+  b := VectorDotProduct(V1, V2);
+  c := VectorDotProduct(V2, V2);
   result := (a * c - b * b) < cColinearBias;
 end;
 
@@ -3288,9 +3284,9 @@ function IsColinear(const V1, V2: TVector): Boolean; overload;
 var
   a, b, c: single;
 begin
-  a      := VectorDotProduct(V1, V1);
-  b      := VectorDotProduct(V1, V2);
-  c      := VectorDotProduct(V2, V2);
+  a := VectorDotProduct(V1, V1);
+  b := VectorDotProduct(V1, V2);
+  c := VectorDotProduct(V2, V2);
   result := (a * c - b * b) < cColinearBias;
 end;
 
@@ -3300,7 +3296,7 @@ procedure SetMatrix(var dest: THomogeneousDblMatrix; const src: TMatrix);
 var
   i: Integer;
 begin
-  for i          := x to w do begin
+  for i := x to w do begin
       dest[i, x] := src[i, x];
       dest[i, y] := src[i, y];
       dest[i, z] := src[i, z];
@@ -3359,7 +3355,7 @@ end;
 //
 function CreateScaleMatrix(const v: TAffineVector): TMatrix;
 begin
-  result       := IdentityHmgMatrix;
+  result := IdentityHmgMatrix;
   result[x, x] := v[x];
   result[y, y] := v[y];
   result[z, z] := v[z];
@@ -3369,7 +3365,7 @@ end;
 //
 function CreateScaleMatrix(const v: TVector): TMatrix;
 begin
-  result       := IdentityHmgMatrix;
+  result := IdentityHmgMatrix;
   result[x, x] := v[x];
   result[y, y] := v[y];
   result[z, z] := v[z];
@@ -3379,7 +3375,7 @@ end;
 //
 function CreateTranslationMatrix(const v: TAffineVector): TMatrix;
 begin
-  result       := IdentityHmgMatrix;
+  result := IdentityHmgMatrix;
   result[w, x] := v[x];
   result[w, y] := v[y];
   result[w, z] := v[z];
@@ -3389,7 +3385,7 @@ end;
 //
 function CreateTranslationMatrix(const v: TVector): TMatrix;
 begin
-  result       := IdentityHmgMatrix;
+  result := IdentityHmgMatrix;
   result[w, x] := v[x];
   result[w, y] := v[y];
   result[w, z] := v[z];
@@ -3399,7 +3395,7 @@ end;
 //
 function CreateScaleAndTranslationMatrix(const scale, offset: TVector): TMatrix;
 begin
-  result       := IdentityHmgMatrix;
+  result := IdentityHmgMatrix;
   result[x, x] := scale[x];
   result[w, x] := offset[x];
   result[y, y] := scale[y];
@@ -3412,7 +3408,7 @@ end;
 //
 function CreateRotationMatrixX(const sine, cosine: single): TMatrix;
 begin
-  result       := EmptyHmgMatrix;
+  result := EmptyHmgMatrix;
   result[x, x] := 1;
   result[y, y] := cosine;
   result[y, z] := sine;
@@ -3435,7 +3431,7 @@ end;
 //
 function CreateRotationMatrixY(const sine, cosine: single): TMatrix;
 begin
-  result       := EmptyHmgMatrix;
+  result := EmptyHmgMatrix;
   result[x, x] := cosine;
   result[x, z] := -sine;
   result[y, y] := 1;
@@ -3458,7 +3454,7 @@ end;
 //
 function CreateRotationMatrixZ(const sine, cosine: single): TMatrix;
 begin
-  result       := EmptyHmgMatrix;
+  result := EmptyHmgMatrix;
   result[x, x] := cosine;
   result[x, y] := sine;
   result[y, x] := -sine;
@@ -3486,7 +3482,7 @@ var
 begin
   GeometryLib.SinCos(angle, sine, cosine);
   one_minus_cosine := 1 - cosine;
-  axis             := VectorNormalize(anAxis);
+  axis := VectorNormalize(anAxis);
 
   result[x, x] := (one_minus_cosine * axis[0] * axis[0]) + cosine;
   result[x, y] := (one_minus_cosine * axis[0] * axis[1]) - (axis[2] * sine);
@@ -3525,7 +3521,7 @@ var
 begin
   GeometryLib.SinCos(angle, sine, cosine);
   one_minus_cosine := 1 - cosine;
-  axis             := VectorNormalize(anAxis);
+  axis := VectorNormalize(anAxis);
 
   result[x, x] := (one_minus_cosine * Sqr(axis[0])) + cosine;
   result[x, y] := (one_minus_cosine * axis[0] * axis[1]) - (axis[2] * sine);
@@ -3707,15 +3703,15 @@ var
     b1, b2, b3,
     c1, c2, c3: single;
 begin
-  a1      := M[x, x];
-  a2      := M[x, y];
-  a3      := M[x, z];
-  b1      := M[y, x];
-  b2      := M[y, y];
-  b3      := M[y, z];
-  c1      := M[z, x];
-  c2      := M[z, y];
-  c3      := M[z, z];
+  a1 := M[x, x];
+  a2 := M[x, y];
+  a3 := M[x, z];
+  b1 := M[y, x];
+  b2 := M[y, y];
+  b3 := M[y, z];
+  c1 := M[z, x];
+  c2 := M[z, y];
+  c3 := M[z, z];
   M[x, x] := (b2 * c3 - c2 * b3);
   M[y, x] := -(b1 * c3 - c1 * b3);
   M[z, x] := (b1 * c2 - c1 * b2);
@@ -3735,7 +3731,7 @@ procedure ScaleMatrix(var M: TAffineMatrix; const factor: single);
 var
   i: Integer;
 begin
-  for i       := 0 to 2 do begin
+  for i := 0 to 2 do begin
       M[i, 0] := M[i, 0] * factor;
       M[i, 1] := M[i, 1] * factor;
       M[i, 2] := M[i, 2] * factor;
@@ -3748,7 +3744,7 @@ procedure ScaleMatrix(var M: TMatrix; const factor: single);
 var
   i: Integer;
 begin
-  for i       := 0 to 3 do begin
+  for i := 0 to 3 do begin
       M[i, 0] := M[i, 0] * factor;
       M[i, 1] := M[i, 1] * factor;
       M[i, 2] := M[i, 2] * factor;
@@ -3793,13 +3789,13 @@ procedure TransposeMatrix(var M: TAffineMatrix);
 var
   f: single;
 begin
-  f       := M[0, 1];
+  f := M[0, 1];
   M[0, 1] := M[1, 0];
   M[1, 0] := f;
-  f       := M[0, 2];
+  f := M[0, 2];
   M[0, 2] := M[2, 0];
   M[2, 0] := f;
-  f       := M[1, 2];
+  f := M[1, 2];
   M[1, 2] := M[2, 1];
   M[2, 1] := f;
 end;
@@ -3810,22 +3806,22 @@ procedure TransposeMatrix(var M: TMatrix);
 var
   f: single;
 begin
-  f       := M[0, 1];
+  f := M[0, 1];
   M[0, 1] := M[1, 0];
   M[1, 0] := f;
-  f       := M[0, 2];
+  f := M[0, 2];
   M[0, 2] := M[2, 0];
   M[2, 0] := f;
-  f       := M[0, 3];
+  f := M[0, 3];
   M[0, 3] := M[3, 0];
   M[3, 0] := f;
-  f       := M[1, 2];
+  f := M[1, 2];
   M[1, 2] := M[2, 1];
   M[2, 1] := f;
-  f       := M[1, 3];
+  f := M[1, 3];
   M[1, 3] := M[3, 1];
   M[3, 1] := f;
-  f       := M[2, 3];
+  f := M[2, 3];
   M[2, 3] := M[3, 2];
   M[3, 2] := f;
 end;
@@ -3946,17 +3942,17 @@ begin
   // normalize the matrix
   if LocMat[w, w] = 0 then
       Exit;
-  for i              := 0 to 3 do
-    for J            := 0 to 3 do
+  for i := 0 to 3 do
+    for J := 0 to 3 do
         LocMat[i, J] := LocMat[i, J] / LocMat[w, w];
 
   // pmat is used to solve for perspective, but it also provides
   // an easy way to test for singularity of the upper 3x3 component.
 
-  pmat           := LocMat;
-  for i          := 0 to 2 do
+  pmat := LocMat;
+  for i := 0 to 2 do
       pmat[i, w] := 0;
-  pmat[w, w]     := 1;
+  pmat[w, w] := 1;
 
   if MatrixDeterminant(pmat) = 0 then
       Exit;
@@ -3999,9 +3995,9 @@ begin
     end;
 
   // next take care of translation (easy)
-  for i                                       := 0 to 2 do begin
+  for i := 0 to 2 do begin
       Tran[TTransType(Ord(ttTranslateX) + i)] := LocMat[w, i];
-      LocMat[w, i]                            := 0;
+      LocMat[w, i] := 0;
     end;
 
   // now get scale and shear
@@ -4015,7 +4011,7 @@ begin
 
   // compute XY shear factor and make 2nd row orthogonal to 1st
   Tran[ttShearXY] := VectorDotProduct(row0, row1);
-  f               := -Tran[ttShearXY];
+  f := -Tran[ttShearXY];
   CombineVector(row1, row0, f);
 
   // now, compute Y scale and normalize 2nd row
@@ -4025,10 +4021,10 @@ begin
 
   // compute XZ and YZ shears, orthogonalize 3rd row
   Tran[ttShearXZ] := VectorDotProduct(row0, row2);
-  f               := -Tran[ttShearXZ];
+  f := -Tran[ttShearXZ];
   CombineVector(row2, row0, f);
   Tran[ttShearYZ] := VectorDotProduct(row1, row2);
-  f               := -Tran[ttShearYZ];
+  f := -Tran[ttShearYZ];
   CombineVector(row2, row1, f);
 
   // next, get Z scale and normalize 3rd row
@@ -4041,7 +4037,7 @@ begin
   // Check for a coordinate system flip.  If the determinant
   // is -1, then negate the matrix and the scaling factors.
   if VectorDotProduct(row0, VectorCrossProduct(row1, row2)) < 0 then begin
-      for i                                   := 0 to 2 do
+      for i := 0 to 2 do
           Tran[TTransType(Ord(ttScaleX) + i)] := -Tran[TTransType(Ord(ttScaleX) + i)];
       NegateVector(row0);
       NegateVector(row1);
@@ -4070,7 +4066,7 @@ begin
   NormalizeVector(ZAxis);
   XAxis := VectorCrossProduct(ZAxis, normUp);
   NormalizeVector(XAxis);
-  YAxis     := VectorCrossProduct(XAxis, ZAxis);
+  YAxis := VectorCrossProduct(XAxis, ZAxis);
   result[0] := XAxis;
   result[1] := YAxis;
   result[2] := ZAxis;
@@ -4080,7 +4076,7 @@ begin
   negEye := eye;
   NegateVector(negEye);
   negEye[3] := 1;
-  negEye    := VectorTransform(negEye, result);
+  negEye := VectorTransform(negEye, result);
   result[3] := negEye;
 end;
 
@@ -4111,9 +4107,9 @@ function CreatePerspectiveMatrix(FOV, Aspect, ZNear, ZFar: single): TMatrix;
 var
   x, y: single;
 begin
-  FOV    := MinFloat(179.9, MaxFloat(0, FOV));
-  y      := ZNear * GeometryLib.Tan(GeometryLib.DegToRad(FOV) * 0.5);
-  x      := y * Aspect;
+  FOV := MinFloat(179.9, MaxFloat(0, FOV));
+  y := ZNear * GeometryLib.Tan(GeometryLib.DegToRad(FOV) * 0.5);
+  x := y * Aspect;
   result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
 
@@ -4162,9 +4158,9 @@ function Project(
   const viewport: TVector4i;
   out WindowVector: TVector): Boolean;
 begin
-  result          := False;
+  result := False;
   objectVector[3] := 1.0;
-  WindowVector    := VectorTransform(objectVector, ViewProjMatrix);
+  WindowVector := VectorTransform(objectVector, ViewProjMatrix);
   if WindowVector[3] = 0.0 then
       Exit;
   WindowVector[0] := WindowVector[0] / WindowVector[3];
@@ -4178,7 +4174,7 @@ begin
   // Map x,y to viewport
   WindowVector[0] := WindowVector[0] * viewport[2] + viewport[0];
   WindowVector[1] := WindowVector[1] * viewport[3] + viewport[1];
-  result          := True;
+  result := True;
 end;
 
 function UnProject(
@@ -4197,13 +4193,13 @@ begin
   WindowVector[0] := WindowVector[0] * 2 - 1;
   WindowVector[1] := WindowVector[1] * 2 - 1;
   WindowVector[2] := WindowVector[2] * 2 - 1;
-  objectVector    := VectorTransform(WindowVector, ViewProjMatrix);
+  objectVector := VectorTransform(WindowVector, ViewProjMatrix);
   if objectVector[3] = 0.0 then
       Exit;
   objectVector[0] := objectVector[0] / objectVector[3];
   objectVector[1] := objectVector[1] / objectVector[3];
   objectVector[2] := objectVector[2] / objectVector[3];
-  result          := True;
+  result := True;
 end;
 
 // CalcPlaneNormal (func, affine)
@@ -4247,7 +4243,7 @@ end;
 function PlaneMake(const point, normal: TAffineVector): THmgPlane;
 begin
   PAffineVector(@result)^ := normal;
-  result[3]               := -VectorDotProduct(point, normal);
+  result[3] := -VectorDotProduct(point, normal);
 end;
 
 // PlaneMake (point + normal, hmg)
@@ -4255,7 +4251,7 @@ end;
 function PlaneMake(const point, normal: TVector): THmgPlane;
 begin
   PAffineVector(@result)^ := PAffineVector(@normal)^;
-  result[3]               := -VectorDotProduct(PAffineVector(@point)^, PAffineVector(@normal)^);
+  result[3] := -VectorDotProduct(PAffineVector(@point)^, PAffineVector(@normal)^);
 end;
 
 // PlaneMake (3 points, affine)
@@ -4370,7 +4366,7 @@ begin
       Exit;
 
   normal := Vector3fMake(plane);
-  inter  := VectorAdd(point, VectorScale(normal, -h));
+  inter := VectorAdd(point, VectorScale(normal, -h));
   result := True;
 end;
 
@@ -4385,14 +4381,14 @@ begin
   result := False;
 
   normal := Vector3fMake(plane);
-  dot    := VectorDotProduct(VectorNormalize(direction), normal);
+  dot := VectorDotProduct(VectorNormalize(direction), normal);
 
   if (not bothface) and (dot > 0) then
       Exit;
 
   if Abs(dot) >= 0.000000001 then begin
-      h      := PointPlaneDistance(point, plane);
-      inter  := VectorAdd(point, VectorScale(direction, -h / dot));
+      h := PointPlaneDistance(point, plane);
+      inter := VectorAdd(point, VectorScale(direction, -h / dot));
       result := True;
     end;
 end;
@@ -4405,15 +4401,15 @@ var
   normal, direction: TVector3f;
 begin
   result := False;
-  hA     := PointPlaneDistance(ptA, plane);
-  hB     := PointPlaneDistance(ptB, plane);
+  hA := PointPlaneDistance(ptA, plane);
+  hB := PointPlaneDistance(ptB, plane);
   if hA * hB <= 0 then
     begin
-      normal    := Vector3fMake(plane);
+      normal := Vector3fMake(plane);
       direction := VectorNormalize(VectorSubtract(ptB, ptA));
-      dot       := VectorDotProduct(direction, normal);
+      dot := VectorDotProduct(direction, normal);
       if Abs(dot) >= 0.000000001 then begin
-          inter  := VectorAdd(ptA, VectorScale(direction, -hA / dot));
+          inter := VectorAdd(ptA, VectorScale(direction, -hA / dot));
           result := True;
         end;
     end;
@@ -4447,7 +4443,7 @@ begin
   if not IsLineIntersectTriangle(point, direction, ptA, ptB, ptC) then
       Exit;
 
-  plane  := PlaneMake(ptA, ptB, ptC);
+  plane := PlaneMake(ptA, ptB, ptC);
   result := PointPlaneProjection(point, direction, plane, inter, bothface);
 end;
 
@@ -4511,7 +4507,7 @@ begin
   if not IsLineIntersectQuad(point, direction, ptA, ptB, ptC, ptD) then
       Exit;
 
-  plane  := PlaneMake(ptA, ptB, ptC);
+  plane := PlaneMake(ptA, ptB, ptC);
   result := PointPlaneProjection(point, direction, plane, inter, bothface);
 end;
 
@@ -4589,7 +4585,7 @@ begin
 
   c1 := VectorDotProduct(w, lineDirection);
   c2 := VectorDotProduct(lineDirection, lineDirection);
-  b  := c1 / c2;
+  b := c1 / c2;
 
   VectorAdd(linePoint, VectorScale(lineDirection, b), result);
 end;
@@ -4600,7 +4596,7 @@ function PointLineDistance(const point, linePoint, lineDirection: TAffineVector)
 var
   PB: TAffineVector;
 begin
-  PB     := PointLineClosestPoint(point, linePoint, lineDirection);
+  PB := PointLineClosestPoint(point, linePoint, lineDirection);
   result := VectorDistance(point, PB);
 end;
 
@@ -4612,11 +4608,11 @@ var
   c1, c2, b       : single;
 begin
   lineDirection := VectorSubtract(segmentStop, segmentStart);
-  w             := VectorSubtract(point, segmentStart);
+  w := VectorSubtract(point, segmentStart);
 
   c1 := VectorDotProduct(w, lineDirection);
   c2 := VectorDotProduct(lineDirection, lineDirection);
-  b  := ClampValue(c1 / c2, 0, 1);
+  b := ClampValue(c1 / c2, 0, 1);
 
   VectorAdd(segmentStart, VectorScale(lineDirection, b), result);
 end;
@@ -4629,11 +4625,11 @@ var
   c1, c2, b       : single;
 begin
   lineDirection := VectorSubtract(segmentStop, segmentStart);
-  w             := VectorSubtract(point, segmentStart);
+  w := VectorSubtract(point, segmentStart);
 
   c1 := VectorDotProduct(w, lineDirection);
   c2 := VectorDotProduct(lineDirection, lineDirection);
-  b  := ClampValue(c1 / c2, 0, 1);
+  b := ClampValue(c1 / c2, 0, 1);
 
   VectorAdd(segmentStart, VectorScale(lineDirection, b), result);
 end;
@@ -4644,7 +4640,7 @@ function PointSegmentDistance(const point, segmentStart, segmentStop: TAffineVec
 var
   PB: TAffineVector;
 begin
-  PB     := PointSegmentClosestPoint(point, segmentStart, segmentStop);
+  PB := PointSegmentClosestPoint(point, segmentStart, segmentStop);
   result := VectorDistance(point, PB);
 end;
 
@@ -4662,11 +4658,11 @@ begin
   VectorSubtract(S1Stop, S1Start, v);
   VectorSubtract(S0Start, S1Start, w);
 
-  a      := VectorDotProduct(u, u);
-  b      := VectorDotProduct(u, v);
-  c      := VectorDotProduct(v, v);
+  a := VectorDotProduct(u, u);
+  b := VectorDotProduct(u, v);
+  c := VectorDotProduct(v, v);
   smalld := VectorDotProduct(u, w);
-  e      := VectorDotProduct(v, w);
+  e := VectorDotProduct(v, w);
   largeD := a * c - b * b;
 
   sD := largeD;
@@ -4786,7 +4782,7 @@ begin
       result.ImagPart[1] := Imag[1];
   if n >= 3 then
       result.ImagPart[2] := Imag[2];
-  result.RealPart        := Real;
+  result.RealPart := Real;
 end;
 
 // QuaternionConjugate
@@ -4796,7 +4792,7 @@ begin
   result.ImagPart[0] := -Q.ImagPart[0];
   result.ImagPart[1] := -Q.ImagPart[1];
   result.ImagPart[2] := -Q.ImagPart[2];
-  result.RealPart    := Q.RealPart;
+  result.RealPart := Q.RealPart;
 end;
 
 // QuaternionMagnitude
@@ -4839,36 +4835,36 @@ var
 begin
   traceMat := 1 + mat[0, 0] + mat[1, 1] + mat[2, 2];
   if traceMat > EPSILON2 then begin
-      S                  := Sqrt(traceMat) * 2;
-      invS               := 1 / S;
+      S := Sqrt(traceMat) * 2;
+      invS := 1 / S;
       result.ImagPart[0] := (mat[1, 2] - mat[2, 1]) * invS;
       result.ImagPart[1] := (mat[2, 0] - mat[0, 2]) * invS;
       result.ImagPart[2] := (mat[0, 1] - mat[1, 0]) * invS;
-      result.RealPart    := 0.25 * S;
+      result.RealPart := 0.25 * S;
     end
   else if (mat[0, 0] > mat[1, 1]) and (mat[0, 0] > mat[2, 2]) then begin // Row 0:
-      S                  := Sqrt(MaxFloat(EPSILON2, cOne + mat[0, 0] - mat[1, 1] - mat[2, 2])) * 2;
-      invS               := 1 / S;
+      S := Sqrt(MaxFloat(EPSILON2, cOne + mat[0, 0] - mat[1, 1] - mat[2, 2])) * 2;
+      invS := 1 / S;
       result.ImagPart[0] := 0.25 * S;
       result.ImagPart[1] := (mat[0, 1] + mat[1, 0]) * invS;
       result.ImagPart[2] := (mat[2, 0] + mat[0, 2]) * invS;
-      result.RealPart    := (mat[1, 2] - mat[2, 1]) * invS;
+      result.RealPart := (mat[1, 2] - mat[2, 1]) * invS;
     end
   else if (mat[1, 1] > mat[2, 2]) then begin // Row 1:
-      S                  := Sqrt(MaxFloat(EPSILON2, cOne + mat[1, 1] - mat[0, 0] - mat[2, 2])) * 2;
-      invS               := 1 / S;
+      S := Sqrt(MaxFloat(EPSILON2, cOne + mat[1, 1] - mat[0, 0] - mat[2, 2])) * 2;
+      invS := 1 / S;
       result.ImagPart[0] := (mat[0, 1] + mat[1, 0]) * invS;
       result.ImagPart[1] := 0.25 * S;
       result.ImagPart[2] := (mat[1, 2] + mat[2, 1]) * invS;
-      result.RealPart    := (mat[2, 0] - mat[0, 2]) * invS;
+      result.RealPart := (mat[2, 0] - mat[0, 2]) * invS;
     end
   else begin // Row 2:
-      S                  := Sqrt(MaxFloat(EPSILON2, cOne + mat[2, 2] - mat[0, 0] - mat[1, 1])) * 2;
-      invS               := 1 / S;
+      S := Sqrt(MaxFloat(EPSILON2, cOne + mat[2, 2] - mat[0, 0] - mat[1, 1])) * 2;
+      invS := 1 / S;
       result.ImagPart[0] := (mat[2, 0] + mat[0, 2]) * invS;
       result.ImagPart[1] := (mat[1, 2] + mat[2, 1]) * invS;
       result.ImagPart[2] := 0.25 * S;
-      result.RealPart    := (mat[0, 1] - mat[1, 0]) * invS;
+      result.RealPart := (mat[0, 1] - mat[1, 0]) * invS;
     end;
   NormalizeQuaternion(result);
 end;
@@ -4897,19 +4893,19 @@ var
   w, x, y, z, xx, xy, xz, xw, yy, yz, yw, zz, zw: single;
 begin
   NormalizeQuaternion(quat);
-  w            := quat.RealPart;
-  x            := quat.ImagPart[0];
-  y            := quat.ImagPart[1];
-  z            := quat.ImagPart[2];
-  xx           := x * x;
-  xy           := x * y;
-  xz           := x * z;
-  xw           := x * w;
-  yy           := y * y;
-  yz           := y * z;
-  yw           := y * w;
-  zz           := z * z;
-  zw           := z * w;
+  w := quat.RealPart;
+  x := quat.ImagPart[0];
+  y := quat.ImagPart[1];
+  z := quat.ImagPart[2];
+  xx := x * x;
+  xy := x * y;
+  xz := x * z;
+  xw := x * w;
+  yy := y * y;
+  yz := y * z;
+  yw := y * w;
+  zz := z * z;
+  zw := z * w;
   result[0, 0] := 1 - 2 * (yy + zz);
   result[1, 0] := 2 * (xy - zw);
   result[2, 0] := 2 * (xz + yw);
@@ -4935,19 +4931,19 @@ var
   w, x, y, z, xx, xy, xz, xw, yy, yz, yw, zz, zw: single;
 begin
   NormalizeQuaternion(quat);
-  w            := quat.RealPart;
-  x            := quat.ImagPart[0];
-  y            := quat.ImagPart[1];
-  z            := quat.ImagPart[2];
-  xx           := x * x;
-  xy           := x * y;
-  xz           := x * z;
-  xw           := x * w;
-  yy           := y * y;
-  yz           := y * z;
-  yw           := y * w;
-  zz           := z * z;
-  zw           := z * w;
+  w := quat.RealPart;
+  x := quat.ImagPart[0];
+  y := quat.ImagPart[1];
+  z := quat.ImagPart[2];
+  xx := x * x;
+  xy := x * y;
+  xz := x * z;
+  xw := x * w;
+  yy := y * y;
+  yz := y * z;
+  yw := y * w;
+  zz := z * z;
+  zw := z * w;
   result[0, 0] := 1 - 2 * (yy + zz);
   result[1, 0] := 2 * (xy - zw);
   result[2, 0] := 2 * (xz + yw);
@@ -4966,8 +4962,8 @@ var
   f, S, c: single;
 begin
   GeometryLib.SinCos(GeometryLib.DegToRad(angle * cOneDotFive), S, c);
-  result.RealPart    := c;
-  f                  := S / VectorLength(axis);
+  result.RealPart := c;
+  f := S / VectorLength(axis);
   result.ImagPart[0] := axis[0] * f;
   result.ImagPart[1] := axis[1] * f;
   result.ImagPart[2] := axis[2] * f;
@@ -4980,8 +4976,8 @@ var
   qp, qy: TQuaternion;
 begin
   result := QuaternionFromAngleAxis(r, ZVector);
-  qp     := QuaternionFromAngleAxis(p, XVector);
-  qy     := QuaternionFromAngleAxis(y, YVector);
+  qp := QuaternionFromAngleAxis(p, XVector);
+  qy := QuaternionFromAngleAxis(y, YVector);
 
   result := QuaternionMultiply(qp, result);
   result := QuaternionMultiply(qy, result);
@@ -5006,8 +5002,8 @@ var
     Q[cOrder[eulerOrder][1]] := QuaternionFromAngleAxis(x, XVector);
     Q[cOrder[eulerOrder][2]] := QuaternionFromAngleAxis(y, YVector);
     Q[cOrder[eulerOrder][3]] := QuaternionFromAngleAxis(z, ZVector);
-    result                   := QuaternionMultiply(Q[2], Q[3]);
-    result                   := QuaternionMultiply(Q[1], result);
+    result := QuaternionMultiply(Q[2], Q[3]);
+    result := QuaternionMultiply(Q[1], result);
   end;
 
 const
@@ -5244,7 +5240,7 @@ begin
   if high(S) - low(S) < 1000 then begin
       // Fast computation (approx 5.5x)
       alpha := 2 * Sqr(Sin(d * 0.5));
-      beta  := Sin(d);
+      beta := Sin(d);
       GeometryLib.SinCos(startAngle * cPIdiv180, S[low(S)], c[low(S)]);
       for i := low(S) to high(S) - 1 do begin
           // Make use of the incremental formulae:
@@ -5257,7 +5253,7 @@ begin
   else begin
       // Slower, but maintains precision when steps are small
       startAngle := startAngle * cPIdiv180;
-      for i      := low(S) to high(S) do
+      for i := low(S) to high(S) do
           GeometryLib.SinCos((i - low(S)) * d + startAngle, S[i], c[i]);
     end;
 end;
@@ -5274,11 +5270,11 @@ end;
 function ArcCos(const x: single): single;
 // Result:=ArcTan2(Sqrt(c1 - X * X), X);
 begin
-{$IFDEF FPC}
+  {$IFDEF FPC}
   if Abs(x) > 1.0 then
       result := Math.ArcCos(Sign(x))
   else
-{$ENDIF}
+    {$ENDIF}
       result := Math.ArcCos(x);
 end;
 
@@ -5433,8 +5429,8 @@ var
   T, w: single;
 begin
   p[2] := 2 * Random - 1;
-  T    := 2 * PI * Random;
-  w    := Sqrt(1 - p[2] * p[2]);
+  T := 2 * PI * Random;
+  w := Sqrt(1 - p[2] * p[2]);
   GeometryLib.SinCos(T, w, p[1], p[0]);
 end;
 
@@ -5501,12 +5497,10 @@ end;
 //
 function Floor(v: single): Integer; overload;
 begin
-{$HINTS OFF}
   if v < 0 then
       result := Trunc(v) - 1
   else
       result := Trunc(v);
-{$HINTS ON}
 end;
 
 // Sign
@@ -5583,11 +5577,11 @@ var
   i, k: Integer;
 begin
   if nbItems > 0 then begin
-      k     := 0;
+      k := 0;
       for i := 1 to nbItems - 1 do
         if values^[i] < values^[k] then
             k := i;
-      result  := values^[k];
+      result := values^[k];
     end
   else
       result := 0;
@@ -5600,11 +5594,11 @@ var
   i, k: Integer;
 begin
   if nbItems > 0 then begin
-      k     := 0;
+      k := 0;
       for i := 1 to nbItems - 1 do
         if values^[i] < values^[k] then
             k := i;
-      result  := values^[k];
+      result := values^[k];
     end
   else
       result := 0;
@@ -5618,7 +5612,7 @@ var
 begin
   if Length(v) > 0 then begin
       result := v[0];
-      for i  := 1 to high(v) do
+      for i := 1 to high(v) do
         if v[i] < result then
             result := v[i];
     end
@@ -5691,11 +5685,11 @@ var
   i, k: Integer;
 begin
   if nbItems > 0 then begin
-      k     := 0;
+      k := 0;
       for i := 1 to nbItems - 1 do
         if values^[i] > values^[k] then
             k := i;
-      result  := values^[k];
+      result := values^[k];
     end
   else
       result := 0;
@@ -5708,11 +5702,11 @@ var
   i, k: Integer;
 begin
   if nbItems > 0 then begin
-      k     := 0;
+      k := 0;
       for i := 1 to nbItems - 1 do
         if values^[i] > values^[k] then
             k := i;
-      result  := values^[k];
+      result := values^[k];
     end
   else
       result := 0;
@@ -5726,7 +5720,7 @@ var
 begin
   if Length(v) > 0 then begin
       result := v[0];
-      for i  := 1 to high(v) do
+      for i := 1 to high(v) do
         if v[i] > result then
             result := v[i];
     end
@@ -5937,9 +5931,9 @@ begin
   result := 0;
   if nSides > 2 then begin
       RstVector(r);
-      p1     := @p[0];
-      p2     := @p[1];
-      for i  := 2 to nSides - 1 do begin
+      p1 := @p[0];
+      p2 := @p[1];
+      for i := 2 to nSides - 1 do begin
           p3 := @p[i];
           AddVector(r, VectorCrossProduct(VectorSubtract(p2^, p1^),
             VectorSubtract(p3^, p1^)));
@@ -5966,10 +5960,10 @@ var
 begin
   result := 0;
   if nSides > 2 then begin
-      p1         := @(p^[0]);
-      p2         := @(p^[1]);
-      for i      := 2 to nSides - 1 do begin
-          p3     := @(p^[i]);
+      p1 := @(p^[0]);
+      p2 := @(p^[1]);
+      for i := 2 to nSides - 1 do begin
+          p3 := @(p^[i]);
           result := result + (p2^[0] - p1^[0]) * (p3^[1] - p1^[1])
             - (p3^[0] - p1^[0]) * (p2^[1] - p1^[1]);
           p2 := p3;
@@ -5985,7 +5979,7 @@ procedure ScaleFloatArray(values: PSingleArray; nb: Integer;
 var
   i: Integer;
 begin
-  for i          := 0 to nb - 1 do
+  for i := 0 to nb - 1 do
       values^[i] := values^[i] * factor;
 end;
 
@@ -6005,7 +5999,7 @@ procedure OffsetFloatArray(values: PSingleArray; nb: Integer;
 var
   i: Integer;
 begin
-  for i          := 0 to nb - 1 do
+  for i := 0 to nb - 1 do
       values^[i] := values^[i] + delta;
 end;
 
@@ -6024,7 +6018,7 @@ procedure OffsetFloatArray(valuesDest, valuesDelta: PSingleArray; nb: Integer);
 var
   i: Integer;
 begin
-  for i              := 0 to nb - 1 do
+  for i := 0 to nb - 1 do
       valuesDest^[i] := valuesDest^[i] + valuesDelta^[i];
 end;
 
@@ -6143,13 +6137,13 @@ var
   i, J, M: Integer;
   buf    : Extended;
 begin
-  for i     := low(a) to high(a) - 1 do begin
-      M     := i;
+  for i := low(a) to high(a) - 1 do begin
+      M := i;
       for J := i + 1 to high(a) do
         if a[J] < a[M] then
             M := J;
       if M <> i then begin
-          buf  := a[M];
+          buf := a[M];
           a[M] := a[i];
           a[i] := buf;
         end;
@@ -6209,12 +6203,12 @@ var
 begin
   result := False;
   if high(xp) = high(yp) then begin
-      J     := high(xp);
+      J := high(xp);
       for i := 0 to high(xp) do begin
           if ((((yp[i] <= y) and (y < yp[J])) or ((yp[J] <= y) and (y < yp[i])))
             and (x < (xp[J] - xp[i]) * (y - yp[i]) / (yp[J] - yp[i]) + xp[i])) then
               result := not result;
-          J          := i;
+          J := i;
         end;
     end;
 end;
@@ -6223,7 +6217,7 @@ end;
 //
 procedure DivMod(Dividend: Integer; Divisor: Word; var result, Remainder: Word);
 begin
-  result    := Dividend div Divisor;
+  result := Dividend div Divisor;
   Remainder := Dividend mod Divisor;
 end;
 
@@ -6297,15 +6291,15 @@ begin
 
   // make the rotation matrix
   Axis1 := XVector;
-  M     := CreateRotationMatrix(Axis1, Angles[x]);
+  M := CreateRotationMatrix(Axis1, Angles[x]);
 
   Axis2 := YVector;
-  m2    := CreateRotationMatrix(Axis2, Angles[y]);
-  m1    := MatrixMultiply(M, m2);
+  m2 := CreateRotationMatrix(Axis2, Angles[y]);
+  m1 := MatrixMultiply(M, m2);
 
   Axis2 := ZVector;
-  m2    := CreateRotationMatrix(Axis2, Angles[z]);
-  M     := MatrixMultiply(m1, m2);
+  m2 := CreateRotationMatrix(Axis2, Angles[z]);
+  M := MatrixMultiply(m1, m2);
 
   cost := ((M[x, x] + M[y, y] + M[z, z]) - 1) / 2;
   if cost < -1 then
@@ -6365,7 +6359,7 @@ begin
 
   // if QEnd is on opposite hemisphere from QStart, use -QEnd instead
   if cost < 0 then begin
-      cost  := -cost;
+      cost := -cost;
       bflip := True;
     end
   else
@@ -6380,10 +6374,10 @@ begin
   else begin
       // normal case
       Theta := GeometryLib.ArcCos(cost);
-      phi   := Theta + Spin * PI;
-      sint  := Sin(Theta);
-      beta  := Sin(Theta - T * phi) / sint;
-      T     := Sin(T * phi) / sint;
+      phi := Theta + Spin * PI;
+      sint := Sin(Theta);
+      beta := Sin(Theta - T * phi) / sint;
+      T := Sin(T * phi) / sint;
     end;
 
   if bflip then
@@ -6393,7 +6387,7 @@ begin
   result.ImagPart[x] := beta * QStart.ImagPart[x] + T * QEnd.ImagPart[x];
   result.ImagPart[y] := beta * QStart.ImagPart[y] + T * QEnd.ImagPart[y];
   result.ImagPart[z] := beta * QStart.ImagPart[z] + T * QEnd.ImagPart[z];
-  result.RealPart    := beta * QStart.RealPart + T * QEnd.RealPart;
+  result.RealPart := beta * QStart.RealPart + T * QEnd.RealPart;
 end;
 
 // QuaternionSlerp
@@ -6412,7 +6406,7 @@ begin
     + source.RealPart * dest.RealPart;
   // adjust signs (if necessary)
   if cosom < 0 then begin
-      cosom  := -cosom;
+      cosom := -cosom;
       to1[0] := -dest.ImagPart[0];
       to1[1] := -dest.ImagPart[1];
       to1[2] := -dest.ImagPart[2];
@@ -6426,8 +6420,8 @@ begin
     end;
   // calculate coefficients
   if ((1.0 - cosom) > EPSILON2) then begin // standard case (slerp)
-      omega  := GeometryLib.ArcCos(cosom);
-      sinom  := 1 / Sin(omega);
+      omega := GeometryLib.ArcCos(cosom);
+      sinom := 1 / Sin(omega);
       scale0 := Sin((1.0 - T) * omega) * sinom;
       scale1 := Sin(T * omega) * sinom;
     end
@@ -6440,7 +6434,7 @@ begin
   result.ImagPart[0] := scale0 * source.ImagPart[0] + scale1 * to1[0];
   result.ImagPart[1] := scale0 * source.ImagPart[1] + scale1 * to1[1];
   result.ImagPart[2] := scale0 * source.ImagPart[2] + scale1 * to1[2];
-  result.RealPart    := scale0 * source.RealPart + scale1 * to1[3];
+  result.RealPart := scale0 * source.RealPart + scale1 * to1[3];
   NormalizeQuaternion(result);
 end;
 
@@ -6539,7 +6533,7 @@ var
   sp  : TVector;
   T, d: single;
 begin
-  d      := VectorDotProduct(rayVector, planeNormal);
+  d := VectorDotProduct(rayVector, planeNormal);
   result := ((d > EPSILON2) or (d < -EPSILON2));
   if result and Assigned(intersectPoint) then begin
       VectorSubtract(planePoint, rayStart, sp);
@@ -6599,8 +6593,8 @@ begin
   if (u < 0) or (u > 1) then
       result := False
   else begin
-      qvec   := VectorCrossProduct(tvec, V1);
-      v      := VectorDotProduct(rayVector, qvec) * invDet;
+      qvec := VectorCrossProduct(tvec, V1);
+      v := VectorDotProduct(rayVector, qvec) * invDet;
       result := (v >= 0) and (u + v <= 1);
       if result then begin
           T := VectorDotProduct(V2, qvec) * invDet;
@@ -6626,7 +6620,7 @@ begin
   proj := PointProject(point, rayStart, rayVector);
   if proj <= 0 then
       proj := 0; // rays don't go backward!
-  result   := VectorDistance(point, VectorCombine(rayStart, rayVector, 1, proj));
+  result := VectorDistance(point, VectorCombine(rayStart, rayVector, 1, proj));
 end;
 
 // RayCastIntersectsSphere
@@ -6640,7 +6634,7 @@ begin
   proj := PointProject(sphereCenter, rayStart, rayVector);
   if proj <= 0 then
       proj := 0; // rays don't go backward!
-  result   := (VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj)) <= Sqr(SphereRadius));
+  result := (VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj)) <= Sqr(SphereRadius));
 end;
 
 // RayCastSphereIntersect
@@ -6656,7 +6650,7 @@ var
 begin
   proj := PointProject(sphereCenter, rayStart, rayVector);
   VectorCombine(rayStart, rayVector, proj, projPoint);
-  d2  := SphereRadius * SphereRadius - VectorDistance2(sphereCenter, projPoint);
+  d2 := SphereRadius * SphereRadius - VectorDistance2(sphereCenter, projPoint);
   id2 := PInteger(@d2)^;
   if id2 >= 0 then begin
       if id2 = 0 then begin
@@ -6696,16 +6690,16 @@ var
 begin
   // Find plane.
   result := True;
-  for i  := 0 to 2 do
+  for i := 0 to 2 do
     if rayStart[i] < aMinExtent[i] then begin
-        plane[i]    := aMinExtent[i];
+        plane[i] := aMinExtent[i];
         isMiddle[i] := False;
-        result      := False;
+        result := False;
       end
     else if rayStart[i] > aMaxExtent[i] then begin
-        plane[i]    := aMaxExtent[i];
+        plane[i] := aMaxExtent[i];
         isMiddle[i] := False;
-        result      := False;
+        result := False;
       end
     else begin
         isMiddle[i] := True;
@@ -6719,7 +6713,7 @@ begin
   else begin
       // Distance to plane.
       planeInd := 0;
-      for i    := 0 to 2 do
+      for i := 0 to 2 do
         if isMiddle[i]
           or (rayVector[i] = 0)
         then
@@ -6730,7 +6724,7 @@ begin
                 if MaxDist[planeInd] < MaxDist[i]
                 then
                     planeInd := i;
-                result       := True;
+                result := True;
               end;
           end;
       // Inside box ?
@@ -6741,7 +6735,7 @@ begin
                 ResAFV[i] := plane[i]
             else begin
                 ResAFV[i] := rayStart[i] + MaxDist[planeInd] * rayVector[i];
-                result    := (ResAFV[i] >= aMinExtent[i])
+                result := (ResAFV[i] >= aMinExtent[i])
                   and (ResAFV[i] <= aMaxExtent[i]);
                 if not result then
                     Exit;
@@ -6786,7 +6780,7 @@ begin
     end
   else begin
       if Assigned(intersectPoint) then begin
-          T               := -b / a; // parameter of intersection
+          T := -b / a; // parameter of intersection
           intersectPoint^ := point;
           // calculate intersection = p + t*d
           CombineVector(intersectPoint^, direction, T);
@@ -6842,7 +6836,7 @@ begin
       Exit;
 
   // Triangle - Box diagonal 2 intersection
-  BoxDiagPt  := VectorMake(aMinExtent[0], aMinExtent[1], aMaxExtent[2]);
+  BoxDiagPt := VectorMake(aMinExtent[0], aMinExtent[1], aMaxExtent[2]);
   BoxDiagPt2 := VectorMake(aMaxExtent[0], aMaxExtent[1], aMinExtent[2]);
   VectorSubtract(BoxDiagPt2, BoxDiagPt, BoxDiagDir);
   result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
@@ -6853,7 +6847,7 @@ begin
       Exit;
 
   // Triangle - Box diagonal 3 intersection
-  BoxDiagPt  := VectorMake(aMinExtent[0], aMaxExtent[1], aMinExtent[2]);
+  BoxDiagPt := VectorMake(aMinExtent[0], aMaxExtent[1], aMinExtent[2]);
   BoxDiagPt2 := VectorMake(aMaxExtent[0], aMinExtent[1], aMaxExtent[2]);
   VectorSubtract(BoxDiagPt, BoxDiagPt, BoxDiagDir);
   result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
@@ -6864,7 +6858,7 @@ begin
       Exit;
 
   // Triangle - Box diagonal 4 intersection
-  BoxDiagPt  := VectorMake(aMaxExtent[0], aMinExtent[1], aMinExtent[2]);
+  BoxDiagPt := VectorMake(aMaxExtent[0], aMinExtent[1], aMinExtent[2]);
   BoxDiagPt2 := VectorMake(aMinExtent[0], aMaxExtent[1], aMaxExtent[2]);
   VectorSubtract(BoxDiagPt, BoxDiagPt, BoxDiagDir);
   result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
@@ -6938,28 +6932,28 @@ begin
   p[2] := SpherePos[2] - BoxMatrix[3, 2];
 
   isSphereCenterInsideBox := True;
-  for i                   := 0 to 2 do begin
-      l[i]                := 0.5 * BoxScale[i];
-      T[i]                := dDotByRow(p, BoxMatrix, i);
+  for i := 0 to 2 do begin
+      l[i] := 0.5 * BoxScale[i];
+      T[i] := dDotByRow(p, BoxMatrix, i);
       if T[i] < -l[i] then begin
-          T[i]                    := -l[i];
+          T[i] := -l[i];
           isSphereCenterInsideBox := False;
         end
       else if T[i] > l[i] then begin
-          T[i]                    := l[i];
+          T[i] := l[i];
           isSphereCenterInsideBox := False;
         end;
     end;
 
   if isSphereCenterInsideBox then begin
 
-      MinDistance      := l[0] - Abs(T[0]);
-      mini             := 0;
-      for i            := 1 to 2 do begin
+      MinDistance := l[0] - Abs(T[0]);
+      mini := 0;
+      for i := 1 to 2 do begin
           FaceDistance := l[i] - Abs(T[i]);
           if FaceDistance < MinDistance then begin
               MinDistance := FaceDistance;
-              mini        := i;
+              mini := i;
             end;
         end;
 
@@ -6972,7 +6966,7 @@ begin
               tmp[mini] := 1
           else
               tmp[mini] := -1;
-          normal^       := dDotMatrByRow(tmp, BoxMatrix);
+          normal^ := dDotMatrByRow(tmp, BoxMatrix);
         end;
 
       if depth <> nil then
@@ -6981,8 +6975,8 @@ begin
       result := True;
     end
   else begin
-      Q      := dDotMatrByColumn(T, BoxMatrix);
-      r      := VectorSubtract(p, Q);
+      Q := dDotMatrByColumn(T, BoxMatrix);
+      r := VectorSubtract(p, Q);
       Depth1 := SphereRadius - VectorLength(r);
       if Depth1 < 0 then begin
           result := False;
@@ -6995,7 +6989,7 @@ begin
             end;
           if depth <> nil then
               depth^ := Depth1;
-          result     := True;
+          result := True;
         end;
     end;
 end;
@@ -7052,7 +7046,7 @@ var
   negRadius: single;
 begin
   negRadius := -objRadius;
-  result    := (PlaneEvaluatePoint(Frustum.pLeft, objPos) < negRadius)
+  result := (PlaneEvaluatePoint(Frustum.pLeft, objPos) < negRadius)
     or (PlaneEvaluatePoint(Frustum.pTop, objPos) < negRadius)
     or (PlaneEvaluatePoint(Frustum.pRight, objPos) < negRadius)
     or (PlaneEvaluatePoint(Frustum.pBottom, objPos) < negRadius)
@@ -7192,7 +7186,6 @@ const
 begin
   Q := QuaternionFromMatrix(mat);
   NormalizeQuaternion(Q);
-{$HINTS OFF}
   if Q.RealPart < 0 then begin
       result[0] := Round(-Q.ImagPart[0] * cFact);
       result[1] := Round(-Q.ImagPart[1] * cFact);
@@ -7203,7 +7196,6 @@ begin
       result[1] := Round(Q.ImagPart[1] * cFact);
       result[2] := Round(Q.ImagPart[2] * cFact);
     end;
-{$HINTS ON}
 end;
 
 // UnPackRotationMatrix
@@ -7217,12 +7209,12 @@ begin
   Q.ImagPart[0] := packedMatrix[0] * cFact;
   Q.ImagPart[1] := packedMatrix[1] * cFact;
   Q.ImagPart[2] := packedMatrix[2] * cFact;
-  Q.RealPart    := 1 - VectorNorm(Q.ImagPart);
+  Q.RealPart := 1 - VectorNorm(Q.ImagPart);
   if Q.RealPart < 0 then
       Q.RealPart := 0
   else
       Q.RealPart := Sqrt(Q.RealPart);
-  result         := QuaternionToMatrix(Q);
+  result := QuaternionToMatrix(Q);
 end;
 
 // BarycentricCoordinates
@@ -8161,208 +8153,6 @@ function RectangleContains(const ACenterOfBigRect1, ACenterOfSmallRect2,
 begin
   result := (Abs(ACenterOfBigRect1[0] - ACenterOfSmallRect2[0]) + ASizeOfSmallRect2[0] / 2 - ASizeOfBigRect1[0] / 2 < AEps) and
     (Abs(ACenterOfBigRect1[1] - ACenterOfSmallRect2[1]) + ASizeOfSmallRect2[1] / 2 - ASizeOfBigRect1[1] / 2 < AEps);
-end;
-
-function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
-  ATargetPosition, AMoveAroundTargetCenter: TVector): TVector2f;
-var
-  pitchangle0, pitchangle1, turnangle0, turnangle1,
-    pitchangledif, turnangledif,
-    dx0, dy0, dz0, dx1, dy1, dz1: double;
-  Sign                          : ShortInt;
-begin
-  // determine relative positions to determine the lines which form the angles
-  // distances from initial camera pos to target object
-  dx0 := AOriginalPosition[0] - AMoveAroundTargetCenter[0];
-  dy0 := AOriginalPosition[1] - AMoveAroundTargetCenter[1];
-  dz0 := AOriginalPosition[2] - AMoveAroundTargetCenter[2];
-
-  // distances from final camera pos to target object
-  dx1 := ATargetPosition[0] - AMoveAroundTargetCenter[0];
-  dy1 := ATargetPosition[1] - AMoveAroundTargetCenter[1];
-  dz1 := ATargetPosition[2] - AMoveAroundTargetCenter[2];
-
-  // just to make sure we don't get division by 0 exceptions
-  if dx0 = 0 then
-      dx0 := 0.001;
-  if dy0 = 0 then
-      dy0 := 0.001;
-  if dz0 = 0 then
-      dz0 := 0.001;
-  if dx1 = 0 then
-      dx1 := 0.001;
-  if dy1 = 0 then
-      dy1 := 0.001;
-  if dz1 = 0 then
-      dz1 := 0.001;
-
-  // determine "pitch" and "turn" angles for the initial and  final camera position
-  // the formulas differ depending on the camera.Up vector
-  // I tested all quadrants for all possible integer FJoblist.Camera.Up directions
-  if Abs(AOriginalUpVector[2]) = 1 then // Z=1/-1
-    begin
-      Sign        := Round(AOriginalUpVector[2] / Abs(AOriginalUpVector[2]));
-      pitchangle0 := arctan(dz0 / Sqrt(Sqr(dx0) + Sqr(dy0)));
-      pitchangle1 := arctan(dz1 / Sqrt(Sqr(dx1) + Sqr(dy1)));
-      turnangle0  := arctan(dy0 / dx0);
-      if (dx0 < 0) and (dy0 < 0) then
-          turnangle0 := -(PI - turnangle0)
-      else if (dx0 < 0) and (dy0 > 0) then
-          turnangle0 := -(PI - turnangle0);
-      turnangle1     := arctan(dy1 / dx1);
-      if (dx1 < 0) and (dy1 < 0) then
-          turnangle1 := -(PI - turnangle1)
-      else if (dx1 < 0) and (dy1 > 0) then
-          turnangle1 := -(PI - turnangle1);
-    end
-  else if Abs(AOriginalUpVector[1]) = 1 then // Y=1/-1
-    begin
-      Sign        := Round(AOriginalUpVector[1] / Abs(AOriginalUpVector[1]));
-      pitchangle0 := arctan(dy0 / Sqrt(Sqr(dx0) + Sqr(dz0)));
-      pitchangle1 := arctan(dy1 / Sqrt(Sqr(dx1) + Sqr(dz1)));
-      turnangle0  := -arctan(dz0 / dx0);
-      if (dx0 < 0) and (dz0 < 0) then
-          turnangle0 := -(PI - turnangle0)
-      else if (dx0 < 0) and (dz0 > 0) then
-          turnangle0 := -(PI - turnangle0);
-      turnangle1     := -arctan(dz1 / dx1);
-      if (dx1 < 0) and (dz1 < 0) then
-          turnangle1 := -(PI - turnangle1)
-      else if (dx1 < 0) and (dz1 > 0) then
-          turnangle1 := -(PI - turnangle1);
-    end
-  else if Abs(AOriginalUpVector[0]) = 1 then // X=1/-1
-    begin
-      Sign        := Round(AOriginalUpVector[0] / Abs(AOriginalUpVector[0]));
-      pitchangle0 := arctan(dx0 / Sqrt(Sqr(dz0) + Sqr(dy0)));
-      pitchangle1 := arctan(dx1 / Sqrt(Sqr(dz1) + Sqr(dy1)));
-      turnangle0  := arctan(dz0 / dy0);
-      if (dz0 > 0) and (dy0 > 0) then
-          turnangle0 := -(PI - turnangle0)
-      else if (dz0 < 0) and (dy0 > 0) then
-          turnangle0 := -(PI - turnangle0);
-      turnangle1     := arctan(dz1 / dy1);
-      if (dz1 > 0) and (dy1 > 0) then
-          turnangle1 := -(PI - turnangle1)
-      else if (dz1 < 0) and (dy1 > 0) then
-          turnangle1 := -(PI - turnangle1);
-    end
-  else
-    begin
-      Assert(False, 'The Camera.Up vector may contain only -1, 0 or 1');
-    end;
-
-  // determine pitch and turn angle differences
-  pitchangledif := Sign * (pitchangle1 - pitchangle0);
-  turnangledif  := Sign * (turnangle1 - turnangle0);
-
-  if Abs(turnangledif) > PI then
-      turnangledif := -Abs(turnangledif) / turnangledif * (2 * PI - Abs(turnangledif));
-
-  // Determine rotation speeds
-  result[0] := GeometryLib.RadToDeg(-pitchangledif);
-  result[1] := GeometryLib.RadToDeg(turnangledif);
-end;
-
-function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
-  ATargetPosition, AMoveAroundTargetCenter: TAffineVector): TVector2f;
-var
-  pitchangle0, pitchangle1, turnangle0, turnangle1,
-    pitchangledif, turnangledif,
-    dx0, dy0, dz0, dx1, dy1, dz1: double;
-  Sign                          : ShortInt;
-begin
-  // determine relative positions to determine the lines which form the angles
-  // distances from initial camera pos to target object
-  dx0 := AOriginalPosition[0] - AMoveAroundTargetCenter[0];
-  dy0 := AOriginalPosition[1] - AMoveAroundTargetCenter[1];
-  dz0 := AOriginalPosition[2] - AMoveAroundTargetCenter[2];
-
-  // distances from final camera pos to target object
-  dx1 := ATargetPosition[0] - AMoveAroundTargetCenter[0];
-  dy1 := ATargetPosition[1] - AMoveAroundTargetCenter[1];
-  dz1 := ATargetPosition[2] - AMoveAroundTargetCenter[2];
-
-  // just to make sure we don't get division by 0 exceptions
-  if dx0 = 0 then
-      dx0 := 0.001;
-  if dy0 = 0 then
-      dy0 := 0.001;
-  if dz0 = 0 then
-      dz0 := 0.001;
-  if dx1 = 0 then
-      dx1 := 0.001;
-  if dy1 = 0 then
-      dy1 := 0.001;
-  if dz1 = 0 then
-      dz1 := 0.001;
-
-  // determine "pitch" and "turn" angles for the initial and  final camera position
-  // the formulas differ depending on the camera.Up vector
-  // I tested all quadrants for all possible integer FJoblist.Camera.Up directions
-  if Abs(AOriginalUpVector[2]) = 1 then // Z=1/-1
-    begin
-      Sign        := Round(AOriginalUpVector[2] / Abs(AOriginalUpVector[2]));
-      pitchangle0 := arctan(dz0 / Sqrt(Sqr(dx0) + Sqr(dy0)));
-      pitchangle1 := arctan(dz1 / Sqrt(Sqr(dx1) + Sqr(dy1)));
-      turnangle0  := arctan(dy0 / dx0);
-      if (dx0 < 0) and (dy0 < 0) then
-          turnangle0 := -(PI - turnangle0)
-      else if (dx0 < 0) and (dy0 > 0) then
-          turnangle0 := -(PI - turnangle0);
-      turnangle1     := arctan(dy1 / dx1);
-      if (dx1 < 0) and (dy1 < 0) then
-          turnangle1 := -(PI - turnangle1)
-      else if (dx1 < 0) and (dy1 > 0) then
-          turnangle1 := -(PI - turnangle1);
-    end
-  else if Abs(AOriginalUpVector[1]) = 1 then // Y=1/-1
-    begin
-      Sign        := Round(AOriginalUpVector[1] / Abs(AOriginalUpVector[1]));
-      pitchangle0 := arctan(dy0 / Sqrt(Sqr(dx0) + Sqr(dz0)));
-      pitchangle1 := arctan(dy1 / Sqrt(Sqr(dx1) + Sqr(dz1)));
-      turnangle0  := -arctan(dz0 / dx0);
-      if (dx0 < 0) and (dz0 < 0) then
-          turnangle0 := -(PI - turnangle0)
-      else if (dx0 < 0) and (dz0 > 0) then
-          turnangle0 := -(PI - turnangle0);
-      turnangle1     := -arctan(dz1 / dx1);
-      if (dx1 < 0) and (dz1 < 0) then
-          turnangle1 := -(PI - turnangle1)
-      else if (dx1 < 0) and (dz1 > 0) then
-          turnangle1 := -(PI - turnangle1);
-    end
-  else if Abs(AOriginalUpVector[0]) = 1 then // X=1/-1
-    begin
-      Sign        := Round(AOriginalUpVector[0] / Abs(AOriginalUpVector[0]));
-      pitchangle0 := arctan(dx0 / Sqrt(Sqr(dz0) + Sqr(dy0)));
-      pitchangle1 := arctan(dx1 / Sqrt(Sqr(dz1) + Sqr(dy1)));
-      turnangle0  := arctan(dz0 / dy0);
-      if (dz0 > 0) and (dy0 > 0) then
-          turnangle0 := -(PI - turnangle0)
-      else if (dz0 < 0) and (dy0 > 0) then
-          turnangle0 := -(PI - turnangle0);
-      turnangle1     := arctan(dz1 / dy1);
-      if (dz1 > 0) and (dy1 > 0) then
-          turnangle1 := -(PI - turnangle1)
-      else if (dz1 < 0) and (dy1 > 0) then
-          turnangle1 := -(PI - turnangle1);
-    end
-  else
-    begin
-      Assert(False, 'The Camera.Up vector may contain only -1, 0 or 1');
-    end;
-
-  // determine pitch and turn angle differences
-  pitchangledif := Sign * (pitchangle1 - pitchangle0);
-  turnangledif  := Sign * (turnangle1 - turnangle0);
-
-  if Abs(turnangledif) > PI then
-      turnangledif := -Abs(turnangledif) / turnangledif * (2 * PI - Abs(turnangledif));
-
-  // Determine rotation speeds
-  result[0] := GeometryLib.RadToDeg(-pitchangledif);
-  result[1] := GeometryLib.RadToDeg(turnangledif);
 end;
 
 function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;

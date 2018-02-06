@@ -1,16 +1,25 @@
+{******************************************************************************}
+{* Core class library  written by QQ 600585@qq.com                            *}
+{* https://github.com/PassByYou888/CoreCipher                                 *}
+(* https://github.com/PassByYou888/ZServer4D                                  *)
+{******************************************************************************}
+
+(*
+  update history
+  2017-12-6
+  timetick
+*)
+
 unit CoreClasses;
+
+{$I zDefine.inc}
 
 interface
 
-{$IFDEF FPC}
-{$ELSE}
-{$ENDIF}
-
-
-uses SysUtils, Classes, Types
-
+uses SysUtils, Classes, Types, PascalStrings,
+  SyncObjs
   {$IFDEF FPC}
-    , Contnrs
+    , Contnrs, fgl
   {$ELSE}
   , System.Generics.Collections
   {$ENDIF}
@@ -25,13 +34,15 @@ const
   fmOpenRead      = SysUtils.fmOpenRead;
   fmOpenWrite     = SysUtils.fmOpenWrite;
   fmOpenReadWrite = SysUtils.fmOpenReadWrite;
-  // fmExclusive = SysUtils.fmExclusive;
 
   fmShareExclusive = SysUtils.fmShareExclusive;
   fmShareDenyWrite = SysUtils.fmShareDenyWrite;
   fmShareDenyNone  = SysUtils.fmShareDenyNone;
 
 type
+  TTimeTickValue = Cardinal;
+  TTimeTick      = TTimeTickValue;
+
   TSeekOrigin = Classes.TSeekOrigin;
   TNotify     = Classes.TNotifyEvent;
 
@@ -84,7 +95,9 @@ type
   TCoreClassPointerList      = Classes.TPointerList;
   TCoreClassListSortCompare  = Classes.TListSortCompare;
   TCoreClassListNotification = Classes.TListNotification;
-  TCoreClassList             = TList;
+  TCoreClassList             = Class(TList)
+    property ListData: PPointerList read GetList;
+  end;
 
   TCoreClassListForObj = class(TObjectList)
   public
@@ -93,6 +106,10 @@ type
   {$ELSE}
 
   TGenericsList<T>=class(System.Generics.Collections.TList<T>)
+    function ListData: Pointer;
+  end;
+
+  TGenericsObjectList<T:class>=class(System.Generics.Collections.TList<T>)
     function ListData: Pointer;
   end;
 
@@ -119,7 +136,7 @@ type
 
   {$ENDIF}
 
-  TExecutePlatform = (epWin32, epWin64, epOSX, epIOS, epIOSSIM, epANDROID, epUnknow);
+  TExecutePlatform = (epWin32, epWin64, epOSX, epIOS, epIOSSIM, epANDROID, epLinux64, epUnknow);
 
 const
   {$IF Defined(WIN32)}
@@ -136,31 +153,38 @@ const
   {$ENDIF}
   {$ELSEIF Defined(ANDROID)}
   CurrentPlatform = TExecutePlatform.epANDROID;
+  {$ELSEIF Defined(Linux)}
+  CurrentPlatform = TExecutePlatform.epLinux64;
   {$ELSE}
   CurrentPlatform = TExecutePlatform.epUnknow;
   {$IFEND}
 
-procedure EmptyProc;
 procedure Empty;
 
-procedure DisposeObject(const obj: TObject); overload;
+procedure DisposeObject(const obj: TObject); overload; {$IFDEF INLINE_ASM} inline; {$ENDIF}
 procedure DisposeObject(const objs: array of TObject); overload;
-procedure DisposeAndNilObject(var obj: TObject);
-
-procedure FreeObject(const obj: TObject); overload;
+procedure FreeObject(const obj: TObject); overload; {$IFDEF INLINE_ASM} inline; {$ENDIF}
 procedure FreeObject(const objs: array of TObject); overload;
-procedure FreeAndNilObject(var obj: TObject);
 
-procedure RaiseInfo(n: string); overload;
-procedure RaiseInfo(n: string; const Args: array of const); overload;
+procedure LockObject(obj:TObject); {$IFDEF INLINE_ASM} inline; {$ENDIF}
+procedure UnLockObject(obj:TObject); {$IFDEF INLINE_ASM} inline; {$ENDIF}
 
-function IsMobile: Boolean;
+procedure FillPtrByte(Dest:Pointer; Count: NativeUInt; const Value: Byte); {$IFDEF INLINE_ASM} inline; {$ENDIF}
+function CompareMemory(P1, P2: Pointer; MLen: NativeUInt): Boolean; {$IFDEF INLINE_ASM} inline; {$ENDIF}
+procedure CopyPtr(sour, dest:Pointer; Count: NativeUInt); {$IFDEF INLINE_ASM} inline; {$ENDIF}
+
+procedure RaiseInfo(n: SystemString); overload;
+procedure RaiseInfo(n: SystemString; const Args: array of const); overload;
+
+function IsMobile: Boolean; {$IFDEF INLINE_ASM} inline; {$ENDIF}
+
+function GetTimeTickCount: TTimeTickValue; {$IFDEF INLINE_ASM} inline; {$ENDIF}
+function GetTimeTick: TTimeTickValue; {$IFDEF INLINE_ASM} inline; {$ENDIF}
+function GetCrashTimeTick: TTimeTickValue;
+
+threadvar MHGlobalHookEnabled: Boolean;
 
 implementation
-
-procedure EmptyProc;
-begin
-end;
 
 procedure Empty;
 begin
@@ -189,13 +213,6 @@ begin
       DisposeObject(obj);
 end;
 
-procedure DisposeAndNilObject(var obj: TObject);
-begin
-  DisposeObject(obj);
-  if obj <> nil then
-      TObject(obj) := nil;
-end;
-
 procedure FreeObject(const obj: TObject);
 begin
   if obj <> nil then
@@ -219,19 +236,85 @@ begin
       FreeObject(obj);
 end;
 
-procedure FreeAndNilObject(var obj: TObject);
+{$I CoreAtomic.inc}
+
+procedure LockObject(obj:TObject);
 begin
-  DisposeObject(obj);
-  if obj <> nil then
-      TObject(obj) := nil;
+{$IFDEF FPC}
+  _LockCriticalObj(obj);
+{$ELSE}
+  {$IFDEF CriticalSimulateAtomic}
+  _LockCriticalObj(obj);
+  {$ELSE}
+  TMonitor.Enter(obj);
+  {$ENDIF}
+{$ENDIF}
 end;
 
-procedure RaiseInfo(n: string);
+procedure UnLockObject(obj:TObject);
+begin
+{$IFDEF FPC}
+  _UnLockCriticalObj(obj);
+{$ELSE}
+  {$IFDEF CriticalSimulateAtomic}
+  _UnLockCriticalObj(obj);
+  {$ELSE}
+  TMonitor.Exit(obj);
+  {$ENDIF}
+{$ENDIF}
+end;
+
+procedure FillPtrByte(Dest:Pointer; Count: NativeUInt; const Value: Byte);
+var
+  Index: NativeUInt;
+  V    : UInt64;
+  PB   : PByte;
+  Total: NativeUInt;
+begin
+  PB := Dest;
+
+  if Count >= 8 then
+    begin
+      V := Value or (Value shl 8) or
+        (Value shl 16) or (Value shl 24);
+      V := V or (V shl 32);
+      Total := Count shr 3;
+
+      for index := 0 to Total - 1 do
+        begin
+          PUInt64(PB)^ := V;
+          Inc(PB, 8);
+        end;
+      { Get the remainder (mod 8) }
+      Count := Count and $7;
+    end;
+
+  // Fill remain.
+  if Count>0 then
+    for index := 0 to Count - 1 do
+      begin
+        PB^ := Value;
+        Inc(PB);
+      end;
+end;
+
+function CompareMemory(P1, P2: Pointer; MLen: NativeUInt): Boolean;
+begin;
+  if MLen=0 then Result:=True
+  else Result:=CompareMem(p1,p2, MLen);
+end;
+
+procedure CopyPtr(sour, dest:Pointer; Count: NativeUInt);
+begin
+  move(sour^, dest^, Count);
+end;
+
+procedure RaiseInfo(n: SystemString);
 begin
   raise Exception.Create(n);
 end;
 
-procedure RaiseInfo(n: string; const Args: array of const);
+procedure RaiseInfo(n: SystemString; const Args: array of const);
 begin
   raise Exception.Create(Format(n, Args));
 end;
@@ -242,6 +325,21 @@ begin
     epIOS, epIOSSIM, epANDROID: Result := True;
     else Result := False;
   end;
+end;
+
+function GetTimeTickCount: TTimeTickValue;
+begin
+  Result := TCoreClassThread.GetTickCount;
+end;
+
+function GetTimeTick: TTimeTickValue;
+begin
+  Result := TCoreClassThread.GetTickCount;
+end;
+
+function GetCrashTimeTick: TTimeTickValue;
+begin
+  Result:= $FFFFFFFF - GetTimeTick;
 end;
 
 {$IFDEF FPC}
@@ -296,6 +394,11 @@ begin
   Result := @(inherited List);
 end;
 
+function TGenericsObjectList<T>.ListData: Pointer;
+begin
+  Result := @(inherited List);
+end;
+
 function TCoreClassList.ListData: PCoreClassPointerList;
 begin
   Result := @(inherited List);
@@ -303,5 +406,11 @@ end;
 
 {$ENDIF}
 
-
+initialization
+  InitCriticalLock;
+  MHGlobalHookEnabled := True;
+finalization
+  FreeCriticalLock;
+  MHGlobalHookEnabled := False;
 end.
+
