@@ -28,13 +28,15 @@
 
 支持函数调用
 
-支持自定义脚本语法的
+支持自定义脚本语法
 
 逆波兰2.0符号优先级处理
 
-自带使用Demo
+支持安卓和苹果各型号手机
 
-在编译以后，能形成原子化op代码，可以通过stream高速载入并运行，不限制cpu类型，可以兼容手机程序
+完整的功能Demo，完整性能和解析准确性评估框架
+
+在编译以后，能形成原子化op代码，可以通过stream高速载入并运行，不限制cpu类型
 
 OP代码框架可以轻松译码成ARMv7 ARMx64 x64 x86等平台的机器码
 
@@ -262,11 +264,91 @@ begin
 end;
 ```
 
+## 将zExpression表达式应用于文本解析器，文本格式可以是HTML,Text,Json,XML
+
+```delphi
+var
+  rt: TOpCustomRunTime;
+
+  function Macro(var AText: string; const HeadToken, TailToken: string): TPascalString;
+  var
+    sour      : TPascalString;
+    ht, tt    : TPascalString;
+    bPos, ePos: Integer;
+    KeyText   : SystemString;
+    i         : Integer;
+    tmpSym    : TSymbolExpression;
+    op        : TOpCode;
+  begin
+    Result := '';
+    sour.Text := AText;
+    ht.Text := HeadToken;
+    tt.Text := TailToken;
+
+    i := 1;
+
+    while i <= sour.Len do
+      begin
+        if sour.ComparePos(i, @ht) then
+          begin
+            bPos := i;
+            ePos := sour.GetPos(tt, i + ht.Len);
+            if ePos > 0 then
+              begin
+                KeyText := sour.copy(bPos + ht.Len, ePos - (bPos + ht.Len)).Text;
+
+                // 在TPascalString中，使用Append方法，要比string:=string+string效率更高
+                Result.Append(VarToStr(EvaluateExpressionValue(KeyText, rt)));
+                i := ePos + tt.Len;
+                continue;
+              end;
+          end;
+
+        // 在TPascalString中，使用Append方法，要比string:=string+string效率更高
+        Result.Append(sour[i]);
+        inc(i);
+      end;
+  end;
+
+var
+  n: string;
+  i: Integer;
+  t: TTimeTick;
+begin
+  DoStatus('简单演示用脚本来封装zExpression');
+  // rt为ze的运行函数支持库
+  rt := TOpCustomRunTime.Create;
+  rt.RegOp('OverFunction', function(var Param: TOpParam): Variant
+    begin
+      Result := '谢谢';
+    end);
+
+  // 我们这里使用宏处理将1+1以表达式来翻译
+  n := '这是1+1=<begin>1+1<end>，这是一个UInt48位整形:<begin>1<<48<end>，结束 <begin>OverFunction<end>';
+
+  DoStatus('原型:' + n);
+  DoStatus('计算结果' + Macro(n, '<begin>', '<end>').Text);
+
+  DoStatus('zExpression正在测试性能，对上列原型做100万次处理');
+
+  t := GetTimeTick;
+
+  // 重复做100万次句法表达式解析和处理
+  for i := 1 to 100 * 10000 do
+      Macro(n, '<begin>', '<end>');
+
+  DoStatus('zExpression性能测试完成，耗时:%dms', [GetTimeTick - t]);
+
+  disposeObject([rt]);
+end;
+```
+
+
 
 ## 关于作者
 
 
-因为不爱交网友，请不要直接联系作者
+因为作者不爱交网友，请不要直接联系作者
 
 
 使用zExpression有疑问请加qq群490269542，

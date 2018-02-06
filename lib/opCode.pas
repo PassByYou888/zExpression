@@ -1,3 +1,9 @@
+{ * opCode                                                                     * }
+{ ****************************************************************************** }
+{ * https://github.com/PassByYou888/CoreCipher                                 * }
+{ * https://github.com/PassByYou888/ZServer4D                                  * }
+{ * https://github.com/PassByYou888/zExpression                                * }
+{ ****************************************************************************** }
 unit opCode;
 
 {$I zDefine.inc}

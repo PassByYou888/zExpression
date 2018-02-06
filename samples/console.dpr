@@ -13,7 +13,6 @@ program console;
 uses
   System.SysUtils,
   Variants,
-  Cadencer in '..\lib\Cadencer.pas',
   CoreClasses in '..\lib\CoreClasses.pas',
   CoreCompress in '..\lib\CoreCompress.pas',
   DataFrameEngine in '..\lib\DataFrameEngine.pas',
@@ -22,7 +21,6 @@ uses
   Geometry2DUnit in '..\lib\Geometry2DUnit.pas',
   Geometry3DUnit in '..\lib\Geometry3DUnit.pas',
   GeometryLib in '..\lib\GeometryLib.pas',
-  GeometryRotationUnit in '..\lib\GeometryRotationUnit.pas',
   JsonDataObjects in '..\lib\JsonDataObjects.pas',
   ListEngine in '..\lib\ListEngine.pas',
   MemoryStream64 in '..\lib\MemoryStream64.pas',
@@ -30,7 +28,6 @@ uses
   PascalStrings in '..\lib\PascalStrings.pas',
   TextDataEngine in '..\lib\TextDataEngine.pas',
   TextParsing in '..\lib\TextParsing.pas',
-  TextTable in '..\lib\TextTable.pas',
   UnicodeMixedLib in '..\lib\UnicodeMixedLib.pas',
   zExpression in '..\lib\zExpression.pas';
 
