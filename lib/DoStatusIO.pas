@@ -17,7 +17,7 @@ uses
   {$ELSEIF not Defined(Linux)}
   FMX.Types,
   {$ENDIF}
-  Sysutils, Classes, PascalStrings, CoreClasses, MemoryStream64;
+  Sysutils, Classes, PascalStrings, UnicodeMixedLib, CoreClasses, MemoryStream64;
 
 type
   TDoStatusMethod = procedure(AText: SystemString; const ID: Integer) of object;
@@ -42,6 +42,7 @@ procedure DoStatus(v: Pointer); overload;
 procedure DoStatus(v: SystemString; const Args: array of const); overload;
 procedure DoError(v: SystemString; const Args: array of const); overload;
 procedure DoStatus(v: SystemString); overload;
+procedure DoStatus(v: TMD5); overload;
 
 var
   LastDoStatus  : SystemString;
@@ -181,6 +182,11 @@ begin
   DoStatus(v, 0);
 end;
 
+procedure DoStatus(v: TMD5);
+begin
+  DoStatus(umlMD52String(v).Text);
+end;
+
 type
   TDoStatusData = record
     TokenObj: TCoreClassObject;
@@ -264,6 +270,7 @@ begin
       exit;
     end;
 
+  LockObject(HookDoSatus);
   try
     if (StatusActive) and (HookDoSatus.Count > 0) then
       begin
@@ -294,8 +301,8 @@ begin
     if ((ConsoleOutput) or (ID = 2)) and (IsConsole) then
         Writeln(Text);
   finally
+      UnLockObject(HookDoSatus);
   end;
-
 end;
 
 procedure DoStatus(Text: SystemString; const ID: Integer);
