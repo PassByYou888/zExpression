@@ -362,7 +362,7 @@ end;
 
 
 
-首发代码创建 于2004年 创建人qq600585
+首发代码创建 于2004年 
 
 最后更新于2014年 可以兼容fpc编译器和最新的delphi xe，包括ios,osx,android,linux,win32
 
