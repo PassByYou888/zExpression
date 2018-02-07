@@ -130,7 +130,7 @@ var
   rt                                     : TOpCustomRunTime; // 运行函数库支持
 begin
   // 由于pascal的字符串不便于书写在程序中，这里我们c风格字符串
-  t := TTextParsing.Create('if 1+1=2 then writeln("if was true") else writeln("if was false");', tsC);
+  t := TTextParsing.Create('if 1+1=/* comment */2 then writeln/* comment */("if was true") else/*  comment */writeln("if was false");', tsC);
   cp := 1;
   ep := 1;
   state := sUnknow;
@@ -142,6 +142,13 @@ begin
   while cp < t.Len do
     begin
       // 词法流程范式，这套此范式是以成熟词法解析为主，没有考虑性能，如果需要加速运行脚本，请考虑编译成数据结构存储再以高速方式载入运行
+      if t.IsComment(cp) then
+        begin
+          ep := t.GetCommentEndPos(cp);
+          cp := ep;
+          continue;
+        end;
+
       wasNumber := t.IsNumber(cp);
       wasText := t.IsTextDecl(cp);
       wasAscii := t.IsAscii(cp);
@@ -276,7 +283,7 @@ var
         if sour.ComparePos(i, @ht) then
           begin
             bPos := i;
-            ePos := sour.GetPos(tt, i + ht.Len);
+            ePos := sour.GetPos(@tt, i + ht.Len);
             if ePos > 0 then
               begin
                 KeyText := sour.copy(bPos + ht.Len, ePos - (bPos + ht.Len)).Text;
@@ -327,8 +334,8 @@ begin
 end;
 
 var
-  sym1, sym2: TSymbolExpression;
-  op        : TOpCode;
+  sym1: TSymbolExpression;
+  op  : TOpCode;
 
 begin
   try
@@ -336,7 +343,7 @@ begin
 
     // 预处理一二三步以后输出opCode 并且运行opCode 最后返回一个值
     // 该函数会消耗一定的硬件资源，高效运行建议一次性BuildAsOpCode，然后再用SaveToStream将opcode以二进制方式保存，使用时用LoadOpFromStream载入
-    DoStatus('Value:' + VarToStr(EvaluateExpressionValue(TTextParsing, '(1+1)*2/3.14', nil)));
+    DoStatus('Value:' + VarToStr(EvaluateExpressionValue('(1+1*2/3.14)')));
     DoStatus('');
 
     // 核心函数：将文本表达式解析成符号表达式
@@ -348,17 +355,18 @@ begin
     // ExpressionText 是表达式的文本内容
     // OnGetValue 在申明了常量和函数时，常量的值以此事件获取
     // 返回：符号表达式的TSymbolExpression类
-    sym1 := ParseTextExpressionAsSymbol(TTextParsing, '', '(1+1)*2/3.14', nil, DefaultOpRT);
-    sym1.PrintDebug(True);
+    sym1 := ParseTextExpressionAsSymbol(TTextParsing, '', '(1+1*2/3.14)', nil, DefaultOpRT);
+    // sym1.PrintDebug(True);
 
     // zExpression 的核心逻辑第三步，在符号缩进预处理完成以后，重新拆开表达式数据结构，并且重建一个带有缩进的严谨TSymbolExpression的缩进顺序，该步骤带侦错功能
     // RebuildAllSymbol可以直接处理完成第二步和第三步
-    sym2 := RebuildAllSymbol(sym1);
-    sym2.PrintDebug(True);
+    // sym2 := RebuildAllSymbol(sym1);
+    // sym2.PrintDebug(True);
 
     // zExpression 的核心逻辑第四步，根据RebuildAllSymbol后的严谨TSymbolExpression符号顺序，创建单步原子化执行
+    // BuildAsOpCode会自动对第二和第三步进行缩进和优化处理
     // 单步原子化执行的实现请参考opCode内容
-    op := BuildAsOpCode(True, sym2);
+    op := BuildAsOpCode(True, sym1);
     if op <> nil then
       begin
         DoStatus('Value:' + VarToStr(op.Execute));
@@ -366,7 +374,7 @@ begin
         FreeObject(op);
       end;
 
-    FreeObject([sym1, sym2]);
+    FreeObject([sym1]);
 
     Demo1;
     Demo2;
