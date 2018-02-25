@@ -31,6 +31,52 @@ uses
   UnicodeMixedLib in '..\lib\UnicodeMixedLib.pas',
   zExpression in '..\lib\zExpression.pas';
 
+// 特殊符号函数
+procedure SpecialFuncDemo;
+var
+  rt: TOpCustomRunTime;
+  v : Variant;
+begin
+  DoStatus('全局的词法探头前缀参量的使用');
+
+  // 全局的特殊符号探头的前后缀参量 凡是前缀有@@符号,均作为ascii来处理
+  SpecialAsciiToken.Clear;
+  SpecialAsciiToken.Add('@@');
+  SpecialAsciiToken.Add('&&');
+
+  // rt为ze的运行函数支持库
+  rt := TOpCustomRunTime.Create;
+  rt.RegOp('@@a&&', function(var Param: TOpParam): Variant
+    // (a+b)*0.5
+    begin
+      Result := (Param[0] + Param[1]) * 0.5;
+    end);
+  rt.RegOp('@@combineString&&', function(var Param: TOpParam): Variant
+    // (a+b)*0.5
+    begin
+      Result := VarToStr(Param[0]) + VarToStr(Param[1]);
+    end);
+
+  // 带有@@前缀的ascii也可以在后缀带有特殊符号，特殊符号长度不限制
+  v := EvaluateExpressionValue(False, '{ 备注 } @@a&&(1,2)', rt);
+  DoStatus(VarToStr(v));
+
+  // 简单字符串表达式，ze的默认文本处理格式为Pascal
+  v := EvaluateExpressionValue(False, '@@combineString&&('#39'abc'#39', '#39'123'#39')', rt);
+  DoStatus(VarToStr(v));
+
+  // 简单字符串表达式，我们使用c的文本格式
+  v := EvaluateExpressionValue(tsC, '@@combineString&&("abc", "123")', rt);
+  DoStatus(VarToStr(v));
+  v := EvaluateExpressionValue(tsC, '@@combineString&&('#39'abc'#39', '#39'123'#39')', rt);
+  DoStatus(VarToStr(v));
+
+  disposeObject(rt);
+
+  // 复原全局的特殊符号探头的前后缀参量
+  SpecialAsciiToken.Clear;
+end;
+
 // 基本使用
 procedure Demo1;
 var
@@ -132,7 +178,7 @@ var
   rt                                     : TOpCustomRunTime; // 运行函数库支持
 begin
   // 由于pascal的字符串不便于书写在程序中，这里我们c风格字符串
-  t := TTextParsing.Create('if 1+1=/* comment */2 then writeln/* comment */("if was true") else/*  comment */writeln("if was false");', tsC);
+  t := TTextParsing.Create('if 1+1=/* comment */2 then writeln/* comment */("if was true") else/*  comment */writeln("if was false");', tsC, nil);
   cp := 1;
   ep := 1;
   state := sUnknow;
@@ -351,7 +397,7 @@ var
   dynvar             : Integer;            // 动态变量
 begin
   // 这里有c和pascal两种写法，自行修改备注即可
-  sourTp := TTextParsing.Create('myvar1/*这里是备注*/,myvar2,myvar3 = 123+456+" 变量: "+dynamic', tsC); // 词法解析引擎，以c语法为例
+  sourTp := TTextParsing.Create('myvar1/*这里是备注*/,myvar2,myvar3 = 123+456+" 变量: "+dynamic', tsC, nil); // 词法解析引擎，以c语法为例
   // sourTp := TTextParsing.Create('myvar1(*这里是备注*),myvar2,myvar3 := 123+456+'#39' 变量: '#39'+dynamic', tsPascal); // 词法解析引擎，以c语法为例
   // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal); // 词法解析引擎，以c语法为例
 
@@ -371,7 +417,7 @@ begin
             setBefore := splitVarDecl[0];
             setAfter := splitVarDecl[1];
 
-            t := TTextParsing.Create(setBefore, tsPascal);
+            t := TTextParsing.Create(setBefore, tsPascal, nil);
             t.DeletedComment;
             if t.SplitChar(1, ',', ';', myvars) = 0 then // 这里不是字符串，是以字符作为切割记号，对带有,的字符进行切割
                 DoStatus('变量赋值语法错误 %s', [setBefore.Text]);
@@ -387,7 +433,7 @@ begin
             setBefore := splitVarDecl[0];
             setAfter := splitVarDecl[1];
 
-            t := TTextParsing.Create(setBefore, tsC);
+            t := TTextParsing.Create(setBefore, tsC, nil);
             t.DeletedComment;
             if t.SplitChar(1, ',', ';', myvars) = 0 then // 这里不是字符串，是以字符作为切割记号，对带有,的字符进行切割
                 DoStatus('变量赋值语法错误 %s', [setBefore.Text]);
@@ -511,6 +557,7 @@ begin
 
     FreeObject([sym1]);
 
+    SpecialFuncDemo;
     Demo1;
     Demo2;
     Demo3;
