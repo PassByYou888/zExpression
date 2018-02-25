@@ -61,6 +61,8 @@ begin
   // 简单字符串表达式，我们使用c的文本格式
   v := EvaluateExpressionValue(tsC, 'myStringFunction("abc", "123")', rt);
   DoStatus(VarToStr(v));
+  v := EvaluateExpressionValue(tsC, 'myStringFunction('#39'abc'#39', '#39'123'#39')', rt);
+  DoStatus(VarToStr(v));
 
   disposeObject(rt);
 end;
@@ -87,7 +89,7 @@ begin
     end);
 
   // 使用ParseTextExpressionAsSymbol函数，将表达式翻译成词法树
-  tmpSym := ParseTextExpressionAsSymbol(TTextParsing, '', '1000+myAddFunction(1+1/2*3/3.14*9999, 599+2+2*100 shl 3)', nil, rt);
+  tmpSym := ParseTextExpressionAsSymbol_M(TTextParsing, tsPascal, '', '1000+myAddFunction(1+1/2*3/3.14*9999, 599+2+2*100 shl 3)', nil, rt);
   // BuildAsOpCode会将词法树再次翻译成语法树，然后再基于语法树生成op代码
   op := BuildAsOpCode(tmpSym);
   disposeObject(tmpSym);
@@ -324,13 +326,146 @@ begin
 
   t := GetTimeTick;
 
-  // 重复做100万次句法表达式解析和处理
-  for i := 1 to 100 * 10000 do
+  // 重复做10万次句法表达式解析和处理
+  for i := 1 to 10 * 10000 do
       Macro(n, '<begin>', '<end>');
 
   DoStatus('zExpression性能测试完成，耗时:%dms', [GetTimeTick - t]);
 
   disposeObject([rt]);
+end;
+
+// 高级Demo，实现内部变量的赋值
+// 这是我从另一个脚本引擎拔出来的范例，内容有点多，但是原理只有三步
+procedure Demo5;
+var
+  sourTp, t          : TTextParsing;       // 词法解析引擎
+  setBefore, setAfter: TPascalString;      // 赋值的前置申明，和赋值的后置申明
+  splitVarDecl       : TArrayPascalString; // 切开的表达式体
+  myvars             : TArrayPascalString; // 我们需要赋值的临时变量，以逗号分隔
+  WasAssignment      : Boolean;            // 在表达式中找到了赋值
+  HashVars           : THashVariantList;   // 变量的hash存储结构，这是可以存放到硬盘中的
+  rt                 : TOpCustomRunTime;   // 运行函数库支持
+  op                 : TOpCode;            // 我们用来做cache的op变量
+  i                  : Integer;            // for使用
+  dynvar             : Integer;            // 动态变量
+begin
+  // 这里有c和pascal两种写法，自行修改备注即可
+  sourTp := TTextParsing.Create('myvar1/*这里是备注*/,myvar2,myvar3 = 123+456+" 变量: "+dynamic', tsC); // 词法解析引擎，以c语法为例
+  // sourTp := TTextParsing.Create('myvar1(*这里是备注*),myvar2,myvar3 := 123+456+'#39' 变量: '#39'+dynamic', tsPascal); // 词法解析引擎，以c语法为例
+  // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal); // 词法解析引擎，以c语法为例
+
+  HashVars := THashVariantList.Create(16); // 16是hash的buff长度，数值越大加速度越快
+
+  SetLength(splitVarDecl, 0);
+  SetLength(myvars, 0);
+
+  // 第一步，分析赋值符号
+  case sourTp.TextStyle of
+    tsPascal:
+      begin
+        // pascal的赋值符号为 :=
+        WasAssignment := sourTp.SplitString(1, ':=', ';', splitVarDecl) = 2; // 以字符串作为切割记号，对带有:=记号的字符串进行切割
+        if WasAssignment then
+          begin
+            setBefore := splitVarDecl[0];
+            setAfter := splitVarDecl[1];
+
+            t := TTextParsing.Create(setBefore, tsPascal);
+            t.DeletedComment;
+            if t.SplitChar(1, ',', ';', myvars) = 0 then // 这里不是字符串，是以字符作为切割记号，对带有,的字符进行切割
+                DoStatus('变量赋值语法错误 %s', [setBefore.Text]);
+            disposeObject(t);
+          end;
+      end;
+    tsC:
+      begin
+        // c的赋值符号为 =
+        WasAssignment := sourTp.SplitChar(1, '=', ';', splitVarDecl) = 2; // 这里不是字符串，是以字符作为切割记号，对带有=的字符进行切割
+        if WasAssignment then
+          begin
+            setBefore := splitVarDecl[0];
+            setAfter := splitVarDecl[1];
+
+            t := TTextParsing.Create(setBefore, tsC);
+            t.DeletedComment;
+            if t.SplitChar(1, ',', ';', myvars) = 0 then // 这里不是字符串，是以字符作为切割记号，对带有,的字符进行切割
+                DoStatus('变量赋值语法错误 %s', [setBefore.Text]);
+            disposeObject(t);
+          end;
+      end;
+    else
+      begin
+        DoStatus('不支持表达式');
+        WasAssignment := False;
+      end;
+  end;
+
+  rt := TOpCustomRunTime.Create;
+  rt.RegOp('dynamic', function(var Param: TOpParam): Variant
+    begin
+      Result := dynvar;
+      inc(dynvar);
+    end);
+  rt.RegOp('myvar1', function(var Param: TOpParam): Variant
+    begin
+      // 对myvar1进行动态复用
+      Result := HashVars['myvar1'];
+    end);
+
+  dynvar := 1;
+
+  // 第二步，如果找到了赋值符号
+  if WasAssignment then
+    begin
+      DoStatus('发现了变量赋值表达式');
+
+      op := BuildAsOpCode(sourTp.TextStyle, setAfter, rt);
+
+      for i := low(myvars) to high(myvars) do
+          HashVars[myvars[i].TrimChar(#32).Text] := op.Execute(rt); // 做一次首尾空格裁剪后，执行op，并且批量的赋值
+
+      DoStatus('变量赋值内容');
+      DoStatus(HashVars.AsText);
+
+      // 第三步，让变量在表达式中的复用
+      DoStatus('现在，我们开始静态复用我们刚才申明的变量，静态复用是将变量以const形式进行编译');
+
+      // 由于opCache机制是自动化进行的，我们在任何时候以const复用变量时都要清空它
+      OpCache.Clear;
+
+      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"静态复用 "+myvar1',
+        procedure(DeclName: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
+        begin
+          if HashVars.Exists(DeclName) then
+            begin
+              Value := HashVars[DeclName];
+              ValType := TExpressionDeclType.edtString; // 我们需要告诉编译器，该变量的类型
+            end;
+        end)));
+
+      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"静态复用 "+myvar4',
+        procedure(DeclName: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
+        begin
+          // myvar4是不存在的
+          // 然后 我们以myvar2来代替
+          Value := HashVars['myvar2'];
+          ValType := TExpressionDeclType.edtString; // 我们需要告诉编译器，该变量的类型
+        end)));
+
+      DoStatus('现在，我们开始动态复用我们刚才申明的变量');
+      DoStatus(VarToStr(EvaluateExpressionValue(tsC, '"动态复用 "+myvar1', rt)));
+
+      HashVars['myvar1'] := 'abc';
+      DoStatus(VarToStr(EvaluateExpressionValue(tsC, '"动态复用 "+myvar1', rt)));
+    end
+  else
+    begin
+      DoStatus('没有发现了变量赋值');
+      DoStatus('表达式 "%s"' + #13#10 + '运行结果 %s', [sourTp.TextData.Text, VarToStr(EvaluateExpressionValue(sourTp.TextStyle, sourTp.TextData, rt))]);
+    end;
+
+  disposeObject([sourTp, HashVars, rt]);
 end;
 
 var
@@ -355,7 +490,7 @@ begin
     // ExpressionText 是表达式的文本内容
     // OnGetValue 在申明了常量和函数时，常量的值以此事件获取
     // 返回：符号表达式的TSymbolExpression类
-    sym1 := ParseTextExpressionAsSymbol(TTextParsing, '', '(1+1*2/3.14)', nil, DefaultOpRT);
+    sym1 := ParseTextExpressionAsSymbol_M(TTextParsing, tsPascal, '', '(1+1*2/3.14)', nil, DefaultOpRT);
     // sym1.PrintDebug(True);
 
     // zExpression 的核心逻辑第三步，在符号缩进预处理完成以后，重新拆开表达式数据结构，并且重建一个带有缩进的严谨TSymbolExpression的缩进顺序，该步骤带侦错功能
@@ -380,6 +515,7 @@ begin
     Demo2;
     Demo3;
     Demo4;
+    Demo5;
 
     readln;
   except

@@ -3,6 +3,7 @@
 { * https://github.com/PassByYou888/CoreCipher                                 * }
 { * https://github.com/PassByYou888/ZServer4D                                  * }
 { * https://github.com/PassByYou888/zExpression                                * }
+{ * https://github.com/PassByYou888/zTranslate                                 * }
 { ****************************************************************************** }
 unit zExpression;
 
@@ -13,8 +14,8 @@ interface
 uses SysUtils, Variants, CoreClasses, TypInfo, OpCode, TextParsing, PascalStrings, DoStatusIO, ListEngine;
 
 type
-  TSymbolOperation = (soAdd, soSub, soMul, soDiv, soMod, soIntDiv, soPow, soOr, soAnd, soXor, // compute
-    soEqual, soLessThan, soEqualOrLessThan, soGreaterThan, soEqualOrGreaterThan, soNotEqual,  // match
+  TSymbolOperation = (soAdd, soSub, soMul, soDiv, soMod, soIntDiv, soPow, soOr, soAnd, soXor, // math
+    soEqual, soLessThan, soEqualOrLessThan, soGreaterThan, soEqualOrGreaterThan, soNotEqual,  // logic
     soShl, soShr,                                                                             // bit
     soBlockIndentBegin, soBlockIndentEnd,                                                     // block indent
     soPropParamIndentBegin, soPropParamIndentEnd,                                             // param indent
@@ -109,13 +110,13 @@ type
   { }
   // text parse support
 function ParseTextExpressionAsSymbol_C(ParsingEng: TTextParsing; uName: SystemString;
-  const OnGetValue: TOnDeclValueCall; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
+  const OnGetValue: TOnDeclValueCall; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
 
 function ParseTextExpressionAsSymbol_M(ParsingEng: TTextParsing; uName: SystemString;
-  const OnGetValue: TOnDeclValueMethod; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
+  const OnGetValue: TOnDeclValueMethod; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
 {$IFNDEF FPC}
 function ParseTextExpressionAsSymbol_P(ParsingEng: TTextParsing; uName: SystemString;
-  const OnGetValue: TOnDeclValueProc; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
+  const OnGetValue: TOnDeclValueProc; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
 {$ENDIF FPC}
 function ParseTextExpressionAsSymbol(textStyle: TTextStyle; uName, ExpressionText: SystemString;
   const OnGetValue: TOnDeclValueMethod; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
@@ -124,8 +125,14 @@ function ParseTextExpressionAsSymbol(ExpressionText: SystemString; RefrenceOpRT:
 
 function ParseTextExpressionAsSymbol(ExpressionText: SystemString): TSymbolExpression; overload;
 
-function ParseTextExpressionAsSymbol(TextEngClass: TTextParsingClass; uName, ExpressionText: SystemString;
+function ParseTextExpressionAsSymbol_M(TextEngClass: TTextParsingClass; textStyle: TTextStyle; uName, ExpressionText: SystemString;
   const OnGetValue: TOnDeclValueMethod; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
+function ParseTextExpressionAsSymbol_C(TextEngClass: TTextParsingClass; textStyle: TTextStyle; uName, ExpressionText: SystemString;
+  const OnGetValue: TOnDeclValueCall; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
+{$IFNDEF FPC}
+function ParseTextExpressionAsSymbol_P(TextEngClass: TTextParsingClass; textStyle: TTextStyle; uName, ExpressionText: SystemString;
+  const OnGetValue: TOnDeclValueProc; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression; overload;
+{$ENDIF FPC}
 
 // symbol priority
 function RebuildLogicalPrioritySymbol(Exps: TSymbolExpression): TSymbolExpression;
@@ -145,7 +152,11 @@ function BuildAsOpCode(textStyle: TTextStyle; ExpressionText: SystemString; Refr
 function BuildAsOpCode(ExpressionText: SystemString; RefrenceOpRT: TOpCustomRunTime): TOpCode; overload;
 
 // evaluate(safe thread)
-function EvaluateExpressionValue(TextEngClass: TTextParsingClass; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueMethod): Variant; overload;
+function EvaluateExpressionValue_M(TextEngClass: TTextParsingClass; textStyle: TTextStyle; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueMethod): Variant;
+function EvaluateExpressionValue_C(TextEngClass: TTextParsingClass; textStyle: TTextStyle; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueCall): Variant;
+{$IFNDEF FPC}
+function EvaluateExpressionValue_P(TextEngClass: TTextParsingClass; textStyle: TTextStyle; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueProc): Variant;
+{$ENDIF FPC}
 function EvaluateExpressionValue(DebugMode: Boolean; const ExpressionText: SystemString; opRT: TOpCustomRunTime): Variant; overload;
 function EvaluateExpressionValue(const ExpressionText: SystemString; opRT: TOpCustomRunTime): Variant; overload;
 function EvaluateExpressionValue(DebugMode: Boolean; const ExpressionText: SystemString): Variant; overload;
@@ -166,7 +177,7 @@ implementation
 
 
 const
-  MethodFlags: TExpressionDeclTypes = ([edtProcExp]);
+  MethodToken: TExpressionDeclTypes = ([edtProcExp]);
 
   AllExpressionValueType: TExpressionDeclTypes = ([
     edtBool, edtInt, edtInt64, edtUInt64, edtWord, edtByte, edtSmallInt, edtShortInt, edtUInt,
@@ -190,15 +201,6 @@ const
     soAdd, soSub, soMul, soDiv, soMod, soIntDiv, soPow, soOr, soAnd, soXor,
     soEqual, soLessThan, soEqualOrLessThan, soGreaterThan, soEqualOrGreaterThan, soNotEqual,
     soShl, soShr]);
-
-  FlagTextDecl: array [TExpressionDeclType] of SystemString = (
-    'Symbol',
-    'bool', 'int', 'int64', 'UInt64', 'word', 'byte', 'smallInt', 'shortInt', 'uint',
-    'float', 'double', 'Currency',
-    'text', 'method',
-    'Exps',
-    'unknow'
-    );
 
 type
   TSymbolOperationType = record
@@ -328,26 +330,26 @@ begin
         begin
           if cnt[vsSymSub] > 0 then
             begin
-              if cnt[vsNum] < 2 then
+              if cnt[vsNum] + cnt[vsAtoF] < 2 then
                   Result := nttShortInt
-              else if cnt[vsNum] < 4 then
+              else if cnt[vsNum] + cnt[vsAtoF] < 4 then
                   Result := nttSmallInt
-              else if cnt[vsNum] < 7 then
+              else if cnt[vsNum] + cnt[vsAtoF] < 7 then
                   Result := nttInt
-              else if cnt[vsNum] < 13 then
+              else if cnt[vsNum] + cnt[vsAtoF] < 13 then
                   Result := nttInt64
               else
                   Result := nttUnknow;
             end
           else
             begin
-              if cnt[vsNum] < 3 then
+              if cnt[vsNum] + cnt[vsAtoF] < 3 then
                   Result := nttByte
-              else if cnt[vsNum] < 5 then
+              else if cnt[vsNum] + cnt[vsAtoF] < 5 then
                   Result := nttWord
-              else if cnt[vsNum] < 8 then
+              else if cnt[vsNum] + cnt[vsAtoF] < 8 then
                   Result := nttUInt
-              else if cnt[vsNum] < 14 then
+              else if cnt[vsNum] + cnt[vsAtoF] < 14 then
                   Result := nttUInt64
               else
                   Result := nttUnknow;
@@ -431,7 +433,7 @@ begin
   if not(esWaitOp in pStates) then
       Exit;
 
-  while cPos <= ParsingEng.ParsingData.Text.Len do
+  while cPos <= ParsingEng.Len do
     begin
       c := ParsingEng.ParsingData.Text[cPos];
       bPos := cPos;
@@ -748,11 +750,7 @@ begin
 end;
 
 function __ParseTextExpressionAsSymbol(ParsingEng: TTextParsing; uName: SystemString;
-  const OnDeclValueCall: TOnDeclValueCall;
-  const OnDeclValueMethod: TOnDeclValueMethod;
-  {$IFNDEF FPC}
-  const OnDeclValueProc: TOnDeclValueProc;
-  {$ENDIF FPC}
+  const OnDeclValueCall: TOnDeclValueCall; const OnDeclValueMethod: TOnDeclValueMethod; {$IFNDEF FPC} const OnDeclValueProc: TOnDeclValueProc; {$ENDIF FPC}
   RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
 
   procedure PrintError(const s: SystemString);
@@ -797,6 +795,7 @@ function __ParseTextExpressionAsSymbol(ParsingEng: TTextParsing; uName: SystemSt
         LocalExp := procExp.AddExpressionAsValue(True, TSymbolExpression.Create, soParameter, 'param_1', Exps[ExpIndex]^.charPos)^.Expression
     else
         LocalExp := TSymbolExpression.Create;
+
     Result := LocalExp;
 
     while ExpIndex < Exps.Count do
@@ -814,9 +813,9 @@ function __ParseTextExpressionAsSymbol(ParsingEng: TTextParsing; uName: SystemSt
               begin
                 if (p2^.DeclType = edtSymbol) and (p2^.Symbol in [soBlockIndentBegin, soPropParamIndentBegin]) then
                   begin
-                    p := Result.AddFunc(p1^.Value, p1^.charPos);
                     Inc(ExpIndex, 2);
-                    ResExp := FillProc(ExpIndex, Exps, p^.Expression);
+                    p := LocalExp.AddFunc(p1^.Value, p1^.charPos);
+                    FillProc(ExpIndex, Exps, p^.Expression);
                     continue;
                   end;
               end
@@ -847,9 +846,10 @@ function __ParseTextExpressionAsSymbol(ParsingEng: TTextParsing; uName: SystemSt
               begin
                 if not WasProc then
                   begin
-                    PrintError('fillProc comma Illegal');
+                    PrintError('comma Illegal');
                     Exit;
                   end;
+
                 LocalExp := procExp.AddExpressionAsValue(True, TSymbolExpression.Create, soParameter, 'param_' + IntToStr(procExp.Count + 1),
                   Exps[ExpIndex]^.charPos)^.Expression;
                 Inc(ExpIndex);
@@ -869,7 +869,7 @@ var
   Container                              : TSymbolExpression;
   te                                     : TTextParsing;
   c                                      : SystemChar;
-  Decl                                   : SystemString;
+  Decl                                   : TPascalString;
   OpState                                : TSymbolOperation;
   IsNumber, IsAscii, IsTextDecl, IsSymbol: Boolean;
   rv                                     : Variant;
@@ -914,6 +914,11 @@ begin
           Decl := ParsingEng.GetStr(bPos, ePos);
           if IsNumber then
             begin
+              if Decl.ComparePos(1, '0x') then
+                begin
+                  Decl.DeleteFirst;
+                  Decl[1] := '$';
+                end;
               case NumTextType(Decl) of
                 nttBool: Container.AddBool(StrToBool(Decl), bPos);
                 nttInt: Container.AddInt(StrToInt(Decl), bPos);
@@ -933,7 +938,7 @@ begin
                 nttCurrency: Container.AddCurrency(StrToFloat(Decl), bPos);
                 else
                   begin
-                    PrintError(Format('number expression "%s" Illegal', [Decl]));
+                    PrintError(Format('number expression "%s" Illegal', [Decl.Text]));
                     break;
                   end;
               end;
@@ -988,7 +993,7 @@ begin
                       end;
                     else
                       begin
-                        PrintError(Format('define "%s" Illegal', [Decl]));
+                        PrintError(Format('define "%s" Illegal', [Decl.Text]));
                         break;
                       end;
                   end;
@@ -1083,15 +1088,39 @@ begin
   DisposeObject(ParsingEng);
 end;
 
-function ParseTextExpressionAsSymbol(TextEngClass: TTextParsingClass; uName, ExpressionText: SystemString;
+function ParseTextExpressionAsSymbol_M(TextEngClass: TTextParsingClass; textStyle: TTextStyle; uName, ExpressionText: SystemString;
   const OnGetValue: TOnDeclValueMethod; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
 var
   ParsingEng: TTextParsing;
 begin
-  ParsingEng := TextEngClass.Create(ExpressionText, tsPascal);
+  ParsingEng := TextEngClass.Create(ExpressionText, textStyle);
   Result := ParseTextExpressionAsSymbol_M(ParsingEng, '', OnGetValue, RefrenceOpRT);
   DisposeObject(ParsingEng);
 end;
+
+function ParseTextExpressionAsSymbol_C(TextEngClass: TTextParsingClass; textStyle: TTextStyle; uName, ExpressionText: SystemString;
+  const OnGetValue: TOnDeclValueCall; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
+var
+  ParsingEng: TTextParsing;
+begin
+  ParsingEng := TextEngClass.Create(ExpressionText, textStyle);
+  Result := ParseTextExpressionAsSymbol_C(ParsingEng, '', OnGetValue, RefrenceOpRT);
+  DisposeObject(ParsingEng);
+end;
+
+{$IFNDEF FPC}
+
+function ParseTextExpressionAsSymbol_P(TextEngClass: TTextParsingClass; textStyle: TTextStyle; uName, ExpressionText: SystemString;
+  const OnGetValue: TOnDeclValueProc; RefrenceOpRT: TOpCustomRunTime): TSymbolExpression;
+var
+  ParsingEng: TTextParsing;
+begin
+  ParsingEng := TextEngClass.Create(ExpressionText, textStyle);
+  Result := ParseTextExpressionAsSymbol_P(ParsingEng, '', OnGetValue, RefrenceOpRT);
+  DisposeObject(ParsingEng);
+end;
+{$ENDIF FPC}
+
 
 function RebuildLogicalPrioritySymbol(Exps: TSymbolExpression): TSymbolExpression;
   function SymbolPriority(s1, s2: TSymbolOperation): Integer;
@@ -1167,7 +1196,7 @@ var
 
             p2 := Exps[SymbolIndex];
 
-            if (p1^.DeclType in MethodFlags) and (p2^.DeclType = edtExpressionAsValue) then
+            if (p1^.DeclType in MethodToken) and (p2^.DeclType = edtExpressionAsValue) then
               begin
                 newExpression.Add(p1^);
                 newExpression.Add(p2^);
@@ -1379,7 +1408,7 @@ var
               begin
                 if (p2^.Symbol in [soBlockIndentBegin, soPropParamIndentBegin]) then
                   begin
-                    if (p1^.DeclType in MethodFlags) then
+                    if (p1^.DeclType in MethodToken) then
                       begin
                         PrintError('method Illegal');
                         Exit;
@@ -1698,7 +1727,7 @@ var
                 if (p2^.Symbol in [soBlockIndentBegin, soPropParamIndentBegin]) then
                   begin
                     // function call
-                    if not(p1^.DeclType in MethodFlags) then
+                    if not(p1^.DeclType in MethodToken) then
                       begin
                         PrintError('method Illegal');
                         break;
@@ -1857,7 +1886,7 @@ begin
   DisposeObject(sym);
 end;
 
-function EvaluateExpressionValue(TextEngClass: TTextParsingClass; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueMethod): Variant;
+function EvaluateExpressionValue_M(TextEngClass: TTextParsingClass; textStyle: TTextStyle; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueMethod): Variant;
 var
   sym: TSymbolExpression;
   op : TOpCode;
@@ -1877,7 +1906,7 @@ begin
   else
     begin
       Result := NULL;
-      sym := ParseTextExpressionAsSymbol(TextEngClass, '', ExpressionText, OnGetValue, DefaultOpRT);
+      sym := ParseTextExpressionAsSymbol_M(TextEngClass, textStyle, '', ExpressionText, OnGetValue, DefaultOpRT);
 
       if sym <> nil then
         begin
@@ -1897,6 +1926,92 @@ begin
         end;
     end;
 end;
+
+function EvaluateExpressionValue_C(TextEngClass: TTextParsingClass; textStyle: TTextStyle; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueCall): Variant;
+var
+  sym: TSymbolExpression;
+  op : TOpCode;
+  i  : Integer;
+begin
+  LockObject(OpCache);
+  op := TOpCode(OpCache[ExpressionText]);
+  UnLockObject(OpCache);
+  if op <> nil then
+    begin
+      try
+          Result := op.Execute(DefaultOpRT);
+      except
+          Result := NULL;
+      end;
+    end
+  else
+    begin
+      Result := NULL;
+      sym := ParseTextExpressionAsSymbol_C(TextEngClass, textStyle, '', ExpressionText, OnGetValue, DefaultOpRT);
+
+      if sym <> nil then
+        begin
+          op := BuildAsOpCode(False, sym, 'Main', -1);
+          if op <> nil then
+            begin
+              try
+                Result := op.Execute;
+                LockObject(OpCache);
+                OpCache.Add(ExpressionText, op);
+                UnLockObject(OpCache);
+              except
+                  Result := NULL;
+              end;
+            end;
+          DisposeObject(sym);
+        end;
+    end;
+end;
+
+{$IFNDEF FPC}
+
+function EvaluateExpressionValue_P(TextEngClass: TTextParsingClass; textStyle: TTextStyle; const ExpressionText: SystemString; const OnGetValue: TOnDeclValueProc): Variant;
+var
+  sym: TSymbolExpression;
+  op : TOpCode;
+  i  : Integer;
+begin
+  LockObject(OpCache);
+  op := TOpCode(OpCache[ExpressionText]);
+  UnLockObject(OpCache);
+  if op <> nil then
+    begin
+      try
+          Result := op.Execute(DefaultOpRT);
+      except
+          Result := NULL;
+      end;
+    end
+  else
+    begin
+      Result := NULL;
+      sym := ParseTextExpressionAsSymbol_P(TextEngClass, textStyle, '', ExpressionText, OnGetValue, DefaultOpRT);
+
+      if sym <> nil then
+        begin
+          op := BuildAsOpCode(False, sym, 'Main', -1);
+          if op <> nil then
+            begin
+              try
+                Result := op.Execute;
+                LockObject(OpCache);
+                OpCache.Add(ExpressionText, op);
+                UnLockObject(OpCache);
+              except
+                  Result := NULL;
+              end;
+            end;
+          DisposeObject(sym);
+        end;
+    end;
+end;
+{$ENDIF FPC}
+
 
 function EvaluateExpressionValue(DebugMode: Boolean; const ExpressionText: SystemString; opRT: TOpCustomRunTime): Variant;
 var
@@ -2030,7 +2145,7 @@ destructor TSymbolExpression.Destroy;
 begin
   Clear;
   DisposeObject(FList);
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TSymbolExpression.Clear;
