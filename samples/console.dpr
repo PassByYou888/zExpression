@@ -397,8 +397,8 @@ var
   dynvar             : Integer;            // 动态变量
 begin
   // 这里有c和pascal两种写法，自行修改备注即可
-  sourTp := TTextParsing.Create('myvar1/*这里是备注*/,myvar2,myvar3 = 123+456+" 变量: "+dynamic', tsC, nil); // 词法解析引擎，以c语法为例
-  // sourTp := TTextParsing.Create('myvar1(*这里是备注*),myvar2,myvar3 := 123+456+'#39' 变量: '#39'+dynamic', tsPascal, nil); // 词法解析引擎，以c语法为例
+  // sourTp := TTextParsing.Create('myvar1/*这里是备注*/,myvar2,myvar3 = 123+456+" 变量: "+dynamic', tsC, nil); // 词法解析引擎，以c语法为例
+  sourTp := TTextParsing.Create('myvar1(*这里是备注*),myvar2,myvar3 := 123+456+'#39' 变量: '#39'+dynamic', tsPascal, nil); // 词法解析引擎，以c语法为例
   // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal, nil); // 词法解析引擎，以c语法为例
 
   HashVars := THashVariantList.Create(16); // 16是hash的buff长度，数值越大加速度越快
@@ -481,17 +481,17 @@ begin
       OpCache.Clear;
 
       DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"静态复用 "+myvar1',
-        procedure(DeclName: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
+        procedure(const decl: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
-          if HashVars.Exists(DeclName) then
+          if HashVars.Exists(decl) then
             begin
-              Value := HashVars[DeclName];
+              Value := HashVars[decl];
               ValType := TExpressionDeclType.edtString; // 我们需要告诉编译器，该变量的类型
             end;
         end)));
 
       DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"静态复用 "+myvar4',
-        procedure(DeclName: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
+        procedure(const decl: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
           // myvar4是不存在的
           // 然后 我们以myvar2来代替
@@ -508,7 +508,7 @@ begin
   else
     begin
       DoStatus('没有发现了变量赋值');
-      DoStatus('表达式 "%s"' + #13#10 + '运行结果 %s', [sourTp.TextData.Text, VarToStr(EvaluateExpressionValue(sourTp.TextStyle, sourTp.TextData, rt))]);
+      DoStatus('表达式 "%s"' + #13#10 + '运行结果 %s', [sourTp.ParsingData.Text.Text, VarToStr(EvaluateExpressionValue(sourTp.TextStyle, sourTp.ParsingData.Text, rt))]);
     end;
 
   disposeObject([sourTp, HashVars, rt]);
