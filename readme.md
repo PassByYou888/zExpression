@@ -1,54 +1,39 @@
-## zExpression ¾ä·¨±àÒëÆ÷+½âÊÍÆ÷£¬½Å±¾ÒıÇæÄÚºË
+## zExpression å¥æ³•ç¼–è¯‘å™¨+è§£é‡Šå™¨ï¼Œè„šæœ¬å¼•æ“å†…æ ¸
 
 
-## ¼¼ÊõÌåÏµ½âÊÍ£º
-ÔÚ±àÒëÔ­ÀíµÄ¼¼ÊõÌåÏµÖĞ£¬·²ÊÇ´¦ÀíÎÄ±¾»¯µÄ´úÂëÇ°£¬¶¼ĞèÒª×öÒ»´ÎÔ¤´¦Àí£¬ÆäÖĞÎÒÃÇ³£ËµµÄÓï·¨£¬Óï·¨ÌÇ£¬¶¼ÊÇÒ»ÖÖÔ¤´¦Àí³ÌĞò
-
-´Ê·¨£º´Ê·¨ÊÇ¶ÔÎÄ±¾¹Ø¼ü×Ö£¬Êı×Ö£¬·ûºÅ£¬½øĞĞ·ÖÀàÕûÀí£¬×îºóĞÎ³É´Ê·¨Ê÷£¬²¢ÇÒÑÏ¸ñ×ñÑ­Ë³Ğò»¯´¦ÀíÔ­Ôò
-
-ÉêÃ÷£ºÔÚÔ¤´¦Àí´úÂëÖĞ£¬ÉêÃ÷²¿·Ö£¬½Ğ×öÉêÃ÷Ê÷£¬ÉêÃ÷Ê÷ÓÖÒÀÀµÓÚ´Ê·¨Ë³ĞòÔ¤´¦Àí£¬ÒòÎª¶Ô´Ê·¨Ô¤´¦ÀíÊÇÒ»ÖÖ¼ò»¯ÊÖ¶Î
-
-¾ä·¨£ºÔÚ¾­¹ıÁËÉêÃ÷Ô¤´¦ÀíÒÔºó£¬ÊÇ¶Ô´úÂë±í´ïÊ½µÄµ¥ĞĞÂß¼­²Ù×÷½øĞĞ´¦Àí£¬ÕâÒ»²½½Ğ¾ä·¨£¬È¡ÎªzExpression¾ä·¨±àÒëÆ÷ÊÇÎÒ´ÓÔø¾­×«Ğ´µÄ±àÒëÆ÷ÖĞÌØÒâ°şÀë³öÀ´µÄ½â¾ö·½°¸£¬Ëü¿ÉÒÔ¶ÀÁ¢³öÀ´·Ö·¢ºÍÊ¹ÓÃ£¬¿ÉÒÔÊµÓÃÊı×Ö»¯Ô¤´¦Àí£¬Í¼ĞÎÍ¼Ïñ£¬¿ÆÑ§¼ÆËãµÈµÈÁìÓò£¬Ò²¿ÉÒÔ×÷ÎªÑ§Ï°Ìá¸ß×Ô¼ºµÄÊÖ¶Î
+## æŠ€æœ¯ä½“ç³»è§£é‡Šï¼š
+- åœ¨ç¼–è¯‘åŸç†çš„æŠ€æœ¯ä½“ç³»ä¸­ï¼Œå‡¡æ˜¯å¤„ç†æ–‡æœ¬åŒ–çš„ä»£ç å‰ï¼Œéƒ½éœ€è¦åšä¸€æ¬¡é¢„å¤„ç†ï¼Œå…¶ä¸­æˆ‘ä»¬å¸¸è¯´çš„è¯­æ³•ï¼Œè¯­æ³•ç³–ï¼Œéƒ½æ˜¯ä¸€ç§é¢„å¤„ç†ç¨‹åº
+- è¯æ³•ï¼šè¯æ³•æ˜¯å¯¹æ–‡æœ¬å…³é”®å­—ï¼Œæ•°å­—ï¼Œç¬¦å·ï¼Œè¿›è¡Œåˆ†ç±»æ•´ç†ï¼Œæœ€åå½¢æˆè¯æ³•æ ‘ï¼Œå¹¶ä¸”ä¸¥æ ¼éµå¾ªé¡ºåºåŒ–å¤„ç†åŸåˆ™
+- ç”³æ˜ï¼šåœ¨é¢„å¤„ç†ä»£ç ä¸­ï¼Œç”³æ˜éƒ¨åˆ†ï¼Œå«åšç”³æ˜æ ‘ï¼Œç”³æ˜æ ‘åˆä¾èµ–äºè¯æ³•é¡ºåºé¢„å¤„ç†ï¼Œå› ä¸ºå¯¹è¯æ³•é¢„å¤„ç†æ˜¯ä¸€ç§ç®€åŒ–æ‰‹æ®µ
+- å¥æ³•ï¼šåœ¨ç»è¿‡äº†ç”³æ˜é¢„å¤„ç†ä»¥åï¼Œæ˜¯å¯¹ä»£ç è¡¨è¾¾å¼çš„å•è¡Œé€»è¾‘æ“ä½œè¿›è¡Œå¤„ç†ï¼Œè¿™ä¸€æ­¥å«å¥æ³•ï¼Œå–ä¸ºzExpressionå¥æ³•ç¼–è¯‘å™¨æ˜¯æˆ‘ä»æ›¾ç»æ’°å†™çš„ç¼–è¯‘å™¨ä¸­ç‰¹æ„å‰¥ç¦»å‡ºæ¥çš„è§£å†³æ–¹æ¡ˆï¼Œå®ƒå¯ä»¥ç‹¬ç«‹å‡ºæ¥åˆ†å‘å’Œä½¿ç”¨ï¼Œå¯ä»¥å®ç”¨æ•°å­—åŒ–é¢„å¤„ç†ï¼Œå›¾å½¢å›¾åƒï¼Œç§‘å­¦è®¡ç®—ç­‰ç­‰é¢†åŸŸï¼Œä¹Ÿå¯ä»¥ä½œä¸ºå­¦ä¹ æé«˜è‡ªå·±çš„æ‰‹æ®µ
 
 
 
-## ºËĞÄË¼Â·
+## æ ¸å¿ƒæ€è·¯
+å®ç°zExpressioné‡‡ç”¨çš„æ˜¯å¯¹ç­‰å¤æ‚åŒ–åŸåˆ™ï¼Œé¢å‘è§£å†³ç¼–è¯‘å™¨é—®é¢˜è€Œç¼–å†™ï¼Œå¤æ‚åº¦ç›¸æ¯”äºå¸¸è§„ç¨‹åºä¼šé«˜è®¸å¤šï¼Œå› ä¸ºè§£å†³äº†æœ€ç»ˆé—®é¢˜ï¼Œä»£ç åœ¨å‘½åå’Œå †ç»“æ„ä¸Šä¹Ÿçœ‹ä¸å‡ºæ¼æ´ï¼Œæ‰€ä»¥å®ƒæ˜¯æˆç†Ÿå¥æ³•è§£é‡Šå™¨æ–¹æ¡ˆ
 
-ÊµÏÖzExpression²ÉÓÃµÄÊÇ¶ÔµÈ¸´ÔÓ»¯Ô­Ôò£¬ÃæÏò½â¾ö±àÒëÆ÷ÎÊÌâ¶ø±àĞ´£¬¸´ÔÓ¶ÈÏà±ÈÓÚ³£¹æ³ÌĞò»á¸ßĞí¶à£¬ÒòÎª½â¾öÁË×îÖÕÎÊÌâ£¬´úÂëÔÚÃüÃûºÍ¶Ñ½á¹¹ÉÏÒ²¿´²»³öÂ©¶´£¬ËùÒÔËüÊÇ³ÉÊì¾ä·¨½âÊÍÆ÷·½°¸
-
-## zExpressionÌØµã
-
-ÍêÕûµÄµ¥²½Ô­×Ó»¯²Ù×÷
-
-ÍêÕûµÄ·ûºÅÓÅÏÈ¼¶ºó´¦Àí
-
-ÄÜÔ¤´¦Àí×ÖÃæ´íÎó£¬²¢·´À¡´íÎó·¢ÉúÔÚÄÄ
-
-ÄÜÊ¶±ğ¸¡µãºÍÕûÊıµÄ×ÔÈ»ÊıĞ´·¨
-
-Ö§³Öº¯Êıµ÷ÓÃ
-
-Ö§³Ö×Ô¶¨Òå½Å±¾Óï·¨
-
-Äæ²¨À¼2.0·ûºÅÓÅÏÈ¼¶´¦Àí
-
-Ö§³Ö°²×¿ºÍÆ»¹û¸÷ĞÍºÅÊÖ»ú
-
-ÍêÕûµÄ¹¦ÄÜDemo£¬ÍêÕûĞÔÄÜºÍ½âÎö×¼È·ĞÔÆÀ¹À¿ò¼Ü
-
-ÔÚ±àÒëÒÔºó£¬ÄÜĞÎ³ÉÔ­×Ó»¯op´úÂë£¬¿ÉÒÔÍ¨¹ıstream¸ßËÙÔØÈë²¢ÔËĞĞ£¬²»ÏŞÖÆcpuÀàĞÍ
-
-OP´úÂë¿ò¼Ü¿ÉÒÔÇáËÉÒëÂë³ÉARMv7 ARMx64 x64 x86µÈÆ½Ì¨µÄ»úÆ÷Âë
+## zExpressionç‰¹ç‚¹
+- å®Œæ•´çš„å•æ­¥åŸå­åŒ–æ“ä½œ
+- å®Œæ•´çš„ç¬¦å·ä¼˜å…ˆçº§åå¤„ç†
+- èƒ½é¢„å¤„ç†å­—é¢é”™è¯¯ï¼Œå¹¶åé¦ˆé”™è¯¯å‘ç”Ÿåœ¨å“ª
+- èƒ½è¯†åˆ«æµ®ç‚¹å’Œæ•´æ•°çš„è‡ªç„¶æ•°å†™æ³•
+- æ”¯æŒå‡½æ•°è°ƒç”¨
+- æ”¯æŒè‡ªå®šä¹‰è„šæœ¬è¯­æ³•
+- é€†æ³¢å…°2.0ç¬¦å·ä¼˜å…ˆçº§å¤„ç†
+- æ”¯æŒå®‰å“å’Œè‹¹æœå„å‹å·æ‰‹æœº
+- å®Œæ•´çš„åŠŸèƒ½Demoï¼Œå®Œæ•´æ€§èƒ½å’Œè§£æå‡†ç¡®æ€§è¯„ä¼°æ¡†æ¶
+- åœ¨ç¼–è¯‘ä»¥åï¼Œèƒ½å½¢æˆåŸå­åŒ–opä»£ç ï¼Œå¯ä»¥é€šè¿‡streamé«˜é€Ÿè½½å…¥å¹¶è¿è¡Œï¼Œä¸é™åˆ¶cpuç±»å‹
+- OPä»£ç æ¡†æ¶å¯ä»¥è½»æ¾è¯‘ç æˆARMv7 ARMx64 x64 x86ç­‰å¹³å°çš„æœºå™¨ç 
 
 
-## »ù±¾ÓÃ·¨ÑİÊ¾
+## åŸºæœ¬ç”¨æ³•æ¼”ç¤º
 
 ```Delphi
 var
   rt: TOpCustomRunTime;
   v : Variant;
 begin
-  // rtÎªzeµÄÔËĞĞº¯ÊıÖ§³Ö¿â
+  // rtä¸ºzeçš„è¿è¡Œå‡½æ•°æ”¯æŒåº“
   rt := TOpCustomRunTime.Create;
   rt.RegOp('myAddFunction', function(var Param: TOpParam): Variant
     // (a+b)*0.5
@@ -57,18 +42,18 @@ begin
     end);
   rt.RegOp('myStringFunction', function(var Param: TOpParam): Variant
     begin
-      Result := Format('×Ö·û´®³¤¶ÈÎª:%d', [Length(VarToStr(Param[0]) + VarToStr(Param[1]))]);
+      Result := Format('å­—ç¬¦ä¸²é•¿åº¦ä¸º:%d', [Length(VarToStr(Param[0]) + VarToStr(Param[1]))]);
     end);
 
-  // ¼òµ¥ÊıÑ§±í´ïÊ½
-  v := EvaluateExpressionValue(False, '1000+{ ÕâÀïÊÇ±¸×¢ ze¿ÉÒÔÊ¶±ğpascalºÍcµÄ±¸×¢ÒÔ¼°×Ö·û´®Ğ´·¨ } myAddFunction(1+1/2*3/3.14*9999, 599+2+2*100 shl 3)', rt);
+  // ç®€å•æ•°å­¦è¡¨è¾¾å¼
+  v := EvaluateExpressionValue(False, '1000+{ è¿™é‡Œæ˜¯å¤‡æ³¨ zeå¯ä»¥è¯†åˆ«pascalå’Œcçš„å¤‡æ³¨ä»¥åŠå­—ç¬¦ä¸²å†™æ³• } myAddFunction(1+1/2*3/3.14*9999, 599+2+2*100 shl 3)', rt);
   DoStatus(VarToStr(v));
 
-  // ¼òµ¥×Ö·û´®±í´ïÊ½£¬zeµÄÄ¬ÈÏÎÄ±¾´¦Àí¸ñÊ½ÎªPascal
+  // ç®€å•å­—ç¬¦ä¸²è¡¨è¾¾å¼ï¼Œzeçš„é»˜è®¤æ–‡æœ¬å¤„ç†æ ¼å¼ä¸ºPascal
   v := EvaluateExpressionValue(False, 'myStringFunction('#39'abc'#39', '#39'123'#39')', rt);
   DoStatus(VarToStr(v));
 
-  // ¼òµ¥×Ö·û´®±í´ïÊ½£¬ÎÒÃÇÊ¹ÓÃcµÄÎÄ±¾¸ñÊ½
+  // ç®€å•å­—ç¬¦ä¸²è¡¨è¾¾å¼ï¼Œæˆ‘ä»¬ä½¿ç”¨cçš„æ–‡æœ¬æ ¼å¼
   v := EvaluateExpressionValue(tsC, 'myStringFunction("abc", "123")', rt);
   DoStatus(VarToStr(v));
 
@@ -77,7 +62,7 @@ end;
 
 ```
 
-## »ùÓÚ¶ş½øÖÆStreamµÄ¸ßËÙ¶ÁÈ¡ÓëÖ´ĞĞ
+## åŸºäºäºŒè¿›åˆ¶Streamçš„é«˜é€Ÿè¯»å–ä¸æ‰§è¡Œ
 
 ```delphi
 var
@@ -86,7 +71,7 @@ var
   rt    : TOpCustomRunTime;
   m64   : TMemoryStream64;
 begin
-  // rtÎªzeµÄÔËĞĞº¯ÊıÖ§³Ö¿â
+  // rtä¸ºzeçš„è¿è¡Œå‡½æ•°æ”¯æŒåº“
   rt := TOpCustomRunTime.Create;
   rt.RegOp('myAddFunction', function(var Param: TOpParam): Variant
     // (a+b)*0.5
@@ -95,55 +80,55 @@ begin
     end);
   rt.RegOp('myStringFunction', function(var Param: TOpParam): Variant
     begin
-      Result := Format('×Ö·û´®³¤¶ÈÎª:%d', [Length(VarToStr(Param[0]) + VarToStr(Param[1]))]);
+      Result := Format('å­—ç¬¦ä¸²é•¿åº¦ä¸º:%d', [Length(VarToStr(Param[0]) + VarToStr(Param[1]))]);
     end);
 
-  // Ê¹ÓÃParseTextExpressionAsSymbolº¯Êı£¬½«±í´ïÊ½·­Òë³É´Ê·¨Ê÷
+  // ä½¿ç”¨ParseTextExpressionAsSymbolå‡½æ•°ï¼Œå°†è¡¨è¾¾å¼ç¿»è¯‘æˆè¯æ³•æ ‘
   tmpSym := ParseTextExpressionAsSymbol(TTextParsing, '', '1000+myAddFunction(1+1/2*3/3.14*9999, 599+2+2*100 shl 3)', nil, rt);
-  // BuildAsOpCode»á½«´Ê·¨Ê÷ÔÙ´Î·­Òë³ÉÓï·¨Ê÷£¬È»ºóÔÙ»ùÓÚÓï·¨Ê÷Éú³Éop´úÂë
+  // BuildAsOpCodeä¼šå°†è¯æ³•æ ‘å†æ¬¡ç¿»è¯‘æˆè¯­æ³•æ ‘ï¼Œç„¶åå†åŸºäºè¯­æ³•æ ‘ç”Ÿæˆopä»£ç 
   op := BuildAsOpCode(tmpSym);
   disposeObject(tmpSym);
-  // ÎÒÃÇÖ´ĞĞÒ»´Îop
-  DoStatus('opÔËĞĞ·µ»ØÖµ(ÕıÈ·ÖµÎª4489.2962): %s', [VarToStr(op.Execute(rt))]);
+  // æˆ‘ä»¬æ‰§è¡Œä¸€æ¬¡op
+  DoStatus('opè¿è¡Œè¿”å›å€¼(æ­£ç¡®å€¼ä¸º4489.2962): %s', [VarToStr(op.Execute(rt))]);
 
   m64 := TMemoryStream64.Create;
   op.SaveToStream(m64);
 
-  // ÕâÀïÒÑ¾­ÊÍ·ÅÁËop
+  // è¿™é‡Œå·²ç»é‡Šæ”¾äº†op
   disposeObject(op);
 
-  // ´Óstream¿ìËÙ¶ÁÈ¡op£¬Õâ±ãÓÚÎÒÃÇÔÚ
+  // ä»streamå¿«é€Ÿè¯»å–opï¼Œè¿™ä¾¿äºæˆ‘ä»¬åœ¨
   m64.Position := 0;
   if LoadOpFromStream(True, m64, op) then
     begin
-      DoStatus('opÔËĞĞ·µ»ØÖµ(ÕıÈ·ÖµÎª4489.2962): %s', [VarToStr(op.Execute(rt))]);
+      DoStatus('opè¿è¡Œè¿”å›å€¼(æ­£ç¡®å€¼ä¸º4489.2962): %s', [VarToStr(op.Execute(rt))]);
     end;
 
   disposeObject([op, rt, m64]);
 
-  DoStatus('¸ßËÙÔØÈëÓëÖ´ĞĞdemo£¬ÔËĞĞÍê±Ï');
+  DoStatus('é«˜é€Ÿè½½å…¥ä¸æ‰§è¡Œdemoï¼Œè¿è¡Œå®Œæ¯•');
 end;
 ```
 
 
-## ×Ô¼ºÊµÏÖIF½á¹¹Ìå£¬»ùÓÚze×Ô´øµÄ´Ê·¨ÒıÇæTTextParsing½âÎö½Å±¾ºÍ±àÒëÆ÷ÖĞµÄIF½á¹¹ÌåÄÚ²¿Á÷³Ì
+## è‡ªå·±å®ç°IFç»“æ„ä½“ï¼ŒåŸºäºzeè‡ªå¸¦çš„è¯æ³•å¼•æ“TTextParsingè§£æè„šæœ¬å’Œç¼–è¯‘å™¨ä¸­çš„IFç»“æ„ä½“å†…éƒ¨æµç¨‹
 
 ```delphi
 type
-  TState = (sUnknow, sIF, sTrue, sFalse); // ½âÎöÓÃµÄ¼òµ¥×´Ì¬»ú
+  TState = (sUnknow, sIF, sTrue, sFalse); // è§£æç”¨çš„ç®€å•çŠ¶æ€æœº
 label gFillStruct;
 var
-  t                                      : TTextParsing;     // ´Ê·¨½âÎöÒıÇæ
-  cp, ep                                 : Integer;          // ×Ö×ø±ê
-  wasNumber, wasText, wasAscii, wasSymbol: Boolean;          // ½âÎöÎÄ±¾×´Ì¬»ú
-  state                                  : TState;           // ½âÎö½á¹¹×´Ì¬»ú
-  decl                                   : TPascalString;    // µ±Ç°½âÎö´Ê·¨Ìå£¬°üÀ¨
-  ifMatchBody                            : TPascalString;    // Ìõ¼ş²¼¶ûÅĞ¶ÏÔËĞĞÌå
-  ifTrueBody                             : TPascalString;    // Ìõ¼ş³ÉÁ¢ÔËĞĞÌå
-  ifFalseBody                            : TPascalString;    // Ìõ¼ş²»³ÉÁ¢ÔËĞĞÌå
-  rt                                     : TOpCustomRunTime; // ÔËĞĞº¯Êı¿âÖ§³Ö
+  t                                      : TTextParsing;     // è¯æ³•è§£æå¼•æ“
+  cp, ep                                 : Integer;          // å­—åæ ‡
+  wasNumber, wasText, wasAscii, wasSymbol: Boolean;          // è§£ææ–‡æœ¬çŠ¶æ€æœº
+  state                                  : TState;           // è§£æç»“æ„çŠ¶æ€æœº
+  decl                                   : TPascalString;    // å½“å‰è§£æè¯æ³•ä½“ï¼ŒåŒ…æ‹¬
+  ifMatchBody                            : TPascalString;    // æ¡ä»¶å¸ƒå°”åˆ¤æ–­è¿è¡Œä½“
+  ifTrueBody                             : TPascalString;    // æ¡ä»¶æˆç«‹è¿è¡Œä½“
+  ifFalseBody                            : TPascalString;    // æ¡ä»¶ä¸æˆç«‹è¿è¡Œä½“
+  rt                                     : TOpCustomRunTime; // è¿è¡Œå‡½æ•°åº“æ”¯æŒ
 begin
-  // ÓÉÓÚpascalµÄ×Ö·û´®²»±ãÓÚÊéĞ´ÔÚ³ÌĞòÖĞ£¬ÕâÀïÎÒÃÇc·ç¸ñ×Ö·û´®
+  // ç”±äºpascalçš„å­—ç¬¦ä¸²ä¸ä¾¿äºä¹¦å†™åœ¨ç¨‹åºä¸­ï¼Œè¿™é‡Œæˆ‘ä»¬cé£æ ¼å­—ç¬¦ä¸²
   t := TTextParsing.Create('if 1+1=2 then writeln("if was true") else writeln("if was false");', tsC);
   cp := 1;
   ep := 1;
@@ -152,10 +137,10 @@ begin
   ifTrueBody := '';
   ifFalseBody := '';
 
-  // ½âÎöÖ÷Ñ­»·
+  // è§£æä¸»å¾ªç¯
   while cp < t.Len do
     begin
-      // ´Ê·¨Á÷³Ì·¶Ê½£¬ÕâÌ×´Ë·¶Ê½ÊÇÒÔ³ÉÊì´Ê·¨½âÎöÎªÖ÷£¬Ã»ÓĞ¿¼ÂÇĞÔÄÜ£¬Èç¹ûĞèÒª¼ÓËÙÔËĞĞ½Å±¾£¬Çë¿¼ÂÇ±àÒë³ÉÊı¾İ½á¹¹´æ´¢ÔÙÒÔ¸ßËÙ·½Ê½ÔØÈëÔËĞĞ
+      // è¯æ³•æµç¨‹èŒƒå¼ï¼Œè¿™å¥—æ­¤èŒƒå¼æ˜¯ä»¥æˆç†Ÿè¯æ³•è§£æä¸ºä¸»ï¼Œæ²¡æœ‰è€ƒè™‘æ€§èƒ½ï¼Œå¦‚æœéœ€è¦åŠ é€Ÿè¿è¡Œè„šæœ¬ï¼Œè¯·è€ƒè™‘ç¼–è¯‘æˆæ•°æ®ç»“æ„å­˜å‚¨å†ä»¥é«˜é€Ÿæ–¹å¼è½½å…¥è¿è¡Œ
       wasNumber := t.IsNumber(cp);
       wasText := t.IsTextDecl(cp);
       wasAscii := t.IsAscii(cp);
@@ -195,18 +180,18 @@ begin
 
       inc(cp);
       continue;
-      // ´Ê·¨Á÷³Ì·¶Ê½½áÊø£¬ÏÂÃæÎÒÃÇ×ö½á¹¹ÌåÅĞ¶Ï
+      // è¯æ³•æµç¨‹èŒƒå¼ç»“æŸï¼Œä¸‹é¢æˆ‘ä»¬åšç»“æ„ä½“åˆ¤æ–­
 
     gFillStruct:
 
       if wasAscii then
         begin
-          // ´Ê·¨½á¹¹
+          // è¯æ³•ç»“æ„
           if decl.Same('if') then
             begin
               if state <> sUnknow then
                 begin
-                  DoStatus('if ¸ñÊ½½âÎö´íÎó');
+                  DoStatus('if æ ¼å¼è§£æé”™è¯¯');
                   break;
                 end;
               state := sIF;
@@ -217,7 +202,7 @@ begin
             begin
               if state <> sIF then
                 begin
-                  DoStatus('then ¸ñÊ½½âÎö´íÎó');
+                  DoStatus('then æ ¼å¼è§£æé”™è¯¯');
                   break;
                 end;
               state := sTrue;
@@ -228,7 +213,7 @@ begin
             begin
               if state <> sTrue then
                 begin
-                  DoStatus('else ÊéĞ´¸ñÊ½½âÎö´íÎó');
+                  DoStatus('else ä¹¦å†™æ ¼å¼è§£æé”™è¯¯');
                   break;
                 end;
               state := sFalse;
@@ -237,13 +222,13 @@ begin
         end;
 
       case state of
-        sIF: ifMatchBody.Append(decl);    // ÔÚTPascalStringÖĞ£¬Ê¹ÓÃAppend·½·¨£¬Òª±Èstring:=string+stringĞ§ÂÊ¸ü¸ß
-        sTrue: ifTrueBody.Append(decl);   // ÔÚTPascalStringÖĞ£¬Ê¹ÓÃAppend·½·¨£¬Òª±Èstring:=string+stringĞ§ÂÊ¸ü¸ß
-        sFalse: ifFalseBody.Append(decl); // ÔÚTPascalStringÖĞ£¬Ê¹ÓÃAppend·½·¨£¬Òª±Èstring:=string+stringĞ§ÂÊ¸ü¸ß
+        sIF: ifMatchBody.Append(decl);    // åœ¨TPascalStringä¸­ï¼Œä½¿ç”¨Appendæ–¹æ³•ï¼Œè¦æ¯”string:=string+stringæ•ˆç‡æ›´é«˜
+        sTrue: ifTrueBody.Append(decl);   // åœ¨TPascalStringä¸­ï¼Œä½¿ç”¨Appendæ–¹æ³•ï¼Œè¦æ¯”string:=string+stringæ•ˆç‡æ›´é«˜
+        sFalse: ifFalseBody.Append(decl); // åœ¨TPascalStringä¸­ï¼Œä½¿ç”¨Appendæ–¹æ³•ï¼Œè¦æ¯”string:=string+stringæ•ˆç‡æ›´é«˜
       end;
     end;
 
-  // µ½ÕâÒ»²½£¬Õû¸öif½á¹¹Ìå¾ÍÒÑ¾­½âÎö³É¹¦ÁË£¬ÎÒÃÇÖ±½ÓÔËĞĞ³ÌĞò¼´¿É
+  // åˆ°è¿™ä¸€æ­¥ï¼Œæ•´ä¸ªifç»“æ„ä½“å°±å·²ç»è§£ææˆåŠŸäº†ï¼Œæˆ‘ä»¬ç›´æ¥è¿è¡Œç¨‹åºå³å¯
   if state = sFalse then
     begin
       rt := TOpCustomRunTime.Create;
@@ -252,7 +237,7 @@ begin
           Writeln(VarToStr(Param[0]));
           Result := 0;
         end);
-      // Èç¹ûĞèÒªĞÔÄÜ£¬ÕâÀïµÄ½á¹¹ÌåÄã¿ÉÒÔ¿¼ÂÇÓÃÊı¾İ½á¹¹À´´æ´¢£¬ÊµÏÖ¿ìËÙ½Å±¾
+      // å¦‚æœéœ€è¦æ€§èƒ½ï¼Œè¿™é‡Œçš„ç»“æ„ä½“ä½ å¯ä»¥è€ƒè™‘ç”¨æ•°æ®ç»“æ„æ¥å­˜å‚¨ï¼Œå®ç°å¿«é€Ÿè„šæœ¬
       if EvaluateExpressionValue(tsC, ifMatchBody, rt) = True then
           EvaluateExpressionValue(tsC, ifTrueBody, rt)
       else
@@ -264,23 +249,23 @@ begin
 end;
 ```
 
-## µ±ÎÒÃÇÖÆ×÷×Ô¼ºµÄ½Å±¾ÒıÇæÊ±£¬ÓĞÊ±ºòĞèÒª´¦ÀíÌØÊâ×Ö·û
+## å½“æˆ‘ä»¬åˆ¶ä½œè‡ªå·±çš„è„šæœ¬å¼•æ“æ—¶ï¼Œæœ‰æ—¶å€™éœ€è¦å¤„ç†ç‰¹æ®Šå­—ç¬¦
 
 ```delphi
-// ÌØÊâ·ûºÅº¯Êı
+// ç‰¹æ®Šç¬¦å·å‡½æ•°
 procedure SpecialFuncDemo;
 var
   rt: TOpCustomRunTime;
   v : Variant;
 begin
-  DoStatus('È«¾ÖµÄ´Ê·¨Ì½Í·Ç°×º²ÎÁ¿µÄÊ¹ÓÃ');
+  DoStatus('å…¨å±€çš„è¯æ³•æ¢å¤´å‰ç¼€å‚é‡çš„ä½¿ç”¨');
 
-  // È«¾ÖµÄÌØÊâ·ûºÅÌ½Í·µÄÇ°ºó×º²ÎÁ¿ ·²ÊÇÇ°×ºÓĞ@@·ûºÅ,¾ù×÷ÎªasciiÀ´´¦Àí
+  // å…¨å±€çš„ç‰¹æ®Šç¬¦å·æ¢å¤´çš„å‰åç¼€å‚é‡ å‡¡æ˜¯å‰ç¼€æœ‰@@ç¬¦å·,å‡ä½œä¸ºasciiæ¥å¤„ç†
   SpecialAsciiToken.Clear;
   SpecialAsciiToken.Add('@@');
   SpecialAsciiToken.Add('&&');
 
-  // rtÎªzeµÄÔËĞĞº¯ÊıÖ§³Ö¿â
+  // rtä¸ºzeçš„è¿è¡Œå‡½æ•°æ”¯æŒåº“
   rt := TOpCustomRunTime.Create;
   rt.RegOp('@@a&&', function(var Param: TOpParam): Variant
     // (a+b)*0.5
@@ -293,15 +278,15 @@ begin
       Result := VarToStr(Param[0]) + VarToStr(Param[1]);
     end);
 
-  // ´øÓĞ@@Ç°×ºµÄasciiÒ²¿ÉÒÔÔÚºó×º´øÓĞÌØÊâ·ûºÅ£¬ÌØÊâ·ûºÅ³¤¶È²»ÏŞÖÆ
-  v := EvaluateExpressionValue(False, '{ ±¸×¢ } @@a&&(1,2)', rt);
+  // å¸¦æœ‰@@å‰ç¼€çš„asciiä¹Ÿå¯ä»¥åœ¨åç¼€å¸¦æœ‰ç‰¹æ®Šç¬¦å·ï¼Œç‰¹æ®Šç¬¦å·é•¿åº¦ä¸é™åˆ¶
+  v := EvaluateExpressionValue(False, '{ å¤‡æ³¨ } @@a&&(1,2)', rt);
   DoStatus(VarToStr(v));
 
-  // ¼òµ¥×Ö·û´®±í´ïÊ½£¬zeµÄÄ¬ÈÏÎÄ±¾´¦Àí¸ñÊ½ÎªPascal
+  // ç®€å•å­—ç¬¦ä¸²è¡¨è¾¾å¼ï¼Œzeçš„é»˜è®¤æ–‡æœ¬å¤„ç†æ ¼å¼ä¸ºPascal
   v := EvaluateExpressionValue(False, '@@combineString&&('#39'abc'#39', '#39'123'#39')', rt);
   DoStatus(VarToStr(v));
 
-  // ¼òµ¥×Ö·û´®±í´ïÊ½£¬ÎÒÃÇÊ¹ÓÃcµÄÎÄ±¾¸ñÊ½
+  // ç®€å•å­—ç¬¦ä¸²è¡¨è¾¾å¼ï¼Œæˆ‘ä»¬ä½¿ç”¨cçš„æ–‡æœ¬æ ¼å¼
   v := EvaluateExpressionValue(tsC, '@@combineString&&("abc", "123")', rt);
   DoStatus(VarToStr(v));
   v := EvaluateExpressionValue(tsC, '@@combineString&&('#39'abc'#39', '#39'123'#39')', rt);
@@ -309,12 +294,12 @@ begin
 
   disposeObject(rt);
 
-  // ¸´Ô­È«¾ÖµÄÌØÊâ·ûºÅÌ½Í·µÄÇ°ºó×º²ÎÁ¿
+  // å¤åŸå…¨å±€çš„ç‰¹æ®Šç¬¦å·æ¢å¤´çš„å‰åç¼€å‚é‡
   SpecialAsciiToken.Clear;
 end;
 ```
 
-## ½«zExpression±í´ïÊ½Ó¦ÓÃÓÚÎÄ±¾½âÎöÆ÷£¬ÎÄ±¾¸ñÊ½¿ÉÒÔÊÇHTML,Text,Json,XML
+## å°†zExpressionè¡¨è¾¾å¼åº”ç”¨äºæ–‡æœ¬è§£æå™¨ï¼Œæ–‡æœ¬æ ¼å¼å¯ä»¥æ˜¯HTML,Text,Json,XML
 
 ```delphi
 var
@@ -347,14 +332,14 @@ var
               begin
                 KeyText := sour.copy(bPos + ht.Len, ePos - (bPos + ht.Len)).Text;
 
-                // ÔÚTPascalStringÖĞ£¬Ê¹ÓÃAppend·½·¨£¬Òª±Èstring:=string+stringĞ§ÂÊ¸ü¸ß
+                // åœ¨TPascalStringä¸­ï¼Œä½¿ç”¨Appendæ–¹æ³•ï¼Œè¦æ¯”string:=string+stringæ•ˆç‡æ›´é«˜
                 Result.Append(VarToStr(EvaluateExpressionValue(KeyText, rt)));
                 i := ePos + tt.Len;
                 continue;
               end;
           end;
 
-        // ÔÚTPascalStringÖĞ£¬Ê¹ÓÃAppend·½·¨£¬Òª±Èstring:=string+stringĞ§ÂÊ¸ü¸ß
+        // åœ¨TPascalStringä¸­ï¼Œä½¿ç”¨Appendæ–¹æ³•ï¼Œè¦æ¯”string:=string+stringæ•ˆç‡æ›´é«˜
         Result.Append(sour[i]);
         inc(i);
       end;
@@ -365,66 +350,66 @@ var
   i: Integer;
   t: TTimeTick;
 begin
-  DoStatus('¼òµ¥ÑİÊ¾ÓÃ½Å±¾À´·â×°zExpression');
-  // rtÎªzeµÄÔËĞĞº¯ÊıÖ§³Ö¿â
+  DoStatus('ç®€å•æ¼”ç¤ºç”¨è„šæœ¬æ¥å°è£…zExpression');
+  // rtä¸ºzeçš„è¿è¡Œå‡½æ•°æ”¯æŒåº“
   rt := TOpCustomRunTime.Create;
   rt.RegOp('OverFunction', function(var Param: TOpParam): Variant
     begin
-      Result := 'Ğ»Ğ»';
+      Result := 'è°¢è°¢';
     end);
 
-  // ÎÒÃÇÕâÀïÊ¹ÓÃºê´¦Àí½«1+1ÒÔ±í´ïÊ½À´·­Òë
-  n := 'ÕâÊÇ1+1=<begin>1+1<end>£¬ÕâÊÇÒ»¸öUInt48Î»ÕûĞÎ:<begin>1<<48<end>£¬½áÊø <begin>OverFunction<end>';
+  // æˆ‘ä»¬è¿™é‡Œä½¿ç”¨å®å¤„ç†å°†1+1ä»¥è¡¨è¾¾å¼æ¥ç¿»è¯‘
+  n := 'è¿™æ˜¯1+1=<begin>1+1<end>ï¼Œè¿™æ˜¯ä¸€ä¸ªUInt48ä½æ•´å½¢:<begin>1<<48<end>ï¼Œç»“æŸ <begin>OverFunction<end>';
 
-  DoStatus('Ô­ĞÍ:' + n);
-  DoStatus('¼ÆËã½á¹û' + Macro(n, '<begin>', '<end>').Text);
+  DoStatus('åŸå‹:' + n);
+  DoStatus('è®¡ç®—ç»“æœ' + Macro(n, '<begin>', '<end>').Text);
 
-  DoStatus('zExpressionÕıÔÚ²âÊÔĞÔÄÜ£¬¶ÔÉÏÁĞÔ­ĞÍ×ö100Íò´Î´¦Àí');
+  DoStatus('zExpressionæ­£åœ¨æµ‹è¯•æ€§èƒ½ï¼Œå¯¹ä¸Šåˆ—åŸå‹åš100ä¸‡æ¬¡å¤„ç†');
 
   t := GetTimeTick;
 
-  // ÖØ¸´×ö100Íò´Î¾ä·¨±í´ïÊ½½âÎöºÍ´¦Àí
+  // é‡å¤åš100ä¸‡æ¬¡å¥æ³•è¡¨è¾¾å¼è§£æå’Œå¤„ç†
   for i := 1 to 100 * 10000 do
       Macro(n, '<begin>', '<end>');
 
-  DoStatus('zExpressionĞÔÄÜ²âÊÔÍê³É£¬ºÄÊ±:%dms', [GetTimeTick - t]);
+  DoStatus('zExpressionæ€§èƒ½æµ‹è¯•å®Œæˆï¼Œè€—æ—¶:%dms', [GetTimeTick - t]);
 
   disposeObject([rt]);
 end;
 ```
 
-## »ùÓÚTTextParsingºÍzExpressionÊµÏÖ¶Ô½Å±¾ÒıÇæµÄÄÚ²¿±äÁ¿¸³Öµ
+## åŸºäºTTextParsingå’ŒzExpressionå®ç°å¯¹è„šæœ¬å¼•æ“çš„å†…éƒ¨å˜é‡èµ‹å€¼
 
 ```delphi
 procedure Demo5;
 var
-  sourTp, t          : TTextParsing;       // ´Ê·¨½âÎöÒıÇæ
-  setBefore, setAfter: TPascalString;      // ¸³ÖµµÄÇ°ÖÃÉêÃ÷£¬ºÍ¸³ÖµµÄºóÖÃÉêÃ÷
-  splitVarDecl       : TArrayPascalString; // ÇĞ¿ªµÄ±í´ïÊ½Ìå
-  myvars             : TArrayPascalString; // ÎÒÃÇĞèÒª¸³ÖµµÄÁÙÊ±±äÁ¿£¬ÒÔ¶ººÅ·Ö¸ô
-  WasAssignment      : Boolean;            // ÔÚ±í´ïÊ½ÖĞÕÒµ½ÁË¸³Öµ
-  HashVars           : THashVariantList;   // ±äÁ¿µÄhash´æ´¢½á¹¹£¬ÕâÊÇ¿ÉÒÔ´æ·Åµ½Ó²ÅÌÖĞµÄ
-  rt                 : TOpCustomRunTime;   // ÔËĞĞº¯Êı¿âÖ§³Ö
-  op                 : TOpCode;            // ÎÒÃÇÓÃÀ´×öcacheµÄop±äÁ¿
-  i                  : Integer;            // forÊ¹ÓÃ
-  dynvar             : Integer;            // ¶¯Ì¬±äÁ¿
+  sourTp, t          : TTextParsing;       // è¯æ³•è§£æå¼•æ“
+  setBefore, setAfter: TPascalString;      // èµ‹å€¼çš„å‰ç½®ç”³æ˜ï¼Œå’Œèµ‹å€¼çš„åç½®ç”³æ˜
+  splitVarDecl       : TArrayPascalString; // åˆ‡å¼€çš„è¡¨è¾¾å¼ä½“
+  myvars             : TArrayPascalString; // æˆ‘ä»¬éœ€è¦èµ‹å€¼çš„ä¸´æ—¶å˜é‡ï¼Œä»¥é€—å·åˆ†éš”
+  WasAssignment      : Boolean;            // åœ¨è¡¨è¾¾å¼ä¸­æ‰¾åˆ°äº†èµ‹å€¼
+  HashVars           : THashVariantList;   // å˜é‡çš„hashå­˜å‚¨ç»“æ„ï¼Œè¿™æ˜¯å¯ä»¥å­˜æ”¾åˆ°ç¡¬ç›˜ä¸­çš„
+  rt                 : TOpCustomRunTime;   // è¿è¡Œå‡½æ•°åº“æ”¯æŒ
+  op                 : TOpCode;            // æˆ‘ä»¬ç”¨æ¥åšcacheçš„opå˜é‡
+  i                  : Integer;            // forä½¿ç”¨
+  dynvar             : Integer;            // åŠ¨æ€å˜é‡
 begin
-  // ÕâÀïÓĞcºÍpascalÁ½ÖÖĞ´·¨£¬×ÔĞĞĞŞ¸Ä±¸×¢¼´¿É
-  sourTp := TTextParsing.Create('myvar1/*ÕâÀïÊÇ±¸×¢*/,myvar2,myvar3 = 123+456+" ±äÁ¿: "+dynamic', tsC, nil); // ´Ê·¨½âÎöÒıÇæ£¬ÒÔcÓï·¨ÎªÀı
-  // sourTp := TTextParsing.Create('myvar1(*ÕâÀïÊÇ±¸×¢*),myvar2,myvar3 := 123+456+'#39' ±äÁ¿: '#39'+dynamic', tsPascal); // ´Ê·¨½âÎöÒıÇæ£¬ÒÔcÓï·¨ÎªÀı
-  // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal); // ´Ê·¨½âÎöÒıÇæ£¬ÒÔcÓï·¨ÎªÀı
+  // è¿™é‡Œæœ‰cå’Œpascalä¸¤ç§å†™æ³•ï¼Œè‡ªè¡Œä¿®æ”¹å¤‡æ³¨å³å¯
+  sourTp := TTextParsing.Create('myvar1/*è¿™é‡Œæ˜¯å¤‡æ³¨*/,myvar2,myvar3 = 123+456+" å˜é‡: "+dynamic', tsC, nil); // è¯æ³•è§£æå¼•æ“ï¼Œä»¥cè¯­æ³•ä¸ºä¾‹
+  // sourTp := TTextParsing.Create('myvar1(*è¿™é‡Œæ˜¯å¤‡æ³¨*),myvar2,myvar3 := 123+456+'#39' å˜é‡: '#39'+dynamic', tsPascal); // è¯æ³•è§£æå¼•æ“ï¼Œä»¥cè¯­æ³•ä¸ºä¾‹
+  // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal); // è¯æ³•è§£æå¼•æ“ï¼Œä»¥cè¯­æ³•ä¸ºä¾‹
 
-  HashVars := THashVariantList.Create(16); // 16ÊÇhashµÄbuff³¤¶È£¬ÊıÖµÔ½´ó¼ÓËÙ¶ÈÔ½¿ì
+  HashVars := THashVariantList.Create(16); // 16æ˜¯hashçš„buffé•¿åº¦ï¼Œæ•°å€¼è¶Šå¤§åŠ é€Ÿåº¦è¶Šå¿«
 
   SetLength(splitVarDecl, 0);
   SetLength(myvars, 0);
 
-  // µÚÒ»²½£¬·ÖÎö¸³Öµ·ûºÅ
+  // ç¬¬ä¸€æ­¥ï¼Œåˆ†æèµ‹å€¼ç¬¦å·
   case sourTp.TextStyle of
     tsPascal:
       begin
-        // pascalµÄ¸³Öµ·ûºÅÎª :=
-        WasAssignment := sourTp.SplitString(1, ':=', ';', splitVarDecl) = 2; // ÒÔ×Ö·û´®×÷ÎªÇĞ¸î¼ÇºÅ£¬¶Ô´øÓĞ:=¼ÇºÅµÄ×Ö·û´®½øĞĞÇĞ¸î
+        // pascalçš„èµ‹å€¼ç¬¦å·ä¸º :=
+        WasAssignment := sourTp.SplitString(1, ':=', ';', splitVarDecl) = 2; // ä»¥å­—ç¬¦ä¸²ä½œä¸ºåˆ‡å‰²è®°å·ï¼Œå¯¹å¸¦æœ‰:=è®°å·çš„å­—ç¬¦ä¸²è¿›è¡Œåˆ‡å‰²
         if WasAssignment then
           begin
             setBefore := splitVarDecl[0];
@@ -432,15 +417,15 @@ begin
 
             t := TTextParsing.Create(setBefore, tsPascal, nil);
             t.DeletedComment;
-            if t.SplitChar(1, ',', ';', myvars) = 0 then // ÕâÀï²»ÊÇ×Ö·û´®£¬ÊÇÒÔ×Ö·û×÷ÎªÇĞ¸î¼ÇºÅ£¬¶Ô´øÓĞ,µÄ×Ö·û½øĞĞÇĞ¸î
-                DoStatus('±äÁ¿¸³ÖµÓï·¨´íÎó %s', [setBefore.Text]);
+            if t.SplitChar(1, ',', ';', myvars) = 0 then // è¿™é‡Œä¸æ˜¯å­—ç¬¦ä¸²ï¼Œæ˜¯ä»¥å­—ç¬¦ä½œä¸ºåˆ‡å‰²è®°å·ï¼Œå¯¹å¸¦æœ‰,çš„å­—ç¬¦è¿›è¡Œåˆ‡å‰²
+                DoStatus('å˜é‡èµ‹å€¼è¯­æ³•é”™è¯¯ %s', [setBefore.Text]);
             disposeObject(t);
           end;
       end;
     tsC:
       begin
-        // cµÄ¸³Öµ·ûºÅÎª =
-        WasAssignment := sourTp.SplitChar(1, '=', ';', splitVarDecl) = 2; // ÕâÀï²»ÊÇ×Ö·û´®£¬ÊÇÒÔ×Ö·û×÷ÎªÇĞ¸î¼ÇºÅ£¬¶Ô´øÓĞ=µÄ×Ö·û½øĞĞÇĞ¸î
+        // cçš„èµ‹å€¼ç¬¦å·ä¸º =
+        WasAssignment := sourTp.SplitChar(1, '=', ';', splitVarDecl) = 2; // è¿™é‡Œä¸æ˜¯å­—ç¬¦ä¸²ï¼Œæ˜¯ä»¥å­—ç¬¦ä½œä¸ºåˆ‡å‰²è®°å·ï¼Œå¯¹å¸¦æœ‰=çš„å­—ç¬¦è¿›è¡Œåˆ‡å‰²
         if WasAssignment then
           begin
             setBefore := splitVarDecl[0];
@@ -448,14 +433,14 @@ begin
 
             t := TTextParsing.Create(setBefore, tsC, nil);
             t.DeletedComment;
-            if t.SplitChar(1, ',', ';', myvars) = 0 then // ÕâÀï²»ÊÇ×Ö·û´®£¬ÊÇÒÔ×Ö·û×÷ÎªÇĞ¸î¼ÇºÅ£¬¶Ô´øÓĞ,µÄ×Ö·û½øĞĞÇĞ¸î
-                DoStatus('±äÁ¿¸³ÖµÓï·¨´íÎó %s', [setBefore.Text]);
+            if t.SplitChar(1, ',', ';', myvars) = 0 then // è¿™é‡Œä¸æ˜¯å­—ç¬¦ä¸²ï¼Œæ˜¯ä»¥å­—ç¬¦ä½œä¸ºåˆ‡å‰²è®°å·ï¼Œå¯¹å¸¦æœ‰,çš„å­—ç¬¦è¿›è¡Œåˆ‡å‰²
+                DoStatus('å˜é‡èµ‹å€¼è¯­æ³•é”™è¯¯ %s', [setBefore.Text]);
             disposeObject(t);
           end;
       end;
     else
       begin
-        DoStatus('²»Ö§³Ö±í´ïÊ½');
+        DoStatus('ä¸æ”¯æŒè¡¨è¾¾å¼');
         WasAssignment := False;
       end;
   end;
@@ -468,60 +453,60 @@ begin
     end);
   rt.RegOp('myvar1', function(var Param: TOpParam): Variant
     begin
-      // ¶Ômyvar1½øĞĞ¶¯Ì¬¸´ÓÃ
+      // å¯¹myvar1è¿›è¡ŒåŠ¨æ€å¤ç”¨
       Result := HashVars['myvar1'];
     end);
 
   dynvar := 1;
 
-  // µÚ¶ş²½£¬Èç¹ûÕÒµ½ÁË¸³Öµ·ûºÅ
+  // ç¬¬äºŒæ­¥ï¼Œå¦‚æœæ‰¾åˆ°äº†èµ‹å€¼ç¬¦å·
   if WasAssignment then
     begin
-      DoStatus('·¢ÏÖÁË±äÁ¿¸³Öµ±í´ïÊ½');
+      DoStatus('å‘ç°äº†å˜é‡èµ‹å€¼è¡¨è¾¾å¼');
 
       op := BuildAsOpCode(sourTp.TextStyle, setAfter, rt);
 
       for i := low(myvars) to high(myvars) do
-          HashVars[myvars[i].TrimChar(#32).Text] := op.Execute(rt); // ×öÒ»´ÎÊ×Î²¿Õ¸ñ²Ã¼ôºó£¬Ö´ĞĞop£¬²¢ÇÒÅúÁ¿µÄ¸³Öµ
+          HashVars[myvars[i].TrimChar(#32).Text] := op.Execute(rt); // åšä¸€æ¬¡é¦–å°¾ç©ºæ ¼è£å‰ªåï¼Œæ‰§è¡Œopï¼Œå¹¶ä¸”æ‰¹é‡çš„èµ‹å€¼
 
-      DoStatus('±äÁ¿¸³ÖµÄÚÈİ');
+      DoStatus('å˜é‡èµ‹å€¼å†…å®¹');
       DoStatus(HashVars.AsText);
 
-      // µÚÈı²½£¬ÈÃ±äÁ¿ÔÚ±í´ïÊ½ÖĞµÄ¸´ÓÃ
-      DoStatus('ÏÖÔÚ£¬ÎÒÃÇ¿ªÊ¼¾²Ì¬¸´ÓÃÎÒÃÇ¸Õ²ÅÉêÃ÷µÄ±äÁ¿£¬¾²Ì¬¸´ÓÃÊÇ½«±äÁ¿ÒÔconstĞÎÊ½½øĞĞ±àÒë');
+      // ç¬¬ä¸‰æ­¥ï¼Œè®©å˜é‡åœ¨è¡¨è¾¾å¼ä¸­çš„å¤ç”¨
+      DoStatus('ç°åœ¨ï¼Œæˆ‘ä»¬å¼€å§‹é™æ€å¤ç”¨æˆ‘ä»¬åˆšæ‰ç”³æ˜çš„å˜é‡ï¼Œé™æ€å¤ç”¨æ˜¯å°†å˜é‡ä»¥constå½¢å¼è¿›è¡Œç¼–è¯‘');
 
-      // ÓÉÓÚopCache»úÖÆÊÇ×Ô¶¯»¯½øĞĞµÄ£¬ÎÒÃÇÔÚÈÎºÎÊ±ºòÒÔconst¸´ÓÃ±äÁ¿Ê±¶¼ÒªÇå¿ÕËü
+      // ç”±äºopCacheæœºåˆ¶æ˜¯è‡ªåŠ¨åŒ–è¿›è¡Œçš„ï¼Œæˆ‘ä»¬åœ¨ä»»ä½•æ—¶å€™ä»¥constå¤ç”¨å˜é‡æ—¶éƒ½è¦æ¸…ç©ºå®ƒ
       OpCache.Clear;
 
-      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"¾²Ì¬¸´ÓÃ "+myvar1',
+      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"é™æ€å¤ç”¨ "+myvar1',
         procedure(DeclName: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
           if HashVars.Exists(DeclName) then
             begin
               Value := HashVars[DeclName];
-              ValType := TExpressionDeclType.edtString; // ÎÒÃÇĞèÒª¸æËß±àÒëÆ÷£¬¸Ã±äÁ¿µÄÀàĞÍ
+              ValType := TExpressionDeclType.edtString; // æˆ‘ä»¬éœ€è¦å‘Šè¯‰ç¼–è¯‘å™¨ï¼Œè¯¥å˜é‡çš„ç±»å‹
             end;
         end)));
 
-      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"¾²Ì¬¸´ÓÃ "+myvar4',
+      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"é™æ€å¤ç”¨ "+myvar4',
         procedure(DeclName: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
-          // myvar4ÊÇ²»´æÔÚµÄ
-          // È»ºó ÎÒÃÇÒÔmyvar2À´´úÌæ
+          // myvar4æ˜¯ä¸å­˜åœ¨çš„
+          // ç„¶å æˆ‘ä»¬ä»¥myvar2æ¥ä»£æ›¿
           Value := HashVars['myvar2'];
-          ValType := TExpressionDeclType.edtString; // ÎÒÃÇĞèÒª¸æËß±àÒëÆ÷£¬¸Ã±äÁ¿µÄÀàĞÍ
+          ValType := TExpressionDeclType.edtString; // æˆ‘ä»¬éœ€è¦å‘Šè¯‰ç¼–è¯‘å™¨ï¼Œè¯¥å˜é‡çš„ç±»å‹
         end)));
 
-      DoStatus('ÏÖÔÚ£¬ÎÒÃÇ¿ªÊ¼¶¯Ì¬¸´ÓÃÎÒÃÇ¸Õ²ÅÉêÃ÷µÄ±äÁ¿');
-      DoStatus(VarToStr(EvaluateExpressionValue(tsC, '"¶¯Ì¬¸´ÓÃ "+myvar1', rt)));
+      DoStatus('ç°åœ¨ï¼Œæˆ‘ä»¬å¼€å§‹åŠ¨æ€å¤ç”¨æˆ‘ä»¬åˆšæ‰ç”³æ˜çš„å˜é‡');
+      DoStatus(VarToStr(EvaluateExpressionValue(tsC, '"åŠ¨æ€å¤ç”¨ "+myvar1', rt)));
 
       HashVars['myvar1'] := 'abc';
-      DoStatus(VarToStr(EvaluateExpressionValue(tsC, '"¶¯Ì¬¸´ÓÃ "+myvar1', rt)));
+      DoStatus(VarToStr(EvaluateExpressionValue(tsC, '"åŠ¨æ€å¤ç”¨ "+myvar1', rt)));
     end
   else
     begin
-      DoStatus('Ã»ÓĞ·¢ÏÖÁË±äÁ¿¸³Öµ');
-      DoStatus('±í´ïÊ½ "%s"' + #13#10 + 'ÔËĞĞ½á¹û %s', [sourTp.TextData.Text, VarToStr(EvaluateExpressionValue(sourTp.TextStyle, sourTp.TextData, rt))]);
+      DoStatus('æ²¡æœ‰å‘ç°äº†å˜é‡èµ‹å€¼');
+      DoStatus('è¡¨è¾¾å¼ "%s"' + #13#10 + 'è¿è¡Œç»“æœ %s', [sourTp.TextData.Text, VarToStr(EvaluateExpressionValue(sourTp.TextStyle, sourTp.TextData, rt))]);
     end;
 
   disposeObject([sourTp, HashVars, rt]);
@@ -529,72 +514,75 @@ end;
 ```
 
 
+**å¦‚æœä½ æ”¯æŒzExpressionå¼€å‘ï¼Œè¯·å‘ä½œè€…ææ¬¾ï¼Œå¸Œæœ›æèµ åèƒ½ç•™ä¸‹çœŸå®å§“åå’Œè”ç³»æ–¹å¼ï¼Œå¼€å‘å»ºè®®è¯·å‘è‡³ä½œè€…é‚®ç®±** [600585@qq.com](mailto:600585@qq.com "600585@qq.com")
 
-## ¹ØÓÚ×÷Õß
+![](alipay.jpg)
 
-
-Çë²»ÒªÖ±½ÓÁªÏµ×÷Õß
-
-
-Ê¹ÓÃzExpressionÓĞÒÉÎÊÇë¼ÓqqÈº490269542£¬
+è¯·ä¸è¦ç›´æ¥è”ç³»ä½œè€…
+ä½¿ç”¨zExpressionæœ‰ç–‘é—®è¯·åŠ äº’åŠ©qqç¾¤490269542ï¼Œ
 
 
-## ¸üĞÂÈÕÖ¾
+## æ›´æ–°æ—¥å¿—
+
+2018-4-12
+
+ä¿®å¤å†…æ ¸ä¸­çš„å†…å­˜è¶Šç•Œbugï¼šè¯¥bugçš„ç—‡çŠ¶ä¸ºæ— æ•…æç¤ºå†…å­˜æ— æ³•è®¿é—®ï¼Œé€šè¿‡æ­£å¸¸debugå¾ˆéš¾æ’é™¤ï¼Œè¿™æ˜¯æ˜¯å†…å­˜è¶Šç•Œæ—¶æ‰€é€ æˆçš„bug
+
 
 2018-3-1
 
-ÔÚTPascalStringÄÚºËÖĞĞÂÔöÄ£ºı×Ö·û´®¶Ô±Èº¯Êı£¨SmithWaterman£©£¬ÓÅ»¯Óë²âÊÔÍê³É
+åœ¨TPascalStringå†…æ ¸ä¸­æ–°å¢æ¨¡ç³Šå­—ç¬¦ä¸²å¯¹æ¯”å‡½æ•°ï¼ˆSmithWatermanï¼‰ï¼Œä¼˜åŒ–ä¸æµ‹è¯•å®Œæˆ
 
-¸ÃËã·¨ÊôÓÚÉúÎï»ùÒò¹¤³ÌÑ§¿Æ Smith-WatermanµÄÎ¬»ù°Ù¿ÆµØÖ· https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm
+è¯¥ç®—æ³•å±äºç”Ÿç‰©åŸºå› å·¥ç¨‹å­¦ç§‘ Smith-Watermançš„ç»´åŸºç™¾ç§‘åœ°å€ https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm
 
 2018-2-28
 
-ĞŞ¸´c×ªÒå×Ö·ûbuf£¬¸ĞĞ»°¢Ä¾qq345148965
+ä¿®å¤cè½¬ä¹‰å­—ç¬¦bufï¼Œæ„Ÿè°¢é˜¿æœ¨qq345148965
 
-½«charPosµÄ²ÎÊıÃüÃû¸ü¸Ä³ÉÁËcOffset£¬²¢ÇÒ¼ÓÈëconstĞŞÊÎ·û
+å°†charPosçš„å‚æ•°å‘½åæ›´æ”¹æˆäº†cOffsetï¼Œå¹¶ä¸”åŠ å…¥constä¿®é¥°ç¬¦
 
 
 2018-2-26
 
-ĞŞ¸´Ê¹ÓÃReleaseÄ£Ê½ÎŞ·¨±àÒëÎÊÌâ
+ä¿®å¤ä½¿ç”¨Releaseæ¨¡å¼æ— æ³•ç¼–è¯‘é—®é¢˜
 
-ĞŞ¸´zExpressionµÄÇĞ¸î·Ö¶Î²»ÕıÈ·ÎÊÌâ
+ä¿®å¤zExpressionçš„åˆ‡å‰²åˆ†æ®µä¸æ­£ç¡®é—®é¢˜
 
-Ğ¡·ùÌáÉı×Ö·ûÌ½Í·µÄÇĞ¸îĞÔÄÜ(splitToken,splitChar)
+å°å¹…æå‡å­—ç¬¦æ¢å¤´çš„åˆ‡å‰²æ€§èƒ½(splitToken,splitChar)
 
-ÒòÎªµ×²ãÖØĞ´ÁËÒ»¸öÔ­×ÓËø£¬ÔÚºÜ¶àrecordÉêÃ÷Ç°¼ÓÈëÁËpackedĞŞÊÎ·û
-
-
-2018-2-25
-
-ĞÂÔö×Ô¶¨Òå±í´ïÊ½·ûºÅÖ§³Ö
-
-ĞÂÔö×Ô¶¨Òå±í´ïÊ½·ûºÅµÄÑİÊ¾
+å› ä¸ºåº•å±‚é‡å†™äº†ä¸€ä¸ªåŸå­é”ï¼Œåœ¨å¾ˆå¤šrecordç”³æ˜å‰åŠ å…¥äº†packedä¿®é¥°ç¬¦
 
 
 2018-2-25
 
-ĞŞ¸´Ç¶Ì×º¯Êı²ÎÊı²»ÄÜÕıÈ·Õ¹¿ª½Ó¿ÚµÄÎÊÌâ
+æ–°å¢è‡ªå®šä¹‰è¡¨è¾¾å¼ç¬¦å·æ”¯æŒ
 
-ĞŞ¸´½âÎöÒıÇæµÄÊı×ÖÌ½Í·²»ÄÜÊ¶±ğ16½øÖÆ×ÔÈ»ÊıºÍº¯ÊıÎÊÌâ
+æ–°å¢è‡ªå®šä¹‰è¡¨è¾¾å¼ç¬¦å·çš„æ¼”ç¤º
 
-ĞÂÔöÒ»¸ö¸³ÖµµÄdemo·¶Àı£¬°üº¬±äÁ¿ÉêÃ÷£¬¾²Ì¬¸´ÓÃ£¬¶¯Ì¬¸´ÓÃ£¬×Ü¹²Èı²¿Çú£¬ÇëÔÚ·¶ÀıÑİÊ¾ÖĞ×ÔĞĞÑĞ¾¿
 
-ĞŞ¸´×Ö·û´®ºÍÊı×ÖÆ¥ÅäÁªºÏµÄÎÊÌâ
+2018-2-25
 
-Ö§³Öc´úÂë·ç¸ñ0x16½øÖÆÓï·¨
+ä¿®å¤åµŒå¥—å‡½æ•°å‚æ•°ä¸èƒ½æ­£ç¡®å±•å¼€æ¥å£çš„é—®é¢˜
+
+ä¿®å¤è§£æå¼•æ“çš„æ•°å­—æ¢å¤´ä¸èƒ½è¯†åˆ«16è¿›åˆ¶è‡ªç„¶æ•°å’Œå‡½æ•°é—®é¢˜
+
+æ–°å¢ä¸€ä¸ªèµ‹å€¼çš„demoèŒƒä¾‹ï¼ŒåŒ…å«å˜é‡ç”³æ˜ï¼Œé™æ€å¤ç”¨ï¼ŒåŠ¨æ€å¤ç”¨ï¼Œæ€»å…±ä¸‰éƒ¨æ›²ï¼Œè¯·åœ¨èŒƒä¾‹æ¼”ç¤ºä¸­è‡ªè¡Œç ”ç©¶
+
+ä¿®å¤å­—ç¬¦ä¸²å’Œæ•°å­—åŒ¹é…è”åˆçš„é—®é¢˜
+
+æ”¯æŒcä»£ç é£æ ¼0x16è¿›åˆ¶è¯­æ³•
 
 
 2018-2-6
 
-ÖØĞ´ÁËÒ»´Î½âÎöÆ÷ÄÚºË£¬Ö§³Öº¯Êıµ÷ÓÃ£¬´ÓÏÖÔÚÆğ£¬zExpression»á²»¶Ï¸üĞÂ
+é‡å†™äº†ä¸€æ¬¡è§£æå™¨å†…æ ¸ï¼Œæ”¯æŒå‡½æ•°è°ƒç”¨ï¼Œä»ç°åœ¨èµ·ï¼ŒzExpressionä¼šä¸æ–­æ›´æ–°
 
 
 
-Ê×·¢´úÂë´´½¨ ÓÚ2004Äê 
+é¦–å‘ä»£ç åˆ›å»º äº2004å¹´ 
 
-×îºó¸üĞÂÓÚ2014Äê ¿ÉÒÔ¼æÈİfpc±àÒëÆ÷ºÍ×îĞÂµÄdelphi xe£¬°üÀ¨ios,osx,android,linux,win32
+æœ€åæ›´æ–°äº2014å¹´ å¯ä»¥å…¼å®¹fpcç¼–è¯‘å™¨å’Œæœ€æ–°çš„delphi xeï¼ŒåŒ…æ‹¬ios,osx,android,linux,win32
 
 
-ÓĞÎÊÌâÇëÀ´ĞÅ
-by600585 qqÓÊÏä
+æœ‰é—®é¢˜è¯·æ¥ä¿¡
+by600585 qqé‚®ç®±
