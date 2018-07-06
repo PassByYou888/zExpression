@@ -4,27 +4,34 @@
 { * https://github.com/PassByYou888/zTranslate                                 * }
 { * https://github.com/PassByYou888/zSound                                     * }
 { * https://github.com/PassByYou888/zAnalysis                                  * }
+{ * https://github.com/PassByYou888/zGameWare                                  * }
+{ * https://github.com/PassByYou888/zRasterization                             * }
 { ****************************************************************************** }
 {$IFDEF FPC}
   {$MODE objfpc}
   {$MODESWITCH AdvancedRecords}
-  {$STACKFRAMES ON}
   {$NOTES OFF}
-  {$ASMMODE intel}
+
+  {$DEFINE LITTLE_ENDIAN}
+  {$UNDEF BIG_ENDIAN}
   {$IFDEF FPC_BIG_ENDIAN}
+    {$UNDEF LITTLE_ENDIAN}
     {$DEFINE BIG_ENDIAN}
   {$ENDIF}
 
   {$UNDEF FirstCharInZero}
-
-  {$R-} { range check }
 
   {$UNDEF Delphi}
   {$UNDEF FastMD5}
   {$DEFINE parallel}
   {$DEFINE OptimizationMemoryStreamMD5}
   {$DEFINE CriticalSimulateAtomic}
+  {$DEFINE release}
+  {$DEFINE INLINE_ASM}
 {$ELSE}
+  {$DEFINE LITTLE_ENDIAN}
+  {$UNDEF BIG_ENDIAN}
+
   {$IFDEF ANDROID}
     {$DEFINE FirstCharInZero}
   {$ENDIF}
@@ -44,51 +51,25 @@
 
   {$IFDEF Linux}
     {$DEFINE CriticalSimulateAtomic}
-    {$UNDEF parallel}
   {$ENDIF}
 
   {$IFDEF release}
-    {$R-} { range check }
+    {$DEFINE INLINE_ASM}
   {$ELSE}
-    {$R+} { range check }
+    {$UNDEF INLINE_ASM}
   {$ENDIF}
 
 {$ENDIF}
 
-//{$WARNINGS OFF}
+{$WARNINGS OFF}
 {$HINTS OFF}
 {$H+} { long string }
-//{$R+} { range check }
 {$A+} { Word Align Data }
 {$O-} { optimization }
 {$Q-} { Overflow checking }
 {$B-} { Complete boolean evaluation }
 {$I+} { Input output checking }
-
-(*
-  {$IFDEF FPC}
-  {$ELSE FPC}
-  {$ENDIF FPC}
-
-  {$IFNDEF FPC}
-  {$ENDIF FPC}
-
-  {$IFDEF parallel}
-  {$ELSE parallel}
-  {$ENDIF parallel}
-
-  {$IFNDEF parallel}
-  {$ENDIF parallel}
-
-  {$Region 'RegionName'}
-  {$EndRegion 'RegionName'}
-*)
-
-{$IFDEF release}
-  {$DEFINE INLINE_ASM}
-{$ELSE}
-  {$UNDEF INLINE_ASM}
-{$ENDIF}
+{$R-} { range check }
 
 {$UNDEF CPU64}
 
@@ -103,4 +84,3 @@
 {$IFNDEF CPU64}
   {$DEFINE CPU32}
 {$ENDIF}
-

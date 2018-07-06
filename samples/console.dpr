@@ -368,7 +368,7 @@ begin
   DoStatus('原型:' + n);
   DoStatus('计算结果' + Macro(n, '<begin>', '<end>').Text);
 
-  DoStatus('zExpression正在测试性能，对上列原型做100万次处理');
+  DoStatus('zExpression正在测试性能，对上列原型做10万次处理');
 
   t := GetTimeTick;
 
