@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{B2F58E22-BD9A-4140-81D8-2AC370404D08}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="StringTranslate\StringTranslate.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="PascalCodeUnification\PascalCodeUnification.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="StringTranslate">
+        <MSBuild Projects="StringTranslate\StringTranslate.dproj"/>
+    </Target>
+    <Target Name="StringTranslate:Clean">
+        <MSBuild Projects="StringTranslate\StringTranslate.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="StringTranslate:Make">
+        <MSBuild Projects="StringTranslate\StringTranslate.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PascalCodeUnification">
+        <MSBuild Projects="PascalCodeUnification\PascalCodeUnification.dproj"/>
+    </Target>
+    <Target Name="PascalCodeUnification:Clean">
+        <MSBuild Projects="PascalCodeUnification\PascalCodeUnification.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PascalCodeUnification:Make">
+        <MSBuild Projects="PascalCodeUnification\PascalCodeUnification.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="StringTranslate;PascalCodeUnification"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="StringTranslate:Clean;PascalCodeUnification:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="StringTranslate:Make;PascalCodeUnification:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
