@@ -25,8 +25,60 @@
 - 在编译以后，能形成原子化op代码，可以通过stream高速载入并运行，不限制cpu类型
 - OP代码框架可以轻松译码成ARMv7 ARMx64 x64 x86等平台的机器码
 
+### 操作系统支持: test with Delphi 10.2 upate 2 and FPC 3.0.4
+
+- Windows x86+x64 
+- Android pad with armv8 aarch64
+- Android mobile with armv6 or last
+- IOS Device armv7(ip4)+armv8(ipad pro,iphone5s or last aarch64)
+- IOS Simulaor:n/a
+- OSX
+- Ubuntu16.04 x64 server
+- Ubuntu18.04 x86+x64 Desktop
+- Ubuntu18.04 x86+x64 Server 
+- Ubuntu18.04 arm32+arm neon Server
+- Ubuntu18.04 arm32+arm neon desktop  
+- Ubuntu16.04 Mate arm32 desktop  
+- Raspberry Pi 3 Debian linux armv7 desktop,only fpc 3.0.4,test passed.
+- wince(arm eabi hard flaot),windows 10 IOT,only fpc 3.3.1,test passed.
+
+### cpu架构支持: test with Delphi 10.2 upate 2 and FPC 3.0.4
+
+- MIPS(fpc-little endian), soft float, test pass on QEMU 
+- intel X86(fpc-x86), soft float
+- intel X86(delphi+fpc), hard float,ATHLON64,COREI,COREAVX,COREAVX2
+- intel X64(fpc-x86_64), soft float
+- intel X64(delphi+fpc), hard float,ATHLON64,COREI,COREAVX,COREAVX2
+- ARM(fpc-arm32-eabi, hard float):ARMV3,ARMV4,ARMV4T,ARMV5,ARMV5T,ARMV5TE,ARMV5TEJ,ARMV6,ARMV6K,ARMV6T2,ARMV6Z,ARMV6M,ARMV7,ARMV7A,ARMV7R,ARMV7M,ARMV7EM
+- ARM(fpc-arm64-eabi, hard float):ARMV8，aarch64
+
 
 ## 更新日志
+
+### 2018-9-29
+
+- 新技术:新增文本探头技术：可将蚂蚁程序的编程复杂度降低50%
+- 新技术:逐字符文本字符爬取性能提升%500
+- 多平台:全面支持多种IOT系统以及多处理器硬件架构
+- 新Demo:新增一个FPC的Demo，该Demo不使用匿名函数
+- 工艺:兼容基于FPC对IOT的支持：从底层到高级，大规模统一调整命名，此项调整会影响很多工程的代码细节
+
+```delphi
+// 本项目中的回调分为3种
+// call:   直接指针回调，fpc+delphi有效
+// method: 方法回调，会继承一个方法宿主的地址，fpc+delphi有效
+// proc:   匿名过程回调，只有delphi有效
+
+// 如果本项调整对于改造现有工程有一定的工作量，请使用字符串批量处理工具
+// 在任何有回调重载的地方，方法与函数，均需要在后缀曾加回调类型首字母说明
+
+// 如
+RunOp 变更为 RunOpP() // 后缀加P表示匿名类型回调
+RunOp 变更为 RunOpM() // 后缀加M表示方法类型的回调
+RunOp 变更为 RunOpC() // 后缀加C表示指针类型的回调
+
+```
+
 
 ### 2018-7-6
 - 大幅修正底层库的命名规则

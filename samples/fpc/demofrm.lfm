@@ -1,0 +1,30 @@
+object DemoForm: TDemoForm
+  Left = 516
+  Height = 668
+  Top = 157
+  Width = 922
+  Caption = 'DemoForm'
+  ClientHeight = 668
+  ClientWidth = 922
+  OnCreate = FormCreate
+  LCLVersion = '1.8.0.6'
+  object Memo1: TMemo
+    Left = 0
+    Height = 668
+    Top = 0
+    Width = 922
+    Align = alClient
+    ScrollBars = ssBoth
+    TabOrder = 0
+    WordWrap = False
+  end
+  object Button1: TButton
+    Left = 816
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'run'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+end
