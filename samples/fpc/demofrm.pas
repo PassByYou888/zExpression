@@ -45,13 +45,14 @@ end;
 
 procedure SpecialFuncDemo;
 var
+  SpecialAsciiToken: TPascalStringList;
   RT: TOpCustomRunTime;
   v: variant;
 begin
   DoStatus('全局的词法探头前缀参量的使用');
 
-  // 全局的特殊符号探头的前后缀参量 凡是前缀有@@符号,均作为ascii来处理
-  SpecialAsciiToken.Clear;
+  // 凡是前缀有@@符号,均作为ascii来处理
+  SpecialAsciiToken := TPascalStringList.Create;
   SpecialAsciiToken.Add('@@');
   SpecialAsciiToken.Add('&&');
 
@@ -61,25 +62,24 @@ begin
   RT.RegOpC('@@combineString&&', @f2);
 
   // 带有@@前缀的ascii也可以在后缀带有特殊符号，特殊符号长度不限制
-  v := EvaluateExpressionValue(False, '{ 备注 } @@a&&(1,2)', RT);
+  v := EvaluateExpressionValue(SpecialAsciiToken, False, '{ 备注 } @@a&&(1,2)', RT);
   DoStatus(VarToStr(v));
 
   // 简单字符串表达式，ze的默认文本处理格式为Pascal
-  v := EvaluateExpressionValue(False,
+  v := EvaluateExpressionValue(SpecialAsciiToken, False,
     '@@combineString&&('#39'abc'#39', '#39'123'#39')', RT);
   DoStatus(VarToStr(v));
 
   // 简单字符串表达式，我们使用c的文本格式
-  v := EvaluateExpressionValue(tsC, '@@combineString&&("abc", "123")', RT);
+  v := EvaluateExpressionValue(SpecialAsciiToken, tsC, '@@combineString&&("abc", "123")', RT);
   DoStatus(VarToStr(v));
-  v := EvaluateExpressionValue(tsC,
+  v := EvaluateExpressionValue(SpecialAsciiToken, tsC,
     '@@combineString&&('#39'abc'#39', '#39'123'#39')', RT);
   DoStatus(VarToStr(v));
 
   DisposeObject(RT);
 
-  // 复原全局的特殊符号探头的前后缀参量
-  SpecialAsciiToken.Clear;
+  DisposeObject(SpecialAsciiToken);
 end;
 
 function myAddFunction(var Param: TOpParam): variant;
@@ -478,7 +478,7 @@ begin
       tsPascal, nil); // 词法解析引擎，以c语法为例
     // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal, nil); // 词法解析引擎，以c语法为例
 
-    HashVars := THashVariantList.Create(16);
+    HashVars := THashVariantList.CustomCreate(16);
     // 16是hash的buff长度，数值越大加速度越快
 
     SetLength(splitVarDecl, 0);
@@ -556,10 +556,10 @@ begin
       // 由于opCache机制是自动化进行的，我们在任何时候以const复用变量时都要清空它
       OpCache.Clear;
 
-      DoStatus(VarToStr(EvaluateExpressionValue_M(TTextParsing, tsC,
+      DoStatus(VarToStr(EvaluateExpressionValue_M(nil, TTextParsing, tsC,
         '"静态复用 "+myvar1', @Static_Ref)));
 
-      DoStatus(VarToStr(EvaluateExpressionValue_M(TTextParsing, tsC,
+      DoStatus(VarToStr(EvaluateExpressionValue_M(nil, TTextParsing, tsC,
         '"静态复用 "+myvar4', @Static_Ref_MyVar2)));
 
       DoStatus('现在，我们开始动态复用我们刚才申明的变量');

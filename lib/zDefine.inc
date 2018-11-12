@@ -11,7 +11,7 @@
   {$MODE objfpc}
   {$MODESWITCH AdvancedRecords}
   {$NOTES OFF}
-  {$STACKFRAMES ON}
+  {$STACKFRAMES OFF}
 
   {$DEFINE LITTLE_ENDIAN}
   {$UNDEF BIG_ENDIAN}
@@ -26,7 +26,21 @@
   {$UNDEF FastMD5}
   {$DEFINE parallel}
   {$DEFINE OptimizationMemoryStreamMD5}
+
+  // used Critical Simulate Atomic with TMonitor.Enter(obj) and TMonitor.Exit(obj)
+  // CriticalSimulateAtomic defined so performance to be reduced
   {$DEFINE CriticalSimulateAtomic}
+
+  // used soft Simulate Critical(ring)
+  // SoftCritical defined so performance to be reduced
+  // {$DEFINE SoftCritical}
+
+  // {$DEFINE ANTI_DEAD_ATOMIC_LOCK}
+
+  // Using Sequential Packet Model will consume more memory and reduce IO performance,
+  // it can memory communication status and facilitate us to return to the original scene.
+  // {$DEFINE SEQUENCE_PACKET}
+
   {$DEFINE release}
   {$UNDEF debug}
   {$DEFINE INLINE_ASM}
@@ -50,27 +64,29 @@
   {$DEFINE OptimizationMemoryStreamMD5}
 
   // used Critical Simulate Atomic with TMonitor.Enter(obj) and TMonitor.Exit(obj)
-  // if CriticalSimulateAtomic defined so performance to be reduced
+  // CriticalSimulateAtomic defined so performance to be reduced
   // {$DEFINE CriticalSimulateAtomic}
 
-  {$IFDEF Linux}
-    {$DEFINE CriticalSimulateAtomic}
-  {$ENDIF}
+  // used soft Simulate Critical(ring)
+  // SoftCritical defined so performance to be reduced
+  // {$DEFINE SoftCritical}
+
+  // {$DEFINE ANTI_DEAD_ATOMIC_LOCK}
+
+  // Using Sequential Packet Model will consume more memory and reduce IO performance,
+  // it can memory communication status and facilitate us to return to the original scene.
+  // {$DEFINE SEQUENCE_PACKET}
 
   {$IFDEF release}
     {$DEFINE INLINE_ASM}
     {$R-} { range check }
     {$I-} { Input output checking }
-    {$IFDEF MSWINDOWS}
-      {$O+} { optimization }
-    {$ELSE MSWINDOWS}
-      {$O-} { optimization }
-    {$ENDIF MSWINDOWS}
+    {$O+} { optimization }
   {$ELSE}
-    {$UNDEF INLINE_ASM}
+    {$DEFINE INLINE_ASM}
     {$R-} { range check }
     {$I-} { Input output checking }
-    {$O-} { optimization }
+    {$O+} { optimization }
   {$ENDIF}
 
   {$IF Defined(Android) or Defined(IOS)}
@@ -82,7 +98,7 @@
     {$DEFINE NatTunnel_On_CrossSocket}
     // {$DEFINE NatTunnel_On_DIOCP}
     // {$DEFINE NatTunnel_On_Indy}
-
+    // {$DEFINE NatTunnel_On_Synapse}
 
     // HostQuery Physics interface
     // {$DEFINE HostQuery_On_ICS}
@@ -112,4 +128,16 @@
 
 {$IFNDEF CPU64}
   {$DEFINE CPU32}
+{$ENDIF}
+
+{$IFDEF BIG_ENDIAN}
+  {$MESSAGE FATAL 'Big-endian system not supported'}
+{$ENDIF}
+
+{$IFOPT R+}
+  {$DEFINE RangeCheck}
+{$ENDIF}
+
+{$IFOPT Q+}
+  {$DEFINE OverflowCheck}
 {$ENDIF}

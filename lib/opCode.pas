@@ -71,12 +71,14 @@ type
     function DoGetLast(var Param: TOpParam): Variant;
     function DoDeleteLast(var Param: TOpParam): Variant;
 
+    function DoMultiple(var Param: TOpParam): Variant;
+
     procedure InternalReg;
   public
     ProcList: THashList;
 
-    constructor Create; overload; virtual;
-    constructor Create(maxHashLen: Integer); overload; virtual;
+    constructor Create; virtual;
+    constructor CustomCreate(maxHashLen: Integer); virtual;
     destructor Destroy; override;
 
     procedure RegOpC(ProcName: SystemString; OnProc: TOnOpCall); overload;
@@ -109,7 +111,7 @@ type
     function AddValue(v: Variant): Integer; overload;
     function AddValueT(v: Variant; VT: TOpValueType): Integer; overload;
     function AddLink(Obj: TOpCode): Integer;
-    { }
+
     function CloneNewSelf: TOpCode;
 
     property Param[index: Integer]: POpData read GetParam; default;
@@ -544,7 +546,7 @@ function TOpCustomRunTime.DoBool(var Param: TOpParam): Variant;
   begin
     if VarIsStr(v) then
       begin
-        n.Text := VarToStr(v);
+        n := VarToStr(v);
         n := n.DeleteChar(#32#9);
         if n.Same('True') or n.Same('Yes') or n.Same('1') then
             Result := True
@@ -552,11 +554,11 @@ function TOpCustomRunTime.DoBool(var Param: TOpParam): Variant;
             Result := False;
       end
     else if VarIsOrdinal(v) then
-        Result := v > 0
+        Result := Boolean(v)
     else if VarIsFloat(v) then
-        Result := v > 0
+        Result := Boolean(Round(v))
     else
-        Result := v;
+        Result := Boolean(v);
   end;
 
 var
@@ -626,6 +628,20 @@ begin
       Result := '';
 end;
 
+function TOpCustomRunTime.DoMultiple(var Param: TOpParam): Variant;
+var
+  i:Integer;
+begin
+  if length(Param) >= 2 then
+    begin
+      Result:=True;
+      for i:=1 to length(Param)-1 do
+      Result := Result and umlMultipleMatch(VarToStr(Param[0]), VarToStr(Param[i]));
+    end
+  else
+      Result := True;
+end;
+
 procedure TOpCustomRunTime.InternalReg;
 begin
   ProcList.OnFreePtr := {$IFDEF FPC}@{$ENDIF FPC}FreeNotifyProc;
@@ -642,30 +658,34 @@ begin
   RegOpM('Trunc', {$IFDEF FPC}@{$ENDIF FPC}DoTrunc);
 
   RegOpM('Str', {$IFDEF FPC}@{$ENDIF FPC}DoStr);
+  RegOpM('String', {$IFDEF FPC}@{$ENDIF FPC}DoStr);
+  RegOpM('Text', {$IFDEF FPC}@{$ENDIF FPC}DoStr);
 
   RegOpM('Bool', {$IFDEF FPC}@{$ENDIF FPC}DoBool);
+  RegOpM('Boolean', {$IFDEF FPC}@{$ENDIF FPC}DoBool);
   RegOpM('True', {$IFDEF FPC}@{$ENDIF FPC}DoTrue);
   RegOpM('False', {$IFDEF FPC}@{$ENDIF FPC}DoFalse);
   RegOpM('Random', {$IFDEF FPC}@{$ENDIF FPC}DoRandom);
 
   RegOpM('GetFirst', {$IFDEF FPC}@{$ENDIF FPC}DoGetFirst);
+  RegOpM('First', {$IFDEF FPC}@{$ENDIF FPC}DoGetFirst);
   RegOpM('DeleteFirst', {$IFDEF FPC}@{$ENDIF FPC}DoDeleteFirst);
   RegOpM('GetLast', {$IFDEF FPC}@{$ENDIF FPC}DoGetLast);
+  RegOpM('Last', {$IFDEF FPC}@{$ENDIF FPC}DoGetLast);
   RegOpM('DeleteLast', {$IFDEF FPC}@{$ENDIF FPC}DoDeleteLast);
+
+  RegOpM('MultipleMatch', {$IFDEF FPC}@{$ENDIF FPC}DoMultiple);
 end;
 
 constructor TOpCustomRunTime.Create;
 begin
-  inherited Create;
-  ProcList := THashList.Create(256);
-  ProcList.AutoFreeData := True;
-  InternalReg;
+  CustomCreate(256);
 end;
 
-constructor TOpCustomRunTime.Create(maxHashLen: Integer);
+constructor TOpCustomRunTime.CustomCreate(maxHashLen: Integer);
 begin
   inherited Create;
-  ProcList := THashList.Create(maxHashLen);
+  ProcList := THashList.CustomCreate(maxHashLen);
   ProcList.AutoFreeData := True;
   InternalReg;
 end;

@@ -28,13 +28,14 @@ uses
 // 特殊符号函数
 procedure SpecialFuncDemo;
 var
+  SpecialAsciiToken: TPascalStringList;
   RT: TOpCustomRunTime;
   v: Variant;
 begin
   DoStatus('全局的词法探头前缀参量的使用');
 
-  // 全局的特殊符号探头的前后缀参量 凡是前缀有@@符号,均作为ascii来处理
-  SpecialAsciiToken.Clear;
+  // 凡是前缀有@@符号,均作为ascii来处理
+  SpecialAsciiToken := TPascalStringList.Create;
   SpecialAsciiToken.Add('@@');
   SpecialAsciiToken.Add('&&');
 
@@ -52,23 +53,22 @@ begin
     end);
 
   // 带有@@前缀的ascii也可以在后缀带有特殊符号，特殊符号长度不限制
-  v := EvaluateExpressionValue(False, '{ 备注 } @@a&&(1,2)', RT);
+  v := EvaluateExpressionValue(SpecialAsciiToken, False, '{ 备注 } @@a&&(1,2)', RT);
   DoStatus(VarToStr(v));
 
   // 简单字符串表达式，ze的默认文本处理格式为Pascal
-  v := EvaluateExpressionValue(False, '@@combineString&&('#39'abc'#39', '#39'123'#39')', RT);
+  v := EvaluateExpressionValue(SpecialAsciiToken, False, '@@combineString&&('#39'abc'#39', '#39'123'#39')', RT);
   DoStatus(VarToStr(v));
 
   // 简单字符串表达式，我们使用c的文本格式
-  v := EvaluateExpressionValue(tsC, '@@combineString&&("abc", "123")', RT);
+  v := EvaluateExpressionValue(SpecialAsciiToken, tsC, '@@combineString&&("abc", "123")', RT);
   DoStatus(VarToStr(v));
-  v := EvaluateExpressionValue(tsC, '@@combineString&&('#39'abc'#39', '#39'123'#39')', RT);
+  v := EvaluateExpressionValue(SpecialAsciiToken, tsC, '@@combineString&&('#39'abc'#39', '#39'123'#39')', RT);
   DoStatus(VarToStr(v));
 
   DisposeObject(RT);
 
-  // 复原全局的特殊符号探头的前后缀参量
-  SpecialAsciiToken.Clear;
+  DisposeObject(SpecialAsciiToken);
 end;
 
 // 基本使用
@@ -395,7 +395,7 @@ begin
   sourTp := TTextParsing.Create('myvar1(*这里是备注*),myvar2,myvar3 := 123+456+'#39' 变量: '#39'+dynamic', tsPascal, nil); // 词法解析引擎，以c语法为例
   // sourTp := TTextParsing.Create('123+456+dynamic', tsPascal, nil); // 词法解析引擎，以c语法为例
 
-  HashVars := THashVariantList.Create(16); // 16是hash的buff长度，数值越大加速度越快
+  HashVars := THashVariantList.CustomCreate(16); // 16是hash的buff长度，数值越大加速度越快
 
   SetLength(splitVarDecl, 0);
   SetLength(myvars, 0);
@@ -474,7 +474,7 @@ begin
       // 由于opCache机制是自动化进行的，我们在任何时候以const复用变量时都要清空它
       OpCache.Clear;
 
-      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"静态复用 "+myvar1',
+      DoStatus(VarToStr(EvaluateExpressionValue_P(nil, TTextParsing, tsC, '"静态复用 "+myvar1',
         procedure(const Decl: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
           if HashVars.Exists(Decl) then
@@ -484,7 +484,7 @@ begin
             end;
         end)));
 
-      DoStatus(VarToStr(EvaluateExpressionValue_P(TTextParsing, tsC, '"静态复用 "+myvar4',
+      DoStatus(VarToStr(EvaluateExpressionValue_P(nil, TTextParsing, tsC, '"静态复用 "+myvar4',
         procedure(const Decl: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
           // myvar4是不存在的
@@ -521,7 +521,7 @@ var
 begin
   // 由于pascal的字符串不便于书写在程序中，这里我们c风格字符串
   T := TTextParsing.Create('if 1+1=2 then writeln("if was true on probe") else writeln("if was false on probe");', tsC, nil);
-  //T := TTextParsing.Create('if 1+1=2 then writeln("no else: if run on probe");', tsC, nil);
+  // T := TTextParsing.Create('if 1+1=2 then writeln("no else: if run on probe");', tsC, nil);
 
   t_error := True;
   // 左向右机制，从左第0个token位置检测ascii词法为if的关键字
@@ -553,7 +553,7 @@ begin
               DoStatus('表达式非法结束');
         end
       else
-        DoStatus('表达式没有then关键字');
+          DoStatus('表达式没有then关键字');
     end
   else
       DoStatus('表达式没有if关键字');
@@ -637,3 +637,4 @@ begin
   end;
 
 end.
+

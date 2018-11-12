@@ -22,8 +22,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="demoFrm"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="653"/>
-        <CursorPos X="105" Y="664"/>
+        <TopLine Value="539"/>
+        <CursorPos X="56" Y="562"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,7 +67,7 @@
       <Unit7>
         <Filename Value="..\..\lib\opCode.pas"/>
         <UnitName Value="OpCode"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="62"/>
         <CursorPos X="63" Y="82"/>
         <UsageCount Value="10"/>
@@ -75,10 +75,11 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\..\lib\zExpression.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="79"/>
-        <CursorPos X="3" Y="110"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="172"/>
+        <CursorPos X="10" Y="191"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\lib\zDefine.inc"/>
@@ -94,7 +95,7 @@
         <UsageCount Value="10"/>
       </Unit10>
     </Units>
-    <JumpHistory Count="26" HistoryIndex="25">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="demofrm.pas"/>
         <Caret Line="507" Column="111" TopLine="475"/>
@@ -199,6 +200,22 @@
         <Filename Value="demofrm.pas"/>
         <Caret Line="516" Column="36" TopLine="503"/>
       </Position26>
+      <Position27>
+        <Filename Value="demofrm.pas"/>
+        <Caret Line="659" Column="52" TopLine="653"/>
+      </Position27>
+      <Position28>
+        <Filename Value="demofrm.pas"/>
+        <Caret Line="79" Column="30" TopLine="50"/>
+      </Position28>
+      <Position29>
+        <Filename Value="demofrm.pas"/>
+        <Caret Line="481" Column="40" TopLine="462"/>
+      </Position29>
+      <Position30>
+        <Filename Value="demofrm.pas"/>
+        <Caret Line="559" Column="51" TopLine="539"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
