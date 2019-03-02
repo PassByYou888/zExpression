@@ -91,7 +91,7 @@ type
     procedure GetNameList(OutputList: TListPascalString); overload;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(const Name: SystemString);
-    procedure Add(const Name: SystemString; _CustomData: Pointer; const overwrite: Boolean); overload;
+    procedure Add(const Name: SystemString; _CustomData: Pointer; const OverWrite: Boolean); overload;
     procedure Add(const Name: SystemString; _CustomData: Pointer); overload;
     procedure SetValue(const Name: SystemString; const _CustomData: Pointer);
     function Find(const Name: SystemString): Pointer;
@@ -139,6 +139,10 @@ type
 
   TObjectFreeProc = procedure(Obj: TCoreClassObject) of object;
 
+  TInt64HashObjectListLoopCall = procedure(i64: Int64; Value: TCoreClassObject);
+  TInt64HashObjectListLoopMethod = procedure(i64: Int64; Value: TCoreClassObject) of object;
+{$IFNDEF FPC} TInt64HashObjectListLoopProc = reference to procedure(i64: Int64; Value: TCoreClassObject); {$ENDIF}
+
   TInt64HashObjectList = class(TCoreClassObject)
   private
     FListBuffer: TListBuffer;
@@ -167,7 +171,7 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(i64: Int64);
-    function Add(i64: Int64; _CustomData: TCoreClassObject; const overwrite: Boolean): PInt64HashListObjectStruct;
+    function Add(i64: Int64; _CustomData: TCoreClassObject; const OverWrite: Boolean): PInt64HashListObjectStruct;
     procedure SetValue(i64: Int64; _CustomData: TCoreClassObject);
     function Exists(i64: Int64): Boolean;
     procedure SetHashBlockCount(cnt: Integer);
@@ -183,6 +187,11 @@ type
     function GetNext(i64: Int64): TCoreClassObject;
     function GetPrev(i64: Int64): TCoreClassObject;
     function ListBuffer: PListBuffer;
+
+    procedure ProgressC(OnProgress: TInt64HashObjectListLoopCall); overload;
+    procedure ProgressM(OnProgress: TInt64HashObjectListLoopMethod); overload;
+{$IFNDEF FPC} procedure ProgressP(OnProgress: TInt64HashObjectListLoopProc); overload; {$ENDIF}
+    // print hash status
     procedure PrintHashReport;
 
     property AutoFreeData: Boolean read FAutoFreeData write FAutoFreeData;
@@ -202,6 +211,10 @@ type
     ID: TCounter;
     Prev, Next: PInt64HashListPointerStruct;
   end;
+
+  TInt64HashPointerListLoopCall = procedure(i64: Int64; Value: Pointer);
+  TInt64HashPointerListLoopMethod = procedure(i64: Int64; Value: Pointer) of object;
+{$IFNDEF FPC} TInt64HashPointerListLoopProc = reference to procedure(i64: Int64; Value: Pointer); {$ENDIF}
 
   TInt64HashPointerList = class(TCoreClassObject)
   private
@@ -233,7 +246,7 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(i64: Int64);
-    function Add(i64: Int64; _CustomData: Pointer; const overwrite: Boolean): PInt64HashListPointerStruct;
+    function Add(i64: Int64; _CustomData: Pointer; const OverWrite: Boolean): PInt64HashListPointerStruct;
     procedure SetValue(i64: Int64; _CustomData: Pointer);
     function Exists(i64: Int64): Boolean;
     procedure SetHashBlockCount(cnt: Integer);
@@ -246,6 +259,11 @@ type
     function GetNext(i64: Int64): Pointer;
     function GetPrev(i64: Int64): Pointer;
     function ListBuffer: PListBuffer;
+
+    procedure ProgressC(OnProgress: TInt64HashPointerListLoopCall); overload;
+    procedure ProgressM(OnProgress: TInt64HashPointerListLoopMethod); overload;
+{$IFNDEF FPC} procedure ProgressP(OnProgress: TInt64HashPointerListLoopProc); overload; {$ENDIF}
+    // print hash status
     procedure PrintHashReport;
 
     property AutoFreeData: Boolean read FAutoFreeData write FAutoFreeData;
@@ -297,7 +315,7 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(u32: UInt32);
-    function Add(u32: UInt32; _CustomData: TCoreClassObject; const overwrite: Boolean): PUInt32HashListObjectStruct;
+    function Add(u32: UInt32; _CustomData: TCoreClassObject; const OverWrite: Boolean): PUInt32HashListObjectStruct;
     procedure SetValue(u32: UInt32; _CustomData: TCoreClassObject);
     function Exists(u32: UInt32): Boolean;
     procedure SetHashBlockCount(cnt: Integer);
@@ -368,7 +386,7 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     function Delete(u32: UInt32): Boolean;
-    function Add(u32: UInt32; _CustomData: Pointer; const overwrite: Boolean): PUInt32HashListPointerStruct;
+    function Add(u32: UInt32; _CustomData: Pointer; const OverWrite: Boolean): PUInt32HashListPointerStruct;
     procedure SetValue(u32: UInt32; _CustomData: Pointer);
     function Exists(u32: UInt32): Boolean;
     procedure SetHashBlockCount(cnt: Integer);
@@ -442,7 +460,7 @@ type
     procedure FastClear;
     procedure GetListData(OutputList: TCoreClassList);
     function Delete(NPtr: Pointer): Boolean;
-    function Add(NPtr: Pointer; _CustomData: NativeUInt; const overwrite: Boolean): PPointerHashListNativeUIntStruct;
+    function Add(NPtr: Pointer; _CustomData: NativeUInt; const OverWrite: Boolean): PPointerHashListNativeUIntStruct;
     procedure SetValue(NPtr: Pointer; _CustomData: NativeUInt);
     function Exists(NPtr: Pointer): Boolean;
     procedure SetHashBlockCount(cnt: Integer);
@@ -1103,7 +1121,9 @@ type
   end;
 
   TPascalStringList = TListPascalString;
+  TPascalStrings = TListPascalString;
   TPascalStringHashList = THashStringList;
+  TPascalStringHash = THashStringList;
 
   TListVariantData = record
     Data: Variant;
@@ -1282,7 +1302,7 @@ uses Math,
 {$IFDEF FPC}
   streamex,
 {$ENDIF FPC}
-  MemoryStream64, DoStatusIO, UnicodeMixedLib;
+  MemoryStream64, DoStatusIO, UnicodeMixedLib, zExpression;
 
 function HashMod(const h: THash; const m: Integer): Integer;
 begin
@@ -1697,7 +1717,7 @@ begin
     end;
 end;
 
-procedure THashList.Add(const Name: SystemString; _CustomData: Pointer; const overwrite: Boolean);
+procedure THashList.Add(const Name: SystemString; _CustomData: Pointer; const OverWrite: Boolean);
 var
   newhash: THash;
   L: NativeInt;
@@ -1727,7 +1747,7 @@ begin
     end;
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (overwrite) then
+  if (lst.Count > 0) and (OverWrite) then
     begin
       for i := 0 to lst.Count - 1 do
         begin
@@ -2282,7 +2302,7 @@ begin
       FIDCounter := 1;
 end;
 
-function TInt64HashObjectList.Add(i64: Int64; _CustomData: TCoreClassObject; const overwrite: Boolean): PInt64HashListObjectStruct;
+function TInt64HashObjectList.Add(i64: Int64; _CustomData: TCoreClassObject; const OverWrite: Boolean): PInt64HashListObjectStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -2292,7 +2312,7 @@ begin
   newhash := MakeHashI64(i64);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (overwrite) then
+  if (lst.Count > 0) and (OverWrite) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -2493,6 +2513,73 @@ function TInt64HashObjectList.ListBuffer: PListBuffer;
 begin
   Result := @FListBuffer;
 end;
+
+procedure TInt64HashObjectList.ProgressC(OnProgress: TInt64HashObjectListLoopCall);
+var
+  i: NativeInt;
+  p: PInt64HashListObjectStruct;
+begin
+  if (FCount > 0) and (Assigned(OnProgress)) then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          try
+              OnProgress(p^.i64, p^.Data);
+          except
+          end;
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+
+procedure TInt64HashObjectList.ProgressM(OnProgress: TInt64HashObjectListLoopMethod);
+var
+  i: NativeInt;
+  p: PInt64HashListObjectStruct;
+begin
+  if (FCount > 0) and (Assigned(OnProgress)) then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          try
+              OnProgress(p^.i64, p^.Data);
+          except
+          end;
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+{$IFNDEF FPC}
+
+
+procedure TInt64HashObjectList.ProgressP(OnProgress: TInt64HashObjectListLoopProc);
+var
+  i: NativeInt;
+  p: PInt64HashListObjectStruct;
+begin
+  if (FCount > 0) and (Assigned(OnProgress)) then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          try
+              OnProgress(p^.i64, p^.Data);
+          except
+          end;
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+{$ENDIF}
+
 
 procedure TInt64HashObjectList.PrintHashReport;
 var
@@ -2809,7 +2896,7 @@ begin
       FIDCounter := 1;
 end;
 
-function TInt64HashPointerList.Add(i64: Int64; _CustomData: Pointer; const overwrite: Boolean): PInt64HashListPointerStruct;
+function TInt64HashPointerList.Add(i64: Int64; _CustomData: Pointer; const OverWrite: Boolean): PInt64HashListPointerStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -2819,7 +2906,7 @@ begin
   newhash := MakeHashI64(i64);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (overwrite) then
+  if (lst.Count > 0) and (OverWrite) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -3015,6 +3102,74 @@ function TInt64HashPointerList.ListBuffer: PListBuffer;
 begin
   Result := @FListBuffer;
 end;
+
+procedure TInt64HashPointerList.ProgressC(OnProgress: TInt64HashPointerListLoopCall);
+var
+  i: NativeInt;
+  p: PInt64HashListPointerStruct;
+begin
+  if (FCount > 0) and (Assigned(OnProgress)) then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          try
+              OnProgress(p^.i64, p^.Data);
+          except
+          end;
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+
+procedure TInt64HashPointerList.ProgressM(OnProgress: TInt64HashPointerListLoopMethod);
+var
+  i: NativeInt;
+  p: PInt64HashListPointerStruct;
+begin
+  if (FCount > 0) and (Assigned(OnProgress)) then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          try
+              OnProgress(p^.i64, p^.Data);
+          except
+          end;
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+{$IFNDEF FPC}
+
+
+procedure TInt64HashPointerList.ProgressP(OnProgress: TInt64HashPointerListLoopProc);
+var
+  i: NativeInt;
+  p: PInt64HashListPointerStruct;
+begin
+  if (FCount > 0) and (Assigned(OnProgress)) then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          try
+              OnProgress(p^.i64, p^.Data);
+          except
+          end;
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+
+{$ENDIF}
+
 
 procedure TInt64HashPointerList.PrintHashReport;
 var
@@ -3314,7 +3469,7 @@ begin
       FIDCounter := 1;
 end;
 
-function TUInt32HashObjectList.Add(u32: UInt32; _CustomData: TCoreClassObject; const overwrite: Boolean): PUInt32HashListObjectStruct;
+function TUInt32HashObjectList.Add(u32: UInt32; _CustomData: TCoreClassObject; const OverWrite: Boolean): PUInt32HashListObjectStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -3324,7 +3479,7 @@ begin
   newhash := MakeHashU32(u32);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (overwrite) then
+  if (lst.Count > 0) and (OverWrite) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -3914,7 +4069,7 @@ begin
       FIDCounter := 1;
 end;
 
-function TUInt32HashPointerList.Add(u32: UInt32; _CustomData: Pointer; const overwrite: Boolean): PUInt32HashListPointerStruct;
+function TUInt32HashPointerList.Add(u32: UInt32; _CustomData: Pointer; const OverWrite: Boolean): PUInt32HashListPointerStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -3924,7 +4079,7 @@ begin
   newhash := MakeHashU32(u32);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (overwrite) then
+  if (lst.Count > 0) and (OverWrite) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -4536,7 +4691,7 @@ begin
     end;
 end;
 
-function TPointerHashNativeUIntList.Add(NPtr: Pointer; _CustomData: NativeUInt; const overwrite: Boolean): PPointerHashListNativeUIntStruct;
+function TPointerHashNativeUIntList.Add(NPtr: Pointer; _CustomData: NativeUInt; const OverWrite: Boolean): PPointerHashListNativeUIntStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -4546,7 +4701,7 @@ begin
   newhash := MakeHashP(NPtr);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (overwrite) then
+  if (lst.Count > 0) and (OverWrite) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -4888,11 +5043,6 @@ function THashObjectList.GetKeyValue(const Name: SystemString): TCoreClassObject
 var
   pObjData: PHashObjectListData;
 begin
-  if Name = '' then
-    begin
-      Result := nil;
-      Exit;
-    end;
   pObjData := FHashList.NameValue[Name];
   if pObjData <> nil then
       Result := pObjData^.Obj
@@ -5322,19 +5472,8 @@ begin
 end;
 
 function THashObjectList.Exists(const Name: SystemString): Boolean;
-var
-  pObjData: PHashObjectListData;
 begin
-  if Name <> '' then
-    begin
-      pObjData := FHashList.NameValue[Name];
-      if pObjData <> nil then
-          Result := pObjData^.Obj <> nil
-      else
-          Result := False;
-    end
-  else
-      Result := False;
+  Result := FHashList.Exists(Name);
 end;
 
 function THashObjectList.ExistsObject(Obj: TCoreClassObject): Boolean;
@@ -5433,11 +5572,6 @@ function THashStringList.GetKeyValue(const Name: SystemString): SystemString;
 var
   pVarData: PHashStringListData;
 begin
-  if Name = '' then
-    begin
-      Result := Null;
-      Exit;
-    end;
   pVarData := FHashList.NameValue[Name];
   if pVarData <> nil then
       Result := pVarData^.v
@@ -6029,7 +6163,7 @@ function THashStringTextStream.VToStr(const v: SystemString): SystemString;
 var
   b64: TPascalString;
 begin
-  if umlExistsLimitChar(v, #10#13#9#8#0) then
+  if umlExistsChar(v, #10#13#9#8#0) then
     begin
       umlEncodeLineBASE64(v, b64);
       Result := '___base64:' + b64.Text;
@@ -6040,15 +6174,34 @@ end;
 
 function THashStringTextStream.StrToV(const s: SystemString): SystemString;
 var
-  n, b64: U_String;
+  n, body: U_String;
 begin
   n := umlTrimSpace(s);
   try
     if n.ComparePos(1, '___base64:') then
       begin
         n := umlDeleteFirstStr(n, ':').Text;
-        umlDecodeLineBASE64(n, b64);
-        Result := b64.Text;
+        umlDecodeLineBASE64(n, body);
+        Result := body.Text;
+      end
+    else if umlMultipleMatch(['e(*)', 'e[*]', 'e<*>', 'e"*"', 'e'#39'*'#39], n) then
+      begin
+        body := n;
+        body.DeleteFirst;
+        body.DeleteFirst;
+        body.DeleteLast;
+        Result := VarToStr(EvaluateExpressionValue(body));
+      end
+    else if umlMultipleMatch([
+      'expression(*)', 'expression[*]', 'expression<*>', 'expression"*"', 'expression'#39'*'#39,
+      'exp(*)', 'exp[*]', 'exp<*>', 'exp"*"', 'exp'#39'*'#39,
+      'expr(*)', 'expr[*]', 'expr<*>', 'expr"*"', 'expr'#39'*'#39,
+      'express(*)', 'express[*]', 'express<*>', 'express"*"', 'exp'#39'*'#39
+      ], n) then
+      begin
+        body := umlDeleteFirstStr_M(n, '([<"'#39);
+        body.DeleteLast;
+        Result := VarToStr(EvaluateExpressionValue(body));
       end
     else
       begin
@@ -7059,7 +7212,7 @@ begin
         begin
           n.Text := VarToStr(v);
 
-          if umlExistsLimitChar(n, #10#13#9#8#0) then
+          if umlExistsChar(n, #10#13#9#8#0) then
             begin
               umlEncodeLineBASE64(n, b64);
               Result := '___base64:' + b64.Text;
@@ -7085,15 +7238,34 @@ end;
 
 class function THashVariantTextStream.StrToV(const s: SystemString): Variant;
 var
-  n, b64: U_String;
+  n, body: U_String;
 begin
   n := umlTrimSpace(s);
   try
     if n.ComparePos(1, '___base64:') then
       begin
         n := umlDeleteFirstStr(n, ':').Text;
-        umlDecodeLineBASE64(n, b64);
-        Result := b64.Text;
+        umlDecodeLineBASE64(n, body);
+        Result := body.Text;
+      end
+    else if umlMultipleMatch(['e(*)', 'e[*]', 'e<*>', 'e"*"', 'e'#39'*'#39], n) then
+      begin
+        body := n;
+        body.DeleteFirst;
+        body.DeleteFirst;
+        body.DeleteLast;
+        Result := EvaluateExpressionValue(body);
+      end
+    else if umlMultipleMatch([
+      'expression(*)', 'expression[*]', 'expression<*>', 'expression"*"', 'expression'#39'*'#39,
+      'exp(*)', 'exp[*]', 'exp<*>', 'exp"*"', 'exp'#39'*'#39,
+      'expr(*)', 'expr[*]', 'expr<*>', 'expr"*"', 'expr'#39'*'#39,
+      'express(*)', 'express[*]', 'express<*>', 'express"*"', 'exp'#39'*'#39
+      ], n) then
+      begin
+        body := umlDeleteFirstStr_M(n, '([<"'#39);
+        body.DeleteLast;
+        Result := EvaluateExpressionValue(body);
       end
     else
       begin

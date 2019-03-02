@@ -26,21 +26,17 @@ type
     ovtUnknow);
 
   TOpCode = class;
+  TOpCustomRunTime = class;
 
   TOpParam = array of Variant;
 
-  POpData = ^opData;
-
-  opData = record
-    Op: TOpCode;
-    Value: Variant;
-    ValueType: TOpValueType;
-  end;
-
   TOnOpCall = function(var Param: TOpParam): Variant;
   TOnOpMethod = function(var Param: TOpParam): Variant of object;
+  TOnObjectOpCall = function(OpRunTime: TOpCustomRunTime; var Param: TOpParam): Variant;
+  TOnObjectOpMethod = function(OpRunTime: TOpCustomRunTime; var Param: TOpParam): Variant of object;
 {$IFNDEF FPC}
   TOnOpProc = reference to function(var Param: TOpParam): Variant;
+  TOnObjectOpProc = reference to function(OpRunTime: TOpCustomRunTime; var Param: TOpParam): Variant;
 {$ENDIF FPC}
 
   TOpCustomRunTime = class(TCoreClassObject)
@@ -72,24 +68,42 @@ type
     function DoDeleteLast(var Param: TOpParam): Variant;
 
     function DoMultiple(var Param: TOpParam): Variant;
+    function DoPrint(var Param: TOpParam): Variant;
 
     procedure InternalReg;
   public
     ProcList: THashList;
+    UserObject: TCoreClassObject;
+    UserData: Pointer;
+    UserVariant: Variant;
+    UserString: SystemString;
 
     constructor Create; virtual;
     constructor CustomCreate(maxHashLen: Integer); virtual;
     destructor Destroy; override;
 
-    procedure RegOpC(ProcName: SystemString; OnProc: TOnOpCall); overload;
-    procedure RegOpM(ProcName: SystemString; OnProc: TOnOpMethod); overload;
-{$IFNDEF FPC} procedure RegOpP(ProcName: SystemString; OnProc: TOnOpProc); overload; {$ENDIF FPC}
+    procedure RegOpC(ProcName: SystemString; OnProc: TOnOpCall);
+    procedure RegOpM(ProcName: SystemString; OnProc: TOnOpMethod);
+    procedure RegObjectOpC(ProcName: SystemString; OnProc: TOnObjectOpCall);
+    procedure RegObjectOpM(ProcName: SystemString; OnProc: TOnObjectOpMethod);
+{$IFNDEF FPC}
+    procedure RegOpP(ProcName: SystemString; OnProc: TOnOpProc);
+    procedure RegObjectOpP(ProcName: SystemString; OnProc: TOnObjectOpProc);
+{$ENDIF FPC}
   end;
 
   opClass = class of TOpCode;
 
   TOpCode = class(TCoreClassObject)
-  private
+  private type
+    POpData = ^opData;
+
+    opData = record
+      Op: TOpCode;
+      Value: Variant;
+      ValueType: TOpValueType;
+    end;
+  protected
     FParam: TCoreClassList;
     FAutoFreeLink: Boolean;
     function DoExecute(opRT: TOpCustomRunTime): Variant; virtual;
@@ -101,8 +115,7 @@ type
     ParsedInfo: SystemString;
     ParsedLineNo: Integer;
 
-    constructor Create; overload;
-    constructor Create(AFreeLink: Boolean); overload;
+    constructor Create(AFreeLink: Boolean);
     destructor Destroy; override;
 
     procedure SaveToStream(stream: TCoreClassStream);
@@ -119,6 +132,8 @@ type
 
     function Execute: Variant; overload;
     function Execute(opRT: TOpCustomRunTime): Variant; overload;
+
+    function OwnerRoot: TOpCode;
 
     property AutoFreeLink: Boolean read FAutoFreeLink write FAutoFreeLink;
   end;
@@ -270,7 +285,12 @@ type
     Name: SystemString;
     OnOpCall: TOnOpCall;
     OnOpMethod: TOnOpMethod;
-{$IFNDEF FPC} OnOpProc: TOnOpProc; {$ENDIF FPC}
+    OnObjectOpCall: TOnObjectOpCall;
+    OnObjectOpMethod: TOnObjectOpMethod;
+{$IFNDEF FPC}
+    OnOpProc: TOnOpProc;
+    OnObjectOpProc: TOnObjectOpProc;
+{$ENDIF FPC}
     procedure Init;
   end;
 
@@ -291,7 +311,12 @@ begin
   Name := '';
   OnOpCall := nil;
   OnOpMethod := nil;
-{$IFNDEF FPC} OnOpProc := nil; {$ENDIF FPC}
+  OnObjectOpCall := nil;
+  OnObjectOpMethod := nil;
+{$IFNDEF FPC}
+  OnOpProc := nil;
+  OnObjectOpProc := nil;
+{$ENDIF FPC}
 end;
 
 function GetRegistedOp(Name: TPascalString): POpRegData;
@@ -338,7 +363,7 @@ end;
 
 function LoadOpFromStream(stream: TCoreClassStream; out LoadedOp: TOpCode): Boolean;
 
-  function LoadFromDataFrame_1(CurDataEng: TDataFrameEngine): TOpCode;
+  function LoadFromDataFrame_(CurDataEng: TDataFrameEngine): TOpCode;
   var
     AName: SystemString;
     RegPtr: POpRegData;
@@ -352,7 +377,7 @@ function LoadOpFromStream(stream: TCoreClassStream; out LoadedOp: TOpCode): Bool
     RegPtr := GetRegistedOp(AName);
     if RegPtr <> nil then
       begin
-        Result := RegPtr^.opClass.Create;
+        Result := RegPtr^.opClass.Create(True);
         Result.ParsedInfo := CurDataEng.Reader.ReadString;
         Result.ParsedLineNo := CurDataEng.Reader.ReadInteger;
         cnt := CurDataEng.Reader.ReadInteger;
@@ -365,7 +390,7 @@ function LoadOpFromStream(stream: TCoreClassStream; out LoadedOp: TOpCode): Bool
                 // create new TOpCode
                 newDataEng := TDataFrameEngine.Create;
                 CurDataEng.Reader.ReadDataFrame(newDataEng);
-                Result.AddLink(LoadFromDataFrame_1(newDataEng));
+                Result.AddLink(LoadFromDataFrame_(newDataEng));
                 DisposeObject(newDataEng);
               end
             else
@@ -391,7 +416,7 @@ begin
     DataEdition := DataEng.Reader.ReadInteger;
     if DataEdition = 1 then
       begin
-        LoadedOp := LoadFromDataFrame_1(DataEng);
+        LoadedOp := LoadFromDataFrame_(DataEng);
         Result := True;
       end
     else
@@ -630,16 +655,31 @@ end;
 
 function TOpCustomRunTime.DoMultiple(var Param: TOpParam): Variant;
 var
-  i:Integer;
+  i: Integer;
 begin
   if length(Param) >= 2 then
     begin
-      Result:=True;
-      for i:=1 to length(Param)-1 do
-      Result := Result and umlMultipleMatch(VarToStr(Param[0]), VarToStr(Param[i]));
+      Result := True;
+      for i := 1 to length(Param) - 1 do
+          Result := Result and umlMultipleMatch(VarToStr(Param[0]), VarToStr(Param[i]));
     end
   else
       Result := True;
+end;
+
+function TOpCustomRunTime.DoPrint(var Param: TOpParam): Variant;
+var
+  i: Integer;
+begin
+  for i := low(Param) to high(Param) do
+    begin
+      DoStatusNoLn(Param[i]);
+      if i < high(Param) then
+          DoStatusNoLn(#32);
+    end;
+
+  DoStatusNoLn;
+  Result := True;
 end;
 
 procedure TOpCustomRunTime.InternalReg;
@@ -675,6 +715,10 @@ begin
   RegOpM('DeleteLast', {$IFDEF FPC}@{$ENDIF FPC}DoDeleteLast);
 
   RegOpM('MultipleMatch', {$IFDEF FPC}@{$ENDIF FPC}DoMultiple);
+  RegOpM('Multiple', {$IFDEF FPC}@{$ENDIF FPC}DoMultiple);
+
+  RegOpM('Print', {$IFDEF FPC}@{$ENDIF FPC}DoPrint);
+  RegOpM('DoStatus', {$IFDEF FPC}@{$ENDIF FPC}DoPrint);
 end;
 
 constructor TOpCustomRunTime.Create;
@@ -687,6 +731,12 @@ begin
   inherited Create;
   ProcList := THashList.CustomCreate(maxHashLen);
   ProcList.AutoFreeData := True;
+
+  UserObject := nil;
+  UserData := nil;
+  UserVariant := Null;
+  UserString := '';
+
   InternalReg;
 end;
 
@@ -718,6 +768,28 @@ begin
   ProcList.Add(ProcName, p, True);
 end;
 
+procedure TOpCustomRunTime.RegObjectOpC(ProcName: SystemString; OnProc: TOnObjectOpCall);
+var
+  p: PopRTproc;
+begin
+  new(p);
+  p^.Init;
+  p^.Name := ProcName;
+  p^.OnObjectOpCall := OnProc;
+  ProcList.Add(ProcName, p, True);
+end;
+
+procedure TOpCustomRunTime.RegObjectOpM(ProcName: SystemString; OnProc: TOnObjectOpMethod);
+var
+  p: PopRTproc;
+begin
+  new(p);
+  p^.Init;
+  p^.Name := ProcName;
+  p^.OnObjectOpMethod := OnProc;
+  ProcList.Add(ProcName, p, True);
+end;
+
 {$IFNDEF FPC}
 
 
@@ -729,6 +801,17 @@ begin
   p^.Init;
   p^.Name := ProcName;
   p^.OnOpProc := OnProc;
+  ProcList.Add(ProcName, p, True);
+end;
+
+procedure TOpCustomRunTime.RegObjectOpP(ProcName: SystemString; OnProc: TOnObjectOpProc);
+var
+  p: PopRTproc;
+begin
+  new(p);
+  p^.Init;
+  p^.Name := ProcName;
+  p^.OnObjectOpProc := OnProc;
   ProcList.Add(ProcName, p, True);
 end;
 {$ENDIF FPC}
@@ -773,16 +856,6 @@ begin
           end;
         end;
     end;
-end;
-
-constructor TOpCode.Create;
-begin
-  inherited Create;
-  Owner := nil;
-  FParam := TCoreClassList.Create;
-  FAutoFreeLink := True;
-  ParsedInfo := '';
-  ParsedLineNo := 0;
 end;
 
 constructor TOpCode.Create(AFreeLink: Boolean);
@@ -929,7 +1002,7 @@ var
   i: Integer;
   p: POpData;
 begin
-  Result := opClass(Self.ClassType).Create;
+  Result := opClass(Self.ClassType).Create(True);
   Result.ParsedInfo := Self.ParsedInfo;
   Result.ParsedLineNo := Self.ParsedLineNo;
 
@@ -966,6 +1039,14 @@ begin
   except
       Result := Null;
   end;
+end;
+
+function TOpCode.OwnerRoot: TOpCode;
+begin
+  if Owner = nil then
+      Result := Self
+  else
+      Result := Owner.OwnerRoot;
 end;
 
 { op_Value }
@@ -1005,9 +1086,15 @@ begin
       Result := p^.OnOpCall(p^.Param);
   if Assigned(p^.OnOpMethod) then
       Result := p^.OnOpMethod(p^.Param);
+  if Assigned(p^.OnObjectOpCall) then
+      Result := p^.OnObjectOpCall(opRT, p^.Param);
+  if Assigned(p^.OnObjectOpMethod) then
+      Result := p^.OnObjectOpMethod(opRT, p^.Param);
 {$IFNDEF FPC}
   if Assigned(p^.OnOpProc) then
       Result := p^.OnOpProc(p^.Param);
+  if Assigned(p^.OnObjectOpProc) then
+      Result := p^.OnObjectOpProc(opRT, p^.Param);
 {$ENDIF FPC}
 end;
 
