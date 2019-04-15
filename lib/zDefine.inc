@@ -1,12 +1,20 @@
-{ * https://github.com/PassByYou888/CoreCipher                                 * }
+{ * https://zpascal.net                                                        * }
+{ * https://github.com/PassByYou888/zAI                                        * }
 { * https://github.com/PassByYou888/ZServer4D                                  * }
-{ * https://github.com/PassByYou888/zExpression                                * }
-{ * https://github.com/PassByYou888/zTranslate                                 * }
-{ * https://github.com/PassByYou888/zSound                                     * }
-{ * https://github.com/PassByYou888/zAnalysis                                  * }
-{ * https://github.com/PassByYou888/zGameWare                                  * }
+{ * https://github.com/PassByYou888/PascalString                               * }
 { * https://github.com/PassByYou888/zRasterization                             * }
+{ * https://github.com/PassByYou888/CoreCipher                                 * }
+{ * https://github.com/PassByYou888/zSound                                     * }
+{ * https://github.com/PassByYou888/zChinese                                   * }
+{ * https://github.com/PassByYou888/zExpression                                * }
+{ * https://github.com/PassByYou888/zGameWare                                  * }
+{ * https://github.com/PassByYou888/zAnalysis                                  * }
+{ * https://github.com/PassByYou888/FFMPEG-Header                              * }
+{ * https://github.com/PassByYou888/zTranslate                                 * }
+{ * https://github.com/PassByYou888/InfiniteIoT                                * }
+{ * https://github.com/PassByYou888/FastMD5                                    * }
 { ****************************************************************************** }
+
 {$IFDEF FPC}
   {$IFDEF FPC_DELPHI_MODE}
     {$MODE delphi}
@@ -114,8 +122,8 @@
     {$C+} { Assertions }
   {$ELSE}
     {$UNDEF INLINE_ASM}
-    {$R+} { range check }
-    {$I+} { Input output checking }
+    {$R-} { range check }
+    {$I-} { Input output checking }
     {$O-} { optimization }
     {$C+} { Assertions }
   {$ENDIF}
@@ -132,7 +140,7 @@
   {$IFEND}
 {$ENDIF FPC}
 
-{$WARNINGS ON}
+{$WARNINGS OFF}
 {$HINTS OFF}
 {$H+} { long string }
 {$A+} { Word Align Data }
@@ -171,40 +179,3 @@
 {$IFOPT Q+}
   {$DEFINE OverflowCheck}
 {$ENDIF}
-
-(*
-  {$IFDEF FPC}
-  {$ELSE FPC}
-  {$ENDIF FPC}
-
-  {$IFDEF FPC}
-  {$ENDIF FPC}
-
-  {$IFDEF FPC}@{$ENDIF FPC}
-
-  {$IFNDEF FPC}
-  {$ENDIF FPC}
-
-  {$IFDEF parallel}
-  {$ELSE parallel}
-  {$ENDIF parallel}
-
-  {$IFNDEF parallel}
-  {$ENDIF parallel}
-
-  {$Region 'RegionName'}
-  {$EndRegion 'RegionName'}
-
-  {$IFDEF OverflowCheck}{$Q-}{$ENDIF}
-  {$IFDEF OverflowCheck}{$Q+}{$ENDIF}
-
-  {$IFDEF RangeCheck}{$R-}{$ENDIF}
-  {$IFDEF RangeCheck}{$R+}{$ENDIF}
-
-  {$IFDEF Z_AI_Dataset_Build_In}
-  {$ELSE Z_AI_Dataset_Build_In}
-  {$ENDIF Z_AI_Dataset_Build_In}
-*)
-
-
-

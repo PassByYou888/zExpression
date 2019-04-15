@@ -25,35 +25,40 @@
 - 在编译以后，能形成原子化op代码，可以通过stream高速载入并运行，不限制cpu类型
 - OP代码框架可以轻松译码成ARMv7 ARMx64 x64 x86等平台的机器码
 
-### 操作系统支持: test with Delphi 10.2 upate 2 and FPC 3.0.4
+## 平台支持，test with Delphi 10.3 upate 1 and FPC 3.0.4
 
-- Windows x86+x64 
-- Android pad with armv8 aarch64
-- Android mobile with armv6 or last
-- IOS Device armv7(ip4)+armv8(ipad pro,iphone5s or last aarch64)
-- IOS Simulaor:n/a
-- OSX
-- Ubuntu16.04 x64 server
-- Ubuntu18.04 x86+x64 Desktop
-- Ubuntu18.04 x86+x64 Server 
-- Ubuntu18.04 arm32+arm neon Server
-- Ubuntu18.04 arm32+arm neon desktop  
-- Ubuntu16.04 Mate arm32 desktop  
+- Windows: delphi-CrossSocket(C/S OK), delphi-DIOCP(C/S OK), delphi-ICS(C/S OK), delphi-Indy(C/S OK),delphi+fpc Synapse(C/S OK)
+- Android:Indy(C/S OK), CrossSocket(Only Client)
+- IOS Device: Indy(C/S OK), CrossSocket(Only Client)
+- IOS Simulaor: n/a
+- OSX: Indy(C/S OK)，ICS(未测试), CrossSocket(C/S OK)
+- Ubuntu16.04 x64 server: Indy(C/S OK), CrossSocket(C/S OK)
+- Ubuntu18.04 x86+x64 Desktop:only fpc3.0.4 Synapse(C/S OK)
+- Ubuntu18.04 x86+x64 Server:only fpc3.0.4 Synapse(C/S OK) 
+- Ubuntu18.04 arm32+arm neon Server:only fpc3.0.4 Synapse(C/S OK)
+- Ubuntu18.04 arm32+arm neon desktop:only fpc3.0.4 compile ok,no test on run.  
+- Ubuntu16.04 Mate arm32 desktop:only fpc3.0.4 compile ok, test passed  
 - Raspberry Pi 3 Debian linux armv7 desktop,only fpc 3.0.4,test passed.
 - wince(arm eabi hard flaot),windows 10 IOT,only fpc 3.3.1,test passed.
 
-### cpu架构支持: test with Delphi 10.2 upate 2 and FPC 3.0.4
+## CPU架构支持，test with Delphi 10.3 upate 1 and FPC 3.0.4
 
 - MIPS(fpc-little endian), soft float, test pass on QEMU 
 - intel X86(fpc-x86), soft float
-- intel X86(delphi+fpc), hard float,ATHLON64,COREI,COREAVX,COREAVX2
+- intel X86(delphi+fpc), hard float,80386,PENTIUM,PENTIUM2,PENTIUM3,PENTIUM4,PENTIUMM,COREI,COREAVX,COREAVX2
 - intel X64(fpc-x86_64), soft float
 - intel X64(delphi+fpc), hard float,ATHLON64,COREI,COREAVX,COREAVX2
-- ARM(fpc-arm32-eabi, hard float):ARMV3,ARMV4,ARMV4T,ARMV5,ARMV5T,ARMV5TE,ARMV5TEJ,ARMV6,ARMV6K,ARMV6T2,ARMV6Z,ARMV6M,ARMV7,ARMV7A,ARMV7R,ARMV7M,ARMV7EM
-- ARM(fpc-arm64-eabi, hard float):ARMV8，aarch64
+- ARM(fpc-arm32-eabi,soft float):ARMV3,ARMV4,ARMV4T,ARMV5,ARMV5T,ARMV5TE,ARMV5TEJ
+- ARM(fpc-arm32-eabi,hard float):ARMV6,ARMV6K,ARMV6T2,ARMV6Z,ARMV6M,ARMV7,ARMV7A,ARMV7R,ARMV7M,ARMV7EM
+- ARM(fpc-arm64-eabi,hard float):ARMV8，aarch64
 
 
 ## 更新日志
+
+### 2019-4
+
+- 修复TextParsing备注编码后的bug
+- OpCode新增回调调用类型(参考zAI工具链中的Script支持)
 
 ### 2018-9-29
 
