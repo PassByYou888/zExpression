@@ -474,7 +474,7 @@ begin
       // 由于opCache机制是自动化进行的，我们在任何时候以const复用变量时都要清空它
       OpCache.Clear;
 
-      DoStatus(VarToStr(EvaluateExpressionValue_P(nil, TTextParsing, tsC, '"静态复用 "+myvar1',
+      DoStatus(VarToStr(EvaluateExpressionValue_P(False, nil, TTextParsing, tsC, '"静态复用 "+myvar1',
         procedure(const Decl: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
           if HashVars.Exists(Decl) then
@@ -484,7 +484,7 @@ begin
             end;
         end)));
 
-      DoStatus(VarToStr(EvaluateExpressionValue_P(nil, TTextParsing, tsC, '"静态复用 "+myvar4',
+      DoStatus(VarToStr(EvaluateExpressionValue_P(False, nil, TTextParsing, tsC, '"静态复用 "+myvar4',
         procedure(const Decl: SystemString; var ValType: TExpressionDeclType; var Value: Variant)
         begin
           // myvar4是不存在的

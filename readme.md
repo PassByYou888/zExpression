@@ -24,8 +24,9 @@
 - 完整的功能Demo，完整性能和解析准确性评估框架
 - 在编译以后，能形成原子化op代码，可以通过stream高速载入并运行，不限制cpu类型
 - OP代码框架可以轻松译码成ARMv7 ARMx64 x64 x86等平台的机器码
+- 矩阵和向量表达式支持
 
-## 平台支持，test with Delphi 10.3 upate 1 and FPC 3.0.4
+## 平台支持，test with Delphi 10.3 update 2 and FPC 3.0.4
 
 - Windows: delphi-CrossSocket(C/S OK), delphi-DIOCP(C/S OK), delphi-ICS(C/S OK), delphi-Indy(C/S OK),delphi+fpc Synapse(C/S OK)
 - Android:Indy(C/S OK), CrossSocket(Only Client)
@@ -41,7 +42,7 @@
 - Raspberry Pi 3 Debian linux armv7 desktop,only fpc 3.0.4,test passed.
 - wince(arm eabi hard flaot),windows 10 IOT,only fpc 3.3.1,test passed.
 
-## CPU架构支持，test with Delphi 10.3 upate 1 and FPC 3.0.4
+## CPU架构支持，test with Delphi 10.3 update 2 and FPC 3.0.4
 
 - MIPS(fpc-little endian), soft float, test pass on QEMU 
 - intel X86(fpc-x86), soft float
@@ -54,6 +55,36 @@
 
 
 ## 更新日志
+
+### 2019-7
+
+**矩阵表达式支持**
+
+```delphi
+// 构建3*3的variant矩阵，使用c语法表达式
+procedure MatrixExp;
+var
+  m: TExpressionValueMatrix;
+begin
+  DoStatus('');
+  m := EvaluateExpressionMatrix(3, 3,
+    '"hello"+"-baby"/*备注：字符串联合*/,true,false,' +
+    '1+1,2+2,3+3,' +
+    '4*4,4*5,4*6', tsC);
+  DoStatus(m);
+end;
+
+// 构建variant向量数组，使用pascal语法表达式
+procedure MatrixVec;
+var
+  v: TExpressionValueVector;
+begin
+  DoStatus('');
+  v := EvaluateExpressionVector('0.1*(0.1+max(0.15,0.11)){备注内容},1,2,3,4,5,6,7,8,9', tsPascal);
+  DoStatus(v);
+end;
+```
+
 
 ### 2019-4
 

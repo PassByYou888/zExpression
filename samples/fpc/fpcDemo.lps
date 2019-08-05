@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <BuildModes Active="Default"/>
     <Units Count="11">
       <Unit0>
@@ -22,8 +22,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="demoFrm"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="539"/>
-        <CursorPos X="80" Y="557"/>
+        <TopLine Value="538"/>
+        <CursorPos X="58" Y="562"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -214,5 +214,9 @@
         <Caret Line="553" Column="49" TopLine="539"/>
       </Position30>
     </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
 </CONFIG>

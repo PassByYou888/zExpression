@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{50BDD959-4829-402C-990D-8BA71A0DFAF8}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Console\console.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TextParsing\TextParsingDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="NumberTransform\NumTrans.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Pascal Code Dependency Anslysis\PascalCodeDependencyAnslysis.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="zExpressionSupport\zExpressionSupport.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="console">
+        <MSBuild Projects="Console\console.dproj"/>
+    </Target>
+    <Target Name="console:Clean">
+        <MSBuild Projects="Console\console.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="console:Make">
+        <MSBuild Projects="Console\console.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextParsingDemo">
+        <MSBuild Projects="TextParsing\TextParsingDemo.dproj"/>
+    </Target>
+    <Target Name="TextParsingDemo:Clean">
+        <MSBuild Projects="TextParsing\TextParsingDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextParsingDemo:Make">
+        <MSBuild Projects="TextParsing\TextParsingDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NumTrans">
+        <MSBuild Projects="NumberTransform\NumTrans.dproj"/>
+    </Target>
+    <Target Name="NumTrans:Clean">
+        <MSBuild Projects="NumberTransform\NumTrans.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NumTrans:Make">
+        <MSBuild Projects="NumberTransform\NumTrans.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PascalCodeDependencyAnslysis">
+        <MSBuild Projects="Pascal Code Dependency Anslysis\PascalCodeDependencyAnslysis.dproj"/>
+    </Target>
+    <Target Name="PascalCodeDependencyAnslysis:Clean">
+        <MSBuild Projects="Pascal Code Dependency Anslysis\PascalCodeDependencyAnslysis.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PascalCodeDependencyAnslysis:Make">
+        <MSBuild Projects="Pascal Code Dependency Anslysis\PascalCodeDependencyAnslysis.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="zExpressionSupport">
+        <MSBuild Projects="zExpressionSupport\zExpressionSupport.dproj"/>
+    </Target>
+    <Target Name="zExpressionSupport:Clean">
+        <MSBuild Projects="zExpressionSupport\zExpressionSupport.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="zExpressionSupport:Make">
+        <MSBuild Projects="zExpressionSupport\zExpressionSupport.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="console;TextParsingDemo;NumTrans;PascalCodeDependencyAnslysis;zExpressionSupport"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="console:Clean;TextParsingDemo:Clean;NumTrans:Clean;PascalCodeDependencyAnslysis:Clean;zExpressionSupport:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="console:Make;TextParsingDemo:Make;NumTrans:Make;PascalCodeDependencyAnslysis:Make;zExpressionSupport:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

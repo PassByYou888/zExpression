@@ -556,10 +556,10 @@ begin
       // 由于opCache机制是自动化进行的，我们在任何时候以const复用变量时都要清空它
       OpCache.Clear;
 
-      DoStatus(VarToStr(EvaluateExpressionValue_M(nil, TTextParsing, tsC,
+      DoStatus(VarToStr(EvaluateExpressionValue_M(False, nil, TTextParsing, tsC,
         '"静态复用 "+myvar1', @Static_Ref)));
 
-      DoStatus(VarToStr(EvaluateExpressionValue_M(nil, TTextParsing, tsC,
+      DoStatus(VarToStr(EvaluateExpressionValue_M(False, nil, TTextParsing, tsC,
         '"静态复用 "+myvar4', @Static_Ref_MyVar2)));
 
       DoStatus('现在，我们开始动态复用我们刚才申明的变量');
