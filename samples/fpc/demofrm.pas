@@ -554,7 +554,7 @@ begin
         '现在，我们开始静态复用我们刚才申明的变量，静态复用是将变量以const形式进行编译');
 
       // 由于opCache机制是自动化进行的，我们在任何时候以const复用变量时都要清空它
-      OpCache.Clear;
+      CleanOpCache();
 
       DoStatus(VarToStr(EvaluateExpressionValue_M(False, nil, TTextParsing, tsC,
         '"静态复用 "+myvar1', @Static_Ref)));

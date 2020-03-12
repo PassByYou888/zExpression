@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <Transactions>
-    <Transaction>2019/08/05 13:29:58.033,E:\developer\git\zExpression\samples\Delphi\all.groupproj=C:\Users\Administrator\Documents\Embarcadero\Studio\Projects\ProjectGroup1.groupproj</Transaction>
+	<Transactions>
+    <Transaction>2019/08/05 13:29:58.000.033,C:\Users\Administrator\Documents\Embarcadero\Studio\Projects\ProjectGroup1.groupproj=E:\developer\git\zExpression\samples\Delphi\all.groupproj</Transaction>
   </Transactions>
-  <Default.Personality>
-    <Projects ActiveProject="E:\developer\git\zExpression\samples\Delphi\Console\console.dproj"/>
-  </Default.Personality>
+	<Default.Personality>
+		<Projects ActiveProject="E:\developer\git\zExpression\samples\Delphi\zExpressionSupport\zExpressionSupport.dproj"/>
+	</Default.Personality>
 </BorlandProject>

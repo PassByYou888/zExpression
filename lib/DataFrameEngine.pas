@@ -49,7 +49,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); virtual; abstract;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); virtual; abstract;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; virtual; abstract;
+    function ComputeEncodeSize: Int64; virtual; abstract;
   end;
 
   TDataFrameString = class sealed(TDataFrameBase)
@@ -65,7 +65,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
   end;
 
   TDataFrameInteger = class sealed(TDataFrameBase)
@@ -82,7 +82,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Integer read FBuffer write FBuffer;
   end;
@@ -101,7 +101,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Cardinal read FBuffer write FBuffer;
   end;
@@ -120,7 +120,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Word read FBuffer write FBuffer;
   end;
@@ -139,7 +139,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Byte read FBuffer write FBuffer;
   end;
@@ -158,7 +158,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Single read FBuffer write FBuffer;
   end;
@@ -177,7 +177,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Double read FBuffer write FBuffer;
   end;
@@ -201,7 +201,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer(index_: Integer): Integer;
     procedure SetBuffer(index_: Integer; Value: Integer);
@@ -227,7 +227,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer(index_: Integer): ShortInt;
     procedure SetBuffer(index_: Integer; Value: ShortInt);
@@ -261,7 +261,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer(index_: Integer): Byte;
     procedure SetBuffer(index_: Integer; Value: Byte);
@@ -287,7 +287,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer(index_: Integer): Single;
     procedure SetBuffer(index_: Integer; Value: Single);
@@ -314,7 +314,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer(index_: Integer): Double;
     procedure SetBuffer(index_: Integer; Value: Double);
@@ -341,7 +341,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer(index_: Integer): Int64;
     procedure SetBuffer(index_: Integer; Value: Int64);
@@ -364,7 +364,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     function GetBuffer: TCoreClassStream;
     procedure SetBuffer(_Buffer: TCoreClassStream);
@@ -385,7 +385,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Variant read FBuffer write FBuffer;
   end;
@@ -404,7 +404,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: Int64 read FBuffer write FBuffer;
   end;
@@ -423,7 +423,7 @@ type
     procedure LoadFromJson(jarry: TJsonArray; index_: Integer); override;
     procedure SaveToJson(jarry: TJsonArray; index_: Integer); override;
 {$ENDIF}
-    function ComputeEncodeSize: Integer; override;
+    function ComputeEncodeSize: Int64; override;
 
     property Buffer: UInt64 read FBuffer write FBuffer;
   end;
@@ -456,7 +456,7 @@ type
     function ReadArrayInteger: TDataFrameArrayInteger;
     function ReadArrayShortInt: TDataFrameArrayShortInt;
     function ReadArrayByte: TDataFrameArrayByte;
-    function ReadMD5: UnicodeMixedLib.TMD5;
+    function ReadMD5: TMD5;
     function ReadArraySingle: TDataFrameArraySingle;
     function ReadArrayDouble: TDataFrameArrayDouble;
     function ReadArrayInt64: TDataFrameArrayInt64;
@@ -525,7 +525,7 @@ type
     function DeleteLastCount(cnt: Integer): Boolean; overload;
     function DeleteCount(index_, _Count: Integer): Boolean;
     //
-    procedure Assign(SameObj: TDataFrameEngine);
+    procedure Assign(source: TDataFrameEngine);
     function Clone: TDataFrameEngine;
     //
     procedure WriteString(v: SystemString); overload;
@@ -542,7 +542,7 @@ type
     function WriteArrayInteger: TDataFrameArrayInteger;
     function WriteArrayShortInt: TDataFrameArrayShortInt;
     function WriteArrayByte: TDataFrameArrayByte;
-    procedure WriteMD5(md5: UnicodeMixedLib.TMD5);
+    procedure WriteMD5(md5: TMD5);
     function WriteArraySingle: TDataFrameArraySingle;
     function WriteArrayDouble: TDataFrameArrayDouble;
     function WriteArrayInt64: TDataFrameArrayInt64;
@@ -594,7 +594,7 @@ type
     function ReadArrayInteger(index_: Integer): TDataFrameArrayInteger;
     function ReadArrayShortInt(index_: Integer): TDataFrameArrayShortInt;
     function ReadArrayByte(index_: Integer): TDataFrameArrayByte;
-    function ReadMD5(index_: Integer): UnicodeMixedLib.TMD5;
+    function ReadMD5(index_: Integer): TMD5;
     function ReadArraySingle(index_: Integer): TDataFrameArraySingle;
     function ReadArrayDouble(index_: Integer): TDataFrameArrayDouble;
     function ReadArrayInt64(index_: Integer): TDataFrameArrayInt64;
@@ -632,7 +632,7 @@ type
     // read as TDataFrameBase
     function Read(index_: Integer): TDataFrameBase; overload;
     //
-    function ComputeEncodeSize: Integer;
+    function ComputeEncodeSize: Int64;
 
     class procedure BuildEmptyStream(output: TCoreClassStream);
 
@@ -646,12 +646,14 @@ type
 
     // json support
 {$IFNDEF FPC}
-    procedure EncodeAsPublicJson(output: TCoreClassStream);
+    procedure EncodeAsPublicJson(var output: TPascalString); overload;
+    procedure EncodeAsPublicJson(output: TCoreClassStream); overload;
     procedure EncodeAsJson(output: TCoreClassStream);
-    procedure DecodeFromJson(stream: TCoreClassStream);
+    procedure DecodeFromJson(stream: TCoreClassStream); overload;
+    procedure DecodeFromJson(const s: TPascalString); overload;
 {$ENDIF}
     //
-    // parallel compressor
+    // Parallel compressor
     function EncodeAsSelectCompressor(scm: TSelectCompressionMethod; output: TCoreClassStream; const FastMode: Boolean): Integer; overload;
     function EncodeAsSelectCompressor(output: TCoreClassStream; const FastMode: Boolean): Integer; overload;
     function EncodeAsSelectCompressor(output: TCoreClassStream): Integer; overload;
@@ -668,16 +670,19 @@ type
     function EncodeAsBRRC(output: TCoreClassStream; const FastMode: Boolean): Integer; overload;
     function EncodeAsBRRC(output: TCoreClassStream): Integer; overload;
 
-    function IsCompressed(Source: TCoreClassStream): Boolean;
-    function DecodeFrom(Source: TCoreClassStream; const FastMode: Boolean): Integer; overload;
-    function DecodeFrom(Source: TCoreClassStream): Integer; overload;
+    function IsCompressed(source: TCoreClassStream): Boolean;
+
+    function DecodeFrom(source: TCoreClassStream; const FastMode: Boolean): Integer; overload;
+    function DecodeFrom(source: TCoreClassStream): Integer; overload;
 
     procedure EncodeToBytes(const Compressed, FastMode: Boolean; var output: TBytes);
-    procedure DecodeFromBytes(var b: TBytes); overload;
-    procedure DecodeFromBytes(var b: TBytes; const FastMode: Boolean); overload;
+    procedure DecodeFromBytes(var buff: TBytes); overload;
+    procedure DecodeFromBytes(var buff: TBytes; const FastMode: Boolean); overload;
 
-    function GetMD5(const FastMode: Boolean): UnicodeMixedLib.TMD5;
-    function Compare(dest: TDataFrameEngine): Boolean;
+    function GetMD5(const FastMode: Boolean): TMD5;
+
+    // fast compare
+    function Compare(source: TDataFrameEngine): Boolean;
 
     procedure LoadFromStream(stream: TCoreClassStream);
     procedure SaveToStream(stream: TCoreClassStream);
@@ -858,7 +863,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameString.ComputeEncodeSize: Integer;
+function TDataFrameString.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + length(Buffer);
 end;
@@ -899,7 +904,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameInteger.ComputeEncodeSize: Integer;
+function TDataFrameInteger.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size;
 end;
@@ -940,7 +945,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameCardinal.ComputeEncodeSize: Integer;
+function TDataFrameCardinal.ComputeEncodeSize: Int64;
 begin
   Result := C_Cardinal_Size;
 end;
@@ -981,7 +986,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameWord.ComputeEncodeSize: Integer;
+function TDataFrameWord.ComputeEncodeSize: Int64;
 begin
   Result := C_Word_Size;
 end;
@@ -1022,7 +1027,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameByte.ComputeEncodeSize: Integer;
+function TDataFrameByte.ComputeEncodeSize: Int64;
 begin
   Result := C_Byte_Size;
 end;
@@ -1063,7 +1068,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameSingle.ComputeEncodeSize: Integer;
+function TDataFrameSingle.ComputeEncodeSize: Int64;
 begin
   Result := C_Single_Size;
 end;
@@ -1104,7 +1109,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameDouble.ComputeEncodeSize: Integer;
+function TDataFrameDouble.ComputeEncodeSize: Int64;
 begin
   Result := C_Double_Size;
 end;
@@ -1216,7 +1221,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameArrayInteger.ComputeEncodeSize: Integer;
+function TDataFrameArrayInteger.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + C_Integer_Size * Count;
 end;
@@ -1338,7 +1343,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameArrayShortInt.ComputeEncodeSize: Integer;
+function TDataFrameArrayShortInt.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + C_Short_Int_Size * Count;
 end;
@@ -1517,7 +1522,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameArrayByte.ComputeEncodeSize: Integer;
+function TDataFrameArrayByte.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + C_Byte_Size * Count;
 end;
@@ -1649,7 +1654,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameArraySingle.ComputeEncodeSize: Integer;
+function TDataFrameArraySingle.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + C_Single_Size * Count;
 end;
@@ -1761,7 +1766,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameArrayDouble.ComputeEncodeSize: Integer;
+function TDataFrameArrayDouble.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + C_Double_Size * Count;
 end;
@@ -1883,7 +1888,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameArrayInt64.ComputeEncodeSize: Integer;
+function TDataFrameArrayInt64.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + C_Int64_Size * Count;
 end;
@@ -1960,7 +1965,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameStream.ComputeEncodeSize: Integer;
+function TDataFrameStream.ComputeEncodeSize: Int64;
 begin
   Result := C_Integer_Size + FBuffer.Size;
 end;
@@ -2055,7 +2060,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameVariant.ComputeEncodeSize: Integer;
+function TDataFrameVariant.ComputeEncodeSize: Int64;
 var
   tmp: TMemoryStream64;
 begin
@@ -2101,7 +2106,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameInt64.ComputeEncodeSize: Integer;
+function TDataFrameInt64.ComputeEncodeSize: Int64;
 begin
   Result := C_Int64_Size;
 end;
@@ -2142,7 +2147,7 @@ end;
 {$ENDIF}
 
 
-function TDataFrameUInt64.ComputeEncodeSize: Integer;
+function TDataFrameUInt64.ComputeEncodeSize: Int64;
 begin
   Result := C_UInt64_Size;
 end;
@@ -2251,7 +2256,7 @@ begin
   inc(FIndex);
 end;
 
-function TDataFrameEngineReader.ReadMD5: UnicodeMixedLib.TMD5;
+function TDataFrameEngineReader.ReadMD5: TMD5;
 begin
   Result := FOwner.ReadMD5(FIndex);
   inc(FIndex);
@@ -2521,40 +2526,23 @@ end;
 function TDataFrameEngine.AddData(v: TRunTimeDataType): TDataFrameBase;
 begin
   case v of
-    rdtString:
-      Result := TDataFrameString.Create(DataTypeToByte(v));
-    rdtInteger:
-      Result := TDataFrameInteger.Create(DataTypeToByte(v));
-    rdtCardinal:
-      Result := TDataFrameCardinal.Create(DataTypeToByte(v));
-    rdtWORD:
-      Result := TDataFrameWord.Create(DataTypeToByte(v));
-    rdtByte:
-      Result := TDataFrameByte.Create(DataTypeToByte(v));
-    rdtSingle:
-      Result := TDataFrameSingle.Create(DataTypeToByte(v));
-    rdtDouble:
-      Result := TDataFrameDouble.Create(DataTypeToByte(v));
-    rdtArrayInteger:
-      Result := TDataFrameArrayInteger.Create(DataTypeToByte(v));
-    rdtArrayShortInt:
-      Result := TDataFrameArrayShortInt.Create(DataTypeToByte(v));
-    rdtArrayByte:
-      Result := TDataFrameArrayByte.Create(DataTypeToByte(v));
-    rdtArraySingle:
-      Result := TDataFrameArraySingle.Create(DataTypeToByte(v));
-    rdtArrayDouble:
-      Result := TDataFrameArrayDouble.Create(DataTypeToByte(v));
-    rdtArrayInt64:
-      Result := TDataFrameArrayInt64.Create(DataTypeToByte(v));
-    rdtStream:
-      Result := TDataFrameStream.Create(DataTypeToByte(v));
-    rdtVariant:
-      Result := TDataFrameVariant.Create(DataTypeToByte(v));
-    rdtInt64:
-      Result := TDataFrameInt64.Create(DataTypeToByte(v));
-    rdtUInt64:
-      Result := TDataFrameUInt64.Create(DataTypeToByte(v));
+    rdtString: Result := TDataFrameString.Create(DataTypeToByte(v));
+    rdtInteger: Result := TDataFrameInteger.Create(DataTypeToByte(v));
+    rdtCardinal: Result := TDataFrameCardinal.Create(DataTypeToByte(v));
+    rdtWORD: Result := TDataFrameWord.Create(DataTypeToByte(v));
+    rdtByte: Result := TDataFrameByte.Create(DataTypeToByte(v));
+    rdtSingle: Result := TDataFrameSingle.Create(DataTypeToByte(v));
+    rdtDouble: Result := TDataFrameDouble.Create(DataTypeToByte(v));
+    rdtArrayInteger: Result := TDataFrameArrayInteger.Create(DataTypeToByte(v));
+    rdtArrayShortInt: Result := TDataFrameArrayShortInt.Create(DataTypeToByte(v));
+    rdtArrayByte: Result := TDataFrameArrayByte.Create(DataTypeToByte(v));
+    rdtArraySingle: Result := TDataFrameArraySingle.Create(DataTypeToByte(v));
+    rdtArrayDouble: Result := TDataFrameArrayDouble.Create(DataTypeToByte(v));
+    rdtArrayInt64: Result := TDataFrameArrayInt64.Create(DataTypeToByte(v));
+    rdtStream: Result := TDataFrameStream.Create(DataTypeToByte(v));
+    rdtVariant: Result := TDataFrameVariant.Create(DataTypeToByte(v));
+    rdtInt64: Result := TDataFrameInt64.Create(DataTypeToByte(v));
+    rdtUInt64: Result := TDataFrameUInt64.Create(DataTypeToByte(v));
     else
       Result := nil;
   end;
@@ -2657,15 +2645,23 @@ begin
       Result := Result and Delete(index_);
 end;
 
-procedure TDataFrameEngine.Assign(SameObj: TDataFrameEngine);
+procedure TDataFrameEngine.Assign(source: TDataFrameEngine);
 var
   s: TMemoryStream64;
+  i: Integer;
+  DataFrame_: TDataFrameBase;
 begin
   Clear;
-  s := TMemoryStream64.Create;
-  SameObj.EncodeTo(s, True);
-  s.Position := 0;
-  DecodeFrom(s, True);
+  s := TMemoryStream64.CustomCreate(8192);
+  for i := 0 to source.Count - 1 do
+    begin
+      DataFrame_ := AddData(ByteToDataType(source[i].FID));
+      s.Clear;
+      source[i].SaveToStream(s);
+      s.Position := 0;
+      DataFrame_.LoadFromStream(s);
+      s.Clear;
+    end;
   DisposeObject(s);
 end;
 
@@ -2789,7 +2785,7 @@ begin
   FDataList.Add(Result);
 end;
 
-procedure TDataFrameEngine.WriteMD5(md5: UnicodeMixedLib.TMD5);
+procedure TDataFrameEngine.WriteMD5(md5: TMD5);
 begin
   WriteArrayByte.WriteArray(md5);
 end;
@@ -2969,7 +2965,7 @@ var
 begin
   if umlFileExists(fn) then
     begin
-      fs := TCoreClassFileStream.Create(fn, fmOpenRead or fmShareDenyWrite);
+      fs := TCoreClassFileStream.Create(fn, fmOpenRead or fmShareDenyNone);
       fs.Position := 0;
       WriteStream(fs);
       DisposeObject(fs);
@@ -3038,12 +3034,12 @@ end;
 
 procedure TDataFrameEngine.WriteVector4(v: TVector4);
 begin
-  WriteArraySingle.WriteArray(v.Buff);
+  WriteArraySingle.WriteArray(v.buff);
 end;
 
 procedure TDataFrameEngine.WriteVector3(v: TVector3);
 begin
-  WriteArraySingle.WriteArray(v.Buff);
+  WriteArraySingle.WriteArray(v.buff);
 end;
 
 procedure TDataFrameEngine.WriteMat4(v: TMat4);
@@ -3059,7 +3055,7 @@ end;
 
 procedure TDataFrameEngine.WriteMatrix4(v: TMatrix4);
 begin
-  WriteMat4(v.Buff);
+  WriteMat4(v.buff);
 end;
 
 procedure TDataFrameEngine.Write2DPoint(v: T2DPoint);
@@ -3454,12 +3450,12 @@ begin
       Result := nil;
 end;
 
-function TDataFrameEngine.ReadMD5(index_: Integer): UnicodeMixedLib.TMD5;
+function TDataFrameEngine.ReadMD5(index_: Integer): TMD5;
 var
   i: Integer;
 begin
   with ReadArrayByte(index_) do
-    for i := low(UnicodeMixedLib.TMD5) to high(UnicodeMixedLib.TMD5) do
+    for i := low(TMD5) to high(TMD5) do
         Result[i] := Buffer[i];
 end;
 
@@ -3827,7 +3823,7 @@ end;
 
 function TDataFrameEngine.ReadMatrix4(index_: Integer): TMatrix4;
 begin
-  Result.Buff := ReadMat4(index_);
+  Result.buff := ReadMat4(index_);
 end;
 
 function TDataFrameEngine.Read2DPoint(index_: Integer): T2DPoint;
@@ -3875,7 +3871,7 @@ begin
   Result := Data[index_];
 end;
 
-function TDataFrameEngine.ComputeEncodeSize: Integer;
+function TDataFrameEngine.ComputeEncodeSize: Int64;
 var
   i: Integer;
 begin
@@ -3887,9 +3883,9 @@ end;
 class procedure TDataFrameEngine.BuildEmptyStream(output: TCoreClassStream);
 var
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo: Cardinal;
   compToken: Byte;
-  md5: UnicodeMixedLib.TMD5;
+  md5: TMD5;
   cnt: Integer;
 begin
   // make header
@@ -3900,7 +3896,7 @@ begin
   cnt := 0;
 
   output.write(editionToken, C_Byte_Size);
-  output.write(sizeInfo, C_Integer_Size);
+  output.write(sizeInfo, C_Cardinal_Size);
   output.write(compToken, C_Byte_Size);
   output.write(md5[0], C_MD5_Size);
   output.write(cnt, C_Integer_Size);
@@ -3909,14 +3905,15 @@ end;
 function TDataFrameEngine.EncodeTo(output: TCoreClassStream; const FastMode: Boolean): Integer;
 var
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
   StoreStream, nStream: TMemoryStream64;
   ID: Byte;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64: Int64;
   compToken: Byte;
-  md5: UnicodeMixedLib.TMD5;
+  md5: TMD5;
 begin
   Result := Count;
 
@@ -3926,7 +3923,14 @@ begin
       Exit;
     end;
 
-  StoreStream := TMemoryStream64.Create;
+  // if encode size too large(>1M), we use EncodeAsSelectCompressor
+  if ComputeEncodeSize > 1024 * 1024 then
+    begin
+      Result := EncodeAsSelectCompressor(TSelectCompressionMethod.scmZLIB, output, FastMode);
+      Exit;
+    end;
+
+  StoreStream := TMemoryStream64.CustomCreate(8192);
 
   // make body
   StoreStream.Write64(Result, C_Integer_Size);
@@ -3934,9 +3938,9 @@ begin
   nStream := TMemoryStream64.Create;
   for i := 0 to Count - 1 do
     begin
-      b := GetData(i);
-      ID := b.FID;
-      b.SaveToStream(nStream);
+      DataFrame_ := GetData(i);
+      ID := DataFrame_.FID;
+      DataFrame_.SaveToStream(nStream);
 
       StoreStream.Write64(ID, C_Byte_Size);
       nStream.Position := 0;
@@ -3945,8 +3949,12 @@ begin
     end;
 
   // make header
-  editionToken := $FF;
-  sizeInfo := StoreStream.Size;
+  sizeInfo32 := Cardinal(StoreStream.Size);
+  sizeInfo64 := StoreStream.Size;
+  if sizeInfo64 > C_Max_UInt32 then
+      editionToken := $FA
+  else
+      editionToken := $FF;
   compToken := 0;
   StoreStream.Position := 0;
   if FastMode then
@@ -3954,9 +3962,13 @@ begin
   else
       md5 := umlMD5(StoreStream.Memory, StoreStream.Size);
 
+  // prepare write header
   nStream.Clear;
   nStream.write(editionToken, C_Byte_Size);
-  nStream.write(sizeInfo, C_Integer_Size);
+  if sizeInfo64 > C_Max_UInt32 then
+      nStream.write(sizeInfo64, C_Int64_Size)
+  else
+      nStream.write(sizeInfo32, C_Cardinal_Size);
   nStream.write(compToken, C_Byte_Size);
   nStream.write(md5[0], C_MD5_Size);
 
@@ -4008,6 +4020,20 @@ end;
 {$IFNDEF FPC}
 
 
+procedure TDataFrameEngine.EncodeAsPublicJson(var output: TPascalString);
+var
+  m64: TMemoryStream64;
+  buff: TBytes;
+begin
+  m64 := TMemoryStream64.Create;
+  EncodeAsPublicJson(m64);
+  SetLength(buff, m64.Size);
+  CopyPtr(m64.Memory, @buff[0], m64.Size);
+  DisposeObject(m64);
+  output.Bytes := buff;
+  SetLength(buff, 0);
+end;
+
 procedure TDataFrameEngine.EncodeAsPublicJson(output: TCoreClassStream);
 var
   j: TJsonObject;
@@ -4031,15 +4057,15 @@ procedure TDataFrameEngine.EncodeAsJson(output: TCoreClassStream);
 var
   j: TJsonObject;
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
 begin
   j := TJsonObject.Create;
 
   for i := 0 to Count - 1 do
     begin
-      b := TDataFrameBase(FDataList[i]);
-      b.SaveToJson(j.a['Data'], i);
-      j.a['Ref'].Add(b.FID);
+      DataFrame_ := TDataFrameBase(FDataList[i]);
+      DataFrame_.SaveToJson(j.a['Data'], i);
+      j.a['Ref'].Add(DataFrame_.FID);
     end;
 
   j.SaveToStream(output, True, TEncoding.UTF8, True);
@@ -4052,7 +4078,7 @@ var
   j: TJsonObject;
   t: Byte;
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
 begin
   Clear;
   j := TJsonObject.Create;
@@ -4067,8 +4093,8 @@ begin
     for i := 0 to j.a['Ref'].Count - 1 do
       begin
         t := j.a['Ref'].i[i];
-        b := AddData(ByteToDataType(t));
-        b.LoadFromJson(j.a['Data'], i);
+        DataFrame_ := AddData(ByteToDataType(t));
+        DataFrame_.LoadFromJson(j.a['Data'], i);
       end;
   except
     DisposeObject(j);
@@ -4077,21 +4103,38 @@ begin
 
   DisposeObject(j);
 end;
+
+procedure TDataFrameEngine.DecodeFromJson(const s: TPascalString);
+var
+  buff: TBytes;
+  m64: TMemoryStream64;
+begin
+  buff := s.Bytes;
+  m64 := TMemoryStream64.Create;
+  m64.SetPointerWithProtectedMode(@buff[0], length(buff));
+  m64.Position := 0;
+  DecodeFromJson(m64);
+  DisposeObject(m64);
+  SetLength(buff, 0);
+end;
+
 {$ENDIF}
 
 
 function TDataFrameEngine.EncodeAsSelectCompressor(scm: TSelectCompressionMethod; output: TCoreClassStream; const FastMode: Boolean): Integer;
 var
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
   StoreStream, nStream, compStream: TMemoryStream64;
   ID: Byte;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64: Int64;
   compToken: Byte;
-  compSizeInfo: Integer;
-  md5: UnicodeMixedLib.TMD5;
+  compsizeInfo32: Cardinal;
+  compsizeInfo64: Int64;
+  md5: TMD5;
 begin
   Result := Count;
 
@@ -4101,7 +4144,7 @@ begin
       Exit;
     end;
 
-  StoreStream := TMemoryStream64.Create;
+  StoreStream := TMemoryStream64.CustomCreate(8192);
 
   // make body
   StoreStream.Write64(Result, C_Integer_Size);
@@ -4109,9 +4152,9 @@ begin
   nStream := TMemoryStream64.Create;
   for i := 0 to Count - 1 do
     begin
-      b := GetData(i);
-      ID := b.FID;
-      b.SaveToStream(nStream);
+      DataFrame_ := GetData(i);
+      ID := DataFrame_.FID;
+      DataFrame_.SaveToStream(nStream);
 
       StoreStream.Write64(ID, C_Byte_Size);
       nStream.Position := 0;
@@ -4120,7 +4163,8 @@ begin
     end;
 
   // compress body and make header
-  compSizeInfo := StoreStream.Size;
+  compsizeInfo32 := Cardinal(StoreStream.Size);
+  compsizeInfo64 := StoreStream.Size;
   StoreStream.Position := 0;
   if FastMode then
       md5 := NullMD5
@@ -4131,15 +4175,30 @@ begin
   ParallelCompressStream(scm, StoreStream, compStream);
   DisposeObject(StoreStream);
 
-  editionToken := $FF;
-  sizeInfo := compStream.Size;
-  compToken := 4;
+  // make header
+  sizeInfo32 := Cardinal(compStream.Size);
+  sizeInfo64 := compStream.Size;
+  if sizeInfo64 > C_Max_UInt32 then
+      editionToken := $FA
+  else
+      editionToken := $FF;
+  if compsizeInfo64 > C_Max_UInt32 then
+      compToken := 44
+  else
+      compToken := 4;
 
+  // prepare write header
   nStream.Clear;
   nStream.write(editionToken, C_Byte_Size);
-  nStream.write(sizeInfo, C_Integer_Size);
+  if sizeInfo64 > C_Max_UInt32 then
+      nStream.write(sizeInfo64, C_Int64_Size)
+  else
+      nStream.write(sizeInfo32, C_Cardinal_Size);
   nStream.write(compToken, C_Byte_Size);
-  nStream.write(compSizeInfo, C_Integer_Size);
+  if compsizeInfo64 > C_Max_UInt32 then
+      nStream.write(compsizeInfo64, C_Int64_Size)
+  else
+      nStream.write(compsizeInfo32, C_Cardinal_Size);
   nStream.write(md5[0], C_MD5_Size);
 
   // write header
@@ -4177,16 +4236,18 @@ end;
 function TDataFrameEngine.EncodeAsZLib(output: TCoreClassStream; const FastMode: Boolean): Integer;
 var
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
   StoreStream, nStream, compStream: TMemoryStream64;
   ZCompStream: TCompressionStream;
   ID: Byte;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64: Int64;
   compToken: Byte;
-  compSizeInfo: Integer;
-  md5: UnicodeMixedLib.TMD5;
+  compsizeInfo32: Cardinal;
+  compsizeInfo64: Int64;
+  md5: TMD5;
 begin
   Result := Count;
 
@@ -4196,7 +4257,14 @@ begin
       Exit;
     end;
 
-  StoreStream := TMemoryStream64.Create;
+  // if encode size too large(>1M), we use EncodeAsSelectCompressor
+  if ComputeEncodeSize > 1024 * 1024 then
+    begin
+      Result := EncodeAsSelectCompressor(TSelectCompressionMethod.scmZLIB, output, FastMode);
+      Exit;
+    end;
+
+  StoreStream := TMemoryStream64.CustomCreate(8192);
 
   // make body
   StoreStream.Write64(Result, C_Integer_Size);
@@ -4204,9 +4272,9 @@ begin
   nStream := TMemoryStream64.Create;
   for i := 0 to Count - 1 do
     begin
-      b := GetData(i);
-      ID := b.FID;
-      b.SaveToStream(nStream);
+      DataFrame_ := GetData(i);
+      ID := DataFrame_.FID;
+      DataFrame_.SaveToStream(nStream);
 
       StoreStream.Write64(ID, C_Byte_Size);
       nStream.Position := 0;
@@ -4215,7 +4283,8 @@ begin
     end;
 
   // compress body and make header
-  compSizeInfo := StoreStream.Size;
+  compsizeInfo32 := Cardinal(StoreStream.Size);
+  compsizeInfo64 := StoreStream.Size;
   StoreStream.Position := 0;
   if FastMode then
       md5 := NullMD5
@@ -4229,15 +4298,30 @@ begin
   DisposeObject(ZCompStream);
   DisposeObject(StoreStream);
 
-  editionToken := $FF;
-  sizeInfo := compStream.Size;
-  compToken := 1;
+  // make header
+  sizeInfo32 := compStream.Size;
+  sizeInfo64 := compStream.Size;
+  if sizeInfo64 > C_Max_UInt32 then
+      editionToken := $FA
+  else
+      editionToken := $FF;
+  if compsizeInfo64 > C_Max_UInt32 then
+      compToken := 11
+  else
+      compToken := 1;
 
+  // prepare write header
   nStream.Clear;
   nStream.write(editionToken, C_Byte_Size);
-  nStream.write(sizeInfo, C_Integer_Size);
+  if sizeInfo64 > C_Max_UInt32 then
+      nStream.write(sizeInfo64, C_Int64_Size)
+  else
+      nStream.write(sizeInfo32, C_Cardinal_Size);
   nStream.write(compToken, C_Byte_Size);
-  nStream.write(compSizeInfo, C_Integer_Size);
+  if compsizeInfo64 > C_Max_UInt32 then
+      nStream.write(compsizeInfo64, C_Int64_Size)
+  else
+      nStream.write(compsizeInfo32, C_Cardinal_Size);
   nStream.write(md5[0], C_MD5_Size);
 
   // write header
@@ -4259,15 +4343,17 @@ end;
 function TDataFrameEngine.EncodeAsDeflate(output: TCoreClassStream; const FastMode: Boolean): Integer;
 var
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
   StoreStream, nStream, compStream: TMemoryStream64;
   ID: Byte;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64: Int64;
   compToken: Byte;
-  compSizeInfo: Integer;
-  md5: UnicodeMixedLib.TMD5;
+  compsizeInfo32: Cardinal;
+  compsizeInfo64: Int64;
+  md5: TMD5;
 begin
   Result := Count;
 
@@ -4277,7 +4363,14 @@ begin
       Exit;
     end;
 
-  StoreStream := TMemoryStream64.Create;
+  // if encode size too large(>1M), we use EncodeAsSelectCompressor
+  if ComputeEncodeSize > 1024 * 1024 then
+    begin
+      Result := EncodeAsSelectCompressor(TSelectCompressionMethod.scmZLIB, output, FastMode);
+      Exit;
+    end;
+
+  StoreStream := TMemoryStream64.CustomCreate(8192);
 
   // make body
   StoreStream.Write64(Result, C_Integer_Size);
@@ -4285,9 +4378,9 @@ begin
   nStream := TMemoryStream64.Create;
   for i := 0 to Count - 1 do
     begin
-      b := GetData(i);
-      ID := b.FID;
-      b.SaveToStream(nStream);
+      DataFrame_ := GetData(i);
+      ID := DataFrame_.FID;
+      DataFrame_.SaveToStream(nStream);
 
       StoreStream.Write64(ID, C_Byte_Size);
       nStream.Position := 0;
@@ -4296,7 +4389,8 @@ begin
     end;
 
   // compress body and make header
-  compSizeInfo := StoreStream.Size;
+  compsizeInfo32 := Cardinal(StoreStream.Size);
+  compsizeInfo64 := StoreStream.Size;
   StoreStream.Position := 0;
   if FastMode then
       md5 := NullMD5
@@ -4312,15 +4406,30 @@ begin
   CoreCompressStream(FCompressorDeflate, StoreStream, compStream);
   DisposeObject(StoreStream);
 
-  editionToken := $FF;
-  sizeInfo := compStream.Size;
-  compToken := 2;
+  // make header
+  sizeInfo32 := Cardinal(compStream.Size);
+  sizeInfo64 := compStream.Size;
+  if sizeInfo64 > C_Max_UInt32 then
+      editionToken := $FA
+  else
+      editionToken := $FF;
+  if compsizeInfo64 > C_Max_UInt32 then
+      compToken := 22
+  else
+      compToken := 2;
 
+  // prepare write header
   nStream.Clear;
   nStream.write(editionToken, C_Byte_Size);
-  nStream.write(sizeInfo, C_Integer_Size);
+  if sizeInfo64 > C_Max_UInt32 then
+      nStream.write(sizeInfo64, C_Int64_Size)
+  else
+      nStream.write(sizeInfo32, C_Cardinal_Size);
   nStream.write(compToken, C_Byte_Size);
-  nStream.write(compSizeInfo, C_Integer_Size);
+  if compsizeInfo64 > C_Max_UInt32 then
+      nStream.write(compsizeInfo64, C_Int64_Size)
+  else
+      nStream.write(compsizeInfo32, C_Cardinal_Size);
   nStream.write(md5[0], C_MD5_Size);
 
   // write header
@@ -4342,15 +4451,17 @@ end;
 function TDataFrameEngine.EncodeAsBRRC(output: TCoreClassStream; const FastMode: Boolean): Integer;
 var
   i: Integer;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
   StoreStream, nStream, compStream: TMemoryStream64;
   ID: Byte;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64: Int64;
   compToken: Byte;
-  compSizeInfo: Integer;
-  md5: UnicodeMixedLib.TMD5;
+  compsizeInfo32: Cardinal;
+  compsizeInfo64: Int64;
+  md5: TMD5;
 begin
   Result := Count;
 
@@ -4360,7 +4471,14 @@ begin
       Exit;
     end;
 
-  StoreStream := TMemoryStream64.Create;
+  // if encode size too large(>1M), we use EncodeAsSelectCompressor
+  if ComputeEncodeSize > 1024 * 1024 then
+    begin
+      Result := EncodeAsSelectCompressor(TSelectCompressionMethod.scmZLIB, output, FastMode);
+      Exit;
+    end;
+
+  StoreStream := TMemoryStream64.CustomCreate(8192);
 
   // make body
   StoreStream.Write64(Result, C_Integer_Size);
@@ -4368,9 +4486,9 @@ begin
   nStream := TMemoryStream64.Create;
   for i := 0 to Count - 1 do
     begin
-      b := GetData(i);
-      ID := b.FID;
-      b.SaveToStream(nStream);
+      DataFrame_ := GetData(i);
+      ID := DataFrame_.FID;
+      DataFrame_.SaveToStream(nStream);
 
       StoreStream.Write64(ID, C_Byte_Size);
       nStream.Position := 0;
@@ -4379,7 +4497,8 @@ begin
     end;
 
   // compress body and make header
-  compSizeInfo := StoreStream.Size;
+  compsizeInfo32 := Cardinal(StoreStream.Size);
+  compsizeInfo64 := StoreStream.Size;
   StoreStream.Position := 0;
   if FastMode then
       md5 := NullMD5
@@ -4395,15 +4514,30 @@ begin
   CoreCompressStream(FCompressorBRRC, StoreStream, compStream);
   DisposeObject(StoreStream);
 
-  editionToken := $FF;
-  sizeInfo := compStream.Size;
-  compToken := 3;
+  // make header
+  sizeInfo32 := Cardinal(compStream.Size);
+  sizeInfo64 := compStream.Size;
+  if sizeInfo64 > C_Max_UInt32 then
+      editionToken := $FA
+  else
+      editionToken := $FF;
+  if compsizeInfo64 > C_Max_UInt32 then
+      compToken := 33
+  else
+      compToken := 3;
 
+  // prepare write header
   nStream.Clear;
   nStream.write(editionToken, C_Byte_Size);
-  nStream.write(sizeInfo, C_Integer_Size);
+  if sizeInfo64 > C_Max_UInt32 then
+      nStream.write(sizeInfo64, C_Int64_Size)
+  else
+      nStream.write(sizeInfo32, C_Cardinal_Size);
   nStream.write(compToken, C_Byte_Size);
-  nStream.write(compSizeInfo, C_Integer_Size);
+  if compsizeInfo64 > C_Max_UInt32 then
+      nStream.write(compsizeInfo64, C_Int64_Size)
+  else
+      nStream.write(compsizeInfo32, C_Cardinal_Size);
   nStream.write(md5[0], C_MD5_Size);
 
   // write header
@@ -4422,42 +4556,55 @@ begin
   Result := EncodeAsBRRC(output, False);
 end;
 
-function TDataFrameEngine.IsCompressed(Source: TCoreClassStream): Boolean;
+function TDataFrameEngine.IsCompressed(source: TCoreClassStream): Boolean;
 var
   bakPos: Int64;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64, sizeInfo: Int64;
   compToken: Byte;
 begin
-  bakPos := Source.Position;
+  bakPos := source.Position;
   Result := False;
 
-  Source.Read(editionToken, C_Byte_Size);
-  if editionToken = $FF then
+  source.Read(editionToken, C_Byte_Size);
+  if (editionToken in [$FF, $FA]) then
     begin
-      Source.Read(sizeInfo, C_Integer_Size);
-      Source.Read(compToken, C_Byte_Size);
+      if editionToken = $FF then
+        begin
+          source.Read(sizeInfo32, C_Cardinal_Size);
+          sizeInfo := sizeInfo32;
+        end
+      else
+        begin
+          source.Read(sizeInfo64, C_Int64_Size);
+          sizeInfo := sizeInfo64;
+        end;
 
-      Result := compToken in [1, 2, 3, 4];
+      source.Read(compToken, C_Byte_Size);
+
+      Result := compToken in [1, 11, 2, 22, 3, 33, 4, 44];
     end;
 
-  Source.Position := bakPos;
+  source.Position := bakPos;
 end;
 
-function TDataFrameEngine.DecodeFrom(Source: TCoreClassStream; const FastMode: Boolean): Integer;
+function TDataFrameEngine.DecodeFrom(source: TCoreClassStream; const FastMode: Boolean): Integer;
 var
   i, cnt: Integer;
   ID: Byte;
   StoreStream: TMemoryStream64;
   ZDecompStream: TDecompressionStream;
-  b: TDataFrameBase;
+  DataFrame_: TDataFrameBase;
 
   editionToken: Byte;
-  sizeInfo: Integer;
+  sizeInfo32: Cardinal;
+  sizeInfo64, sizeInfo: Int64;
   compToken: Byte;
-  compSizeInfo: Integer;
-  md5: UnicodeMixedLib.TMD5;
+  compsizeInfo32: Cardinal;
+  compsizeInfo64, compsizeInfo: Int64;
+  md5: TMD5;
 begin
   Clear;
 
@@ -4465,19 +4612,33 @@ begin
 
   StoreStream := TMemoryStream64.Create;
 
-  Source.Read(editionToken, C_Byte_Size);
-  if editionToken = $FF then
+  source.Read(editionToken, C_Byte_Size);
+  if (editionToken in [$FF, $FA]) then
     begin
-      Source.Read(sizeInfo, C_Integer_Size);
-      Source.Read(compToken, C_Byte_Size);
+      if editionToken = $FF then
+        begin
+          source.Read(sizeInfo32, C_Cardinal_Size);
+          sizeInfo := sizeInfo32;
+        end
+      else
+        begin
+          source.Read(sizeInfo64, C_Int64_Size);
+          sizeInfo := sizeInfo64;
+        end;
+
+      source.Read(compToken, C_Byte_Size);
+
       if compToken = 0 then
         begin
-          Source.Read(md5[0], 16);
+          source.Read(md5[0], 16);
 
-          if Source is TMemoryStream64 then
-              StoreStream.SetPointerWithProtectedMode(TMemoryStream64(Source).PositionAsPtr, sizeInfo)
+          if source is TMemoryStream64 then
+              StoreStream.SetPointerWithProtectedMode(TMemoryStream64(source).PositionAsPtr, sizeInfo)
           else
-              StoreStream.CopyFrom(Source, sizeInfo);
+            begin
+              if sizeInfo > 0 then
+                  StoreStream.CopyFrom(source, sizeInfo);
+            end;
 
           StoreStream.Position := 0;
           if (not FastMode) and (not umlIsNullMD5(md5)) then
@@ -4488,13 +4649,23 @@ begin
                 Exit;
               end;
         end
-      else if compToken = 1 then
+      else if compToken in [1, 11] then
         begin
-          Source.Read(compSizeInfo, C_Integer_Size);
-          Source.Read(md5[0], 16);
+          if compToken = 1 then
+            begin
+              source.Read(compsizeInfo32, C_Cardinal_Size);
+              compsizeInfo := compsizeInfo32;
+            end
+          else
+            begin
+              source.Read(compsizeInfo64, C_Int64_Size);
+              compsizeInfo := compsizeInfo64;
+            end;
 
-          ZDecompStream := TDecompressionStream.Create(Source);
-          StoreStream.CopyFrom(ZDecompStream, compSizeInfo);
+          source.Read(md5[0], 16);
+
+          ZDecompStream := TDecompressionStream.Create(source);
+          StoreStream.CopyFrom(ZDecompStream, compsizeInfo);
           DisposeObject(ZDecompStream);
 
           StoreStream.Position := 0;
@@ -4506,14 +4677,23 @@ begin
                 Exit;
               end;
         end
-      else if compToken = 2 then
+      else if compToken in [2, 22] then
         begin
-          Source.Read(compSizeInfo, C_Integer_Size);
-          Source.Read(md5[0], 16);
+          if compToken = 2 then
+            begin
+              source.Read(compsizeInfo32, C_Cardinal_Size);
+              compsizeInfo := compsizeInfo32;
+            end
+          else
+            begin
+              source.Read(compsizeInfo64, C_Int64_Size);
+              compsizeInfo := compsizeInfo64;
+            end;
+          source.Read(md5[0], 16);
 
           if FCompressorDeflate = nil then
               FCompressorDeflate := TCompressorDeflate.Create;
-          CoreDecompressStream(FCompressorDeflate, Source, StoreStream);
+          CoreDecompressStream(FCompressorDeflate, source, StoreStream);
 
           StoreStream.Position := 0;
           if (not FastMode) and (not umlIsNullMD5(md5)) then
@@ -4524,14 +4704,23 @@ begin
                 Exit;
               end;
         end
-      else if compToken = 3 then
+      else if compToken in [3, 33] then
         begin
-          Source.Read(compSizeInfo, C_Integer_Size);
-          Source.Read(md5[0], 16);
+          if compToken = 3 then
+            begin
+              source.Read(compsizeInfo32, C_Cardinal_Size);
+              compsizeInfo := compsizeInfo32;
+            end
+          else
+            begin
+              source.Read(compsizeInfo64, C_Int64_Size);
+              compsizeInfo := compsizeInfo64;
+            end;
+          source.Read(md5[0], 16);
 
           if FCompressorBRRC = nil then
               FCompressorBRRC := TCompressorBRRC.Create;
-          CoreDecompressStream(FCompressorBRRC, Source, StoreStream);
+          CoreDecompressStream(FCompressorBRRC, source, StoreStream);
 
           StoreStream.Position := 0;
           if (not FastMode) and (not umlIsNullMD5(md5)) then
@@ -4542,12 +4731,21 @@ begin
                 Exit;
               end;
         end
-      else if compToken = 4 then
+      else if compToken in [4, 44] then
         begin
-          Source.Read(compSizeInfo, C_Integer_Size);
-          Source.Read(md5[0], 16);
+          if compToken = 4 then
+            begin
+              source.Read(compsizeInfo32, C_Cardinal_Size);
+              compsizeInfo := compsizeInfo32;
+            end
+          else
+            begin
+              source.Read(compsizeInfo64, C_Int64_Size);
+              compsizeInfo := compsizeInfo64;
+            end;
+          source.Read(md5[0], 16);
 
-          ParallelDecompressStream(Source, StoreStream);
+          ParallelDecompressStream(source, StoreStream);
 
           StoreStream.Position := 0;
           if (not FastMode) and (not umlIsNullMD5(md5)) then
@@ -4565,8 +4763,8 @@ begin
       for i := 0 to cnt - 1 do
         begin
           StoreStream.Read64(ID, C_Byte_Size);
-          b := AddData(ByteToDataType(ID));
-          b.LoadFromStream(StoreStream);
+          DataFrame_ := AddData(ByteToDataType(ID));
+          DataFrame_.LoadFromStream(StoreStream);
         end;
       DisposeObject(StoreStream);
       Result := cnt;
@@ -4579,9 +4777,9 @@ begin
     end;
 end;
 
-function TDataFrameEngine.DecodeFrom(Source: TCoreClassStream): Integer;
+function TDataFrameEngine.DecodeFrom(source: TCoreClassStream): Integer;
 begin
-  Result := DecodeFrom(Source, False);
+  Result := DecodeFrom(source, False);
 end;
 
 procedure TDataFrameEngine.EncodeToBytes(const Compressed, FastMode: Boolean; var output: TBytes);
@@ -4599,22 +4797,22 @@ begin
   DisposeObject(enStream);
 end;
 
-procedure TDataFrameEngine.DecodeFromBytes(var b: TBytes);
+procedure TDataFrameEngine.DecodeFromBytes(var buff: TBytes);
 begin
-  DecodeFromBytes(b, False);
+  DecodeFromBytes(buff, False);
 end;
 
-procedure TDataFrameEngine.DecodeFromBytes(var b: TBytes; const FastMode: Boolean);
+procedure TDataFrameEngine.DecodeFromBytes(var buff: TBytes; const FastMode: Boolean);
 var
   enStream: TMemoryStream64;
 begin
   enStream := TMemoryStream64.Create;
-  enStream.SetPointerWithProtectedMode(@b[0], length(b));
+  enStream.SetPointerWithProtectedMode(@buff[0], length(buff));
   DecodeFrom(enStream, FastMode);
   DisposeObject(enStream);
 end;
 
-function TDataFrameEngine.GetMD5(const FastMode: Boolean): UnicodeMixedLib.TMD5;
+function TDataFrameEngine.GetMD5(const FastMode: Boolean): TMD5;
 var
   enStream: TMemoryStream64;
 begin
@@ -4625,26 +4823,44 @@ begin
   DisposeObject(enStream);
 end;
 
-function TDataFrameEngine.Compare(dest: TDataFrameEngine): Boolean;
+function TDataFrameEngine.Compare(source: TDataFrameEngine): Boolean;
 var
-  m1, m2: UnicodeMixedLib.TMD5;
   i: Integer;
+  s1, s2: TMemoryStream64;
 begin
   Result := False;
 
-  // fast prepare compare
-  if Count <> dest.Count then
-      Exit;
-  for i := 0 to Count - 1 do
-    if FDataList[i].ClassType <> dest[i].ClassType then
-        Exit;
-  if ComputeEncodeSize <> dest.ComputeEncodeSize then
+  if Count <> source.Count then
       Exit;
 
-  // data compare
-  m1 := GetMD5(False);
-  m2 := dest.GetMD5(False);
-  Result := umlMD5Compare(m1, m2);
+  s1 := TMemoryStream64.CustomCreate(8192);
+  s2 := TMemoryStream64.CustomCreate(8192);
+  try
+    for i := 0 to Count - 1 do
+      begin
+        if FDataList[i].ClassType <> source[i].ClassType then
+            Exit;
+        if TDataFrameBase(FDataList[i]).FID <> TDataFrameBase(source[i]).FID then
+            Exit;
+        if TDataFrameBase(FDataList[i]).ComputeEncodeSize <> TDataFrameBase(source[i]).ComputeEncodeSize then
+            Exit;
+
+        s1.Clear;
+        s2.Clear;
+        TDataFrameBase(FDataList[i]).SaveToStream(s1);
+        TDataFrameBase(source[i]).SaveToStream(s2);
+        if s1.Size <> s2.Size then
+            Exit;
+        if not CompareMemory(s1.Memory, s2.Memory, s1.Size) then
+            Exit;
+        s1.Clear;
+        s2.Clear;
+      end;
+    Result := True;
+  finally
+    DisposeObject(s1);
+    DisposeObject(s2);
+  end;
 end;
 
 procedure TDataFrameEngine.LoadFromStream(stream: TCoreClassStream);
