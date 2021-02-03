@@ -80,7 +80,6 @@ end;
 
 function TMT19937Core.GenRand_MT19937(): Integer;
 var
-  th: TCoreClassThread;
   Y, K: Integer;
 begin
   if InternalRndSeed <> InternalOldRndSeed then
@@ -169,6 +168,15 @@ var
   p: PMD19937Core;
 begin
   th := TCoreClassThread.CurrentThread;
+
+  if (th is TCompute) and (TCompute(th).FRndInstance <> nil) then
+    begin
+      p := TCompute(th).FRndInstance;
+      p^.LastActivtedTime := GetTimeTick;
+      Result := p;
+      exit;
+    end;
+
   Result := nil;
 
   MT19937InternalCritical.Acquire;
@@ -496,33 +504,40 @@ end;
 constructor TMT19937Random.Create;
 begin
   inherited Create;
+  FInternalCritical := TCritical.Create;
   FRndInstance := InternalMT19937__();
   AtomInc(PMD19937Core(FRndInstance)^.Instance);
 end;
 
 destructor TMT19937Random.Destroy;
 begin
+  FInternalCritical.Free;
   AtomDec(PMD19937Core(FRndInstance)^.Instance);
   inherited Destroy;
 end;
 
 procedure TMT19937Random.Rndmize;
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
       InternalRndSeed := GetTimeTick;
+  FInternalCritical.Release;
 end;
 
 function TMT19937Random.Rand32(L: Integer): Integer;
 begin
+  FInternalCritical.Acquire;
   { otherwise we can return values = L (JM) }
   if (L < 0) then
       inc(L);
   with PMD19937Core(FRndInstance)^ do
       Result := Integer((Int64(Cardinal(GenRand_MT19937())) * L) shr 32);
+  FInternalCritical.Release;
 end;
 
 procedure TMT19937Random.Rand32(L: Integer; dest: PInteger; num: NativeInt);
 begin
+  FInternalCritical.Acquire;
   { otherwise we can return values = L (JM) }
   if (L < 0) then
       inc(L);
@@ -536,10 +551,12 @@ begin
           inc(dest);
         end;
     end;
+  FInternalCritical.Release;
 end;
 
 function TMT19937Random.Rand64(L: Int64): Int64;
 begin
+  FInternalCritical.Acquire;
   { always call random, so the random generator cycles (TP-compatible) (JM) }
   with PMD19937Core(FRndInstance)^ do
       Result := Int64((UInt64(Cardinal(GenRand_MT19937())) or ((UInt64(Cardinal(GenRand_MT19937())) shl 32))) and $7FFFFFFFFFFFFFFF);
@@ -547,10 +564,12 @@ begin
       Result := Result mod L
   else
       Result := 0;
+  FInternalCritical.Release;
 end;
 
 procedure TMT19937Random.Rand64(L: Int64; dest: PInt64; num: NativeInt);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
     begin
       while num > 0 do
@@ -564,20 +583,24 @@ begin
           inc(dest);
         end;
     end;
+  FInternalCritical.Release;
 end;
 
 function TMT19937Random.RandE: Extended;
 const
   f = Extended(1.0) / (Int64(1) shl 32);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
       Result := f * Cardinal(GenRand_MT19937());
+  FInternalCritical.Release;
 end;
 
 procedure TMT19937Random.RandE(dest: PExtended; num: NativeInt);
 const
   f = Extended(1.0) / (Int64(1) shl 32);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
     begin
       while num > 0 do
@@ -587,20 +610,24 @@ begin
           inc(dest);
         end;
     end;
+  FInternalCritical.Release;
 end;
 
 function TMT19937Random.RandF: Single;
 const
   f = Single(1.0) / (Int64(1) shl 32);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
       Result := f * Cardinal(GenRand_MT19937());
+  FInternalCritical.Release;
 end;
 
 procedure TMT19937Random.RandF(dest: PSingle; num: NativeInt);
 const
   f = Single(1.0) / (Int64(1) shl 32);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
     begin
       while num > 0 do
@@ -610,20 +637,24 @@ begin
           inc(dest);
         end;
     end;
+  FInternalCritical.Release;
 end;
 
 function TMT19937Random.RandD: Double;
 const
   f = Double(1.0) / (Int64(1) shl 32);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
       Result := f * Cardinal(GenRand_MT19937());
+  FInternalCritical.Release;
 end;
 
 procedure TMT19937Random.RandD(dest: PDouble; num: NativeInt);
 const
   f = Double(1.0) / (Int64(1) shl 32);
 begin
+  FInternalCritical.Acquire;
   with PMD19937Core(FRndInstance)^ do
     begin
       while num > 0 do
@@ -633,4 +664,10 @@ begin
           inc(dest);
         end;
     end;
+  FInternalCritical.Release;
+end;
+
+function TMT19937Random.RandBool: Boolean;
+begin
+  Result := ODD(Rand32(MaxInt));
 end;

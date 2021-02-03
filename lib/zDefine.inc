@@ -22,14 +22,18 @@
     {$MODE objfpc}
   {$ENDIF FPC_DELPHI_MODE}
 
+  {$ASMMODE INTEL}
   {$MODESWITCH AdvancedRecords}
   {$MODESWITCH NestedProcVars}
+  {$MODESWITCH NESTEDCOMMENTS}
   {$NOTES OFF}
   {$STACKFRAMES OFF}
   {$COPERATORS OFF}
   {$GOTO ON}
   {$INLINE ON}
-  {$MACRO OFF}
+  {$MACRO ON}
+  {$HINTS ON}
+  {$IEEEERRORS ON}
 
   {$DEFINE LITTLE_ENDIAN}
   {$UNDEF BIG_ENDIAN}
@@ -59,10 +63,10 @@
   // if rem this "FoldParallel" parallel for block program, thread can use linear address
   {$DEFINE FoldParallel}
 
-  // MT19937 of seed in the startup TComputeThread is 0
+  // MT19937 of seed in the startup TCompute is 0
   {$DEFINE MT19937SeedOnTComputeThreadIs0}
 
-  // automated loading common AI data sets on boot-time
+  // automated loading common AI datasets on boot-time
   {$DEFINE Z_AI_Dataset_Build_In}
 
   // With SMALL_RASTER_FONT_Build_In and LARGE_RASTER_FONT_Build_In, boot-time memory usage increase by 100M-200M and start-up time to be delay 100ms
@@ -88,24 +92,33 @@
   {$UNDEF debug}
   {$DEFINE release}
   {$DEFINE INLINE_ASM}
-  {$R-} { range check }
+  {$R-}
+  {$I-}
+  {$S-}
+  {$OPTIMIZATION OFF}
 {$ELSE FPC} { IF DELPHI }
+  {$DEFINE Delphi}
+
   {$DEFINE LITTLE_ENDIAN}
   {$UNDEF BIG_ENDIAN}
 
+  {$IFDEF ANDROID}
+    {$DEFINE FirstCharInZero}
+  {$ENDIF ANDROID}
+
+  {$IFDEF IOS}
+    {$DEFINE FirstCharInZero}
+  {$ENDIF IOS}
+
+  // delphi 10.4
   {$IFDEF VER340}
     {$UNDEF FirstCharInZero}
-  {$ELSE VER340}
-    {$IFDEF ANDROID}
-      {$DEFINE FirstCharInZero}
-    {$ENDIF ANDROID}
-
-    {$IFDEF IOS}
-      {$DEFINE FirstCharInZero}
-    {$ENDIF IOS}
   {$ENDIF VER340}
 
-  {$DEFINE Delphi}
+  // delphi 10.5
+  {$IFDEF VER350}
+    {$UNDEF FirstCharInZero}
+  {$ENDIF VER350}
 
   // nativeint as int or int64 type variable when Modifier is overload
   {$DEFINE OVERLOAD_NATIVEINT}
@@ -129,12 +142,24 @@
 
   // paper: Mersenne Twister: A 623-dimensionallyequidistributed uniformpseudorandom number generator
   // Using this paper replace of Delphi Random() and Randomize() function, work on xe 10.3 or laster
-  // {$DEFINE InstallMT19937CoreToDelphi}
+  {$UNDEF InstallMT19937CoreToDelphi}
 
-  // MT19937 of seed in the startup TComputeThread is 0
+  {$IFDEF VER330}
+    {$DEFINE InstallMT19937CoreToDelphi}
+  {$ENDIF VER330}
+
+  {$IFDEF VER340}
+    {$DEFINE InstallMT19937CoreToDelphi}
+  {$ENDIF VER340}
+
+  {$IFDEF VER350}
+    {$DEFINE InstallMT19937CoreToDelphi}
+  {$ENDIF VER350}
+
+  // MT19937 of seed in the startup TCompute is 0
   {$DEFINE MT19937SeedOnTComputeThreadIs0}
 
-  // automated loading common AI data sets on boot-time
+  // automated loading common AI datasets on boot-time
   // {$DEFINE Z_AI_Dataset_Build_In}
 
   // With SMALL_RASTER_FONT_Build_In and LARGE_RASTER_FONT_Build_In, boot-time memory usage increase by 100M-200M and start-up time to be delay 100ms
@@ -191,18 +216,40 @@
   {$Z1} { Minimum enum size }
 {$ENDIF FPC}
 
+// ZDB2.0 optimized TMemoryStream/TMemoryStream64 for Replace
+{$DEFINE ZDB2_Core_Used_Mem64}
 
+// Using fillchar replace of FillPtr
+// Maybe fillchar works on MMX / SSE2,
+// {$Define FillPtr_Used_FillChar}
+
+// Using Move replace of CopyPtr
+// {$Define CopyPtr_Used_Move}
+
+// Sequence packets default are opened in Physics-IO
+// Sequence package can support multi platform keep-alive mode
+// building a network CS system, the symmetry of compiler(FPC/Delphi) "UsedSequencePacket"
+{$DEFINE UsedSequencePacket}
+
+// Sequence package can support multi platform keep-alive mode
+// building a network CS system, the symmetry of compiler(FPC/Delphi) "UsedSequencePacketOnP2PVM"
+// Sequence packets default are closed in P2PVM-IO
+{$UNDEF UsedSequencePacketOnP2PVM}
 
 {$IFDEF DEBUG}
   // initialization status prompt
   {$DEFINE initializationStatus}
   // warning prompt
   {$WARNINGS ON}
+  // JPEG support can output debug info
+  {$UNDEF JPEG_Debug}
 {$ELSE DEBUG}
   // initialization status prompt
   {$UNDEF initializationStatus}
   // warning prompt
   {$WARNINGS OFF}
+  // JPEG support can output debug info
+  {$UNDEF JPEG_Debug}
 {$ENDIF DEBUG}
 
 {$HINTS OFF}

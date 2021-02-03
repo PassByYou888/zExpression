@@ -36,10 +36,14 @@ unit ListEngine;
 
 interface
 
-uses SysUtils, Classes, Variants, CoreClasses, PascalStrings;
+uses SysUtils, Classes, Variants, CoreClasses,
+{$IFDEF FPC}
+  FPCGenericStructlist,
+{$ENDIF FPC}
+  PascalStrings;
 
 type
-  TCounter = NativeUInt;
+  TSeedCounter = NativeUInt;
 
   TListBuffer = array of TCoreClassList;
   PListBuffer = ^TListBuffer;
@@ -61,7 +65,7 @@ type
     qHash: THash;
     LowerCaseName, OriginName: SystemString;
     Data: Pointer;
-    ID: TCounter;
+    ID: TSeedCounter;
     Prev, Next: PHashListData;
   end;
 
@@ -82,7 +86,7 @@ type
     FListBuffer: TListBuffer;
     FAutoFreeData: Boolean;
     FCount: NativeInt;
-    FIDCounter: TCounter;
+    FIDSeed: TSeedCounter;
     FIgnoreCase: Boolean;
     FAccessOptimization: Boolean;
     FOnFreePtr: TOnPtr;
@@ -96,9 +100,10 @@ type
     function GetKeyData(const Name: SystemString): PHashListData;
     function GetKeyValue(const Name: SystemString): Pointer;
 
-    procedure RebuildIDCounter;
+    procedure RebuildIDSeedCounter;
 
     procedure DoAdd(p: PHashListData);
+    procedure DoInsertBefore(p, insertTo_: PHashListData);
     procedure DoDelete(p: PHashListData);
     procedure DefaultDataFreeProc(p: Pointer);
 
@@ -109,21 +114,23 @@ type
     destructor Destroy; override;
     procedure Clear;
     procedure MergeTo(dest: THashList);
-    procedure GetNameList(var output: TArrayPascalString); overload;
+    procedure GetNameList(var Output_: TArrayPascalString); overload;
     procedure GetNameList(OutputList: TListString); overload;
     procedure GetNameList(OutputList: TListPascalString); overload;
+    procedure GetNameList(OutputList: TCoreClassStrings); overload;
     procedure GetListData(OutputList: TCoreClassList);
     function GetHashDataArray(): THashDataArray;
     procedure Delete(const Name: SystemString);
-    procedure Add(const Name: SystemString; _CustomData: Pointer; const OverWrite: Boolean); overload;
-    procedure Add(const Name: SystemString; _CustomData: Pointer); overload;
-    procedure SetValue(const Name: SystemString; const _CustomData: Pointer);
+    function Add(const Name: SystemString; Data_: Pointer; const Overwrite_: Boolean): PHashListData; overload;
+    procedure Add(const Name: SystemString; Data_: Pointer); overload;
+    procedure SetValue(const Name: SystemString; const Data_: Pointer);
+    function Insert(Name, InsertToBefore_: SystemString; Data_: Pointer; const Overwrite_: Boolean): PHashListData;
     function Find(const Name: SystemString): Pointer;
     function Exists(const Name: SystemString): Boolean;
     procedure SetHashBlockCount(HashPoolSize_: Integer);
 
-    property FirstPtr: PHashListData read FFirst;
-    property LastPtr: PHashListData read FLast;
+    property FirstPtr: PHashListData read FFirst write FFirst;
+    property LastPtr: PHashListData read FLast write FLast;
 
     function First: Pointer;
     function Last: Pointer;
@@ -131,9 +138,9 @@ type
     function GetPrev(const Name: SystemString): Pointer;
     function ListBuffer: PListBuffer;
 
-    procedure ProgressC(OnProgress: THashListLoopCall);
-    procedure ProgressM(OnProgress: THashListLoopMethod);
-    procedure ProgressP(OnProgress: THashListLoopProc);
+    procedure ProgressC(const OnProgress: THashListLoopCall);
+    procedure ProgressM(const OnProgress: THashListLoopMethod);
+    procedure ProgressP(const OnProgress: THashListLoopProc);
     procedure PrintHashReport;
 
     property AutoFreeData: Boolean read FAutoFreeData write FAutoFreeData;
@@ -154,16 +161,17 @@ type
     property MaxNameLen: NativeInt read FMaxNameLen;
     property MinNameLen: NativeInt read FMinNameLen;
   end;
+
+  PHashList = ^THashList;
 {$ENDREGION 'THashList'}
 {$REGION 'TInt64HashObjectList'}
-
   PInt64HashListObjectStruct = ^TInt64HashListObjectStruct;
 
   TInt64HashListObjectStruct = record
     qHash: THash;
     i64: Int64;
     Data: TCoreClassObject;
-    ID: TCounter;
+    ID: TSeedCounter;
     Prev, Next: PInt64HashListObjectStruct;
   end;
 
@@ -181,7 +189,7 @@ type
   private
     FListBuffer: TListBuffer;
     FCount: NativeInt;
-    FIDCounter: TCounter;
+    FIDSeed: TSeedCounter;
     FAccessOptimization: Boolean;
     FAutoFreeData: Boolean;
     FFirst: PInt64HashListObjectStruct;
@@ -192,9 +200,10 @@ type
     function Geti64Data(i64: Int64): PInt64HashListObjectStruct;
     function Geti64Val(i64: Int64): TCoreClassObject;
 
-    procedure RebuildIDCounter;
+    procedure RebuildIDSeedCounter;
 
     procedure DoAdd(p: PInt64HashListObjectStruct);
+    procedure DoInsertBefore(p, insertTo_: PInt64HashListObjectStruct);
     procedure DoDelete(p: PInt64HashListObjectStruct);
     procedure DefaultObjectFreeProc(Obj: TCoreClassObject);
     procedure DoDataFreeProc(Obj: TCoreClassObject);
@@ -205,16 +214,17 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(i64: Int64);
-    function Add(i64: Int64; _CustomData: TCoreClassObject; const OverWrite: Boolean): PInt64HashListObjectStruct;
-    procedure SetValue(i64: Int64; _CustomData: TCoreClassObject);
+    function Add(i64: Int64; Data_: TCoreClassObject; const Overwrite_: Boolean): PInt64HashListObjectStruct;
+    procedure SetValue(i64: Int64; Data_: TCoreClassObject);
+    function Insert(i64, InsertToBefore_: Int64; Data_: TCoreClassObject; const Overwrite_: Boolean): PInt64HashListObjectStruct;
     function Exists(i64: Int64): Boolean;
     procedure SetHashBlockCount(HashPoolSize_: Integer);
 
     procedure DeleteFirst;
     procedure DeleteLast;
 
-    property FirstPtr: PInt64HashListObjectStruct read FFirst;
-    property LastPtr: PInt64HashListObjectStruct read FLast;
+    property FirstPtr: PInt64HashListObjectStruct read FFirst write FFirst;
+    property LastPtr: PInt64HashListObjectStruct read FLast write FLast;
 
     function First: TCoreClassObject;
     function Last: TCoreClassObject;
@@ -222,9 +232,9 @@ type
     function GetPrev(i64: Int64): TCoreClassObject;
     function ListBuffer: PListBuffer;
 
-    procedure ProgressC(OnProgress: TInt64HashObjectListLoopCall);
-    procedure ProgressM(OnProgress: TInt64HashObjectListLoopMethod);
-    procedure ProgressP(OnProgress: TInt64HashObjectListLoopProc);
+    procedure ProgressC(const OnProgress: TInt64HashObjectListLoopCall);
+    procedure ProgressM(const OnProgress: TInt64HashObjectListLoopMethod);
+    procedure ProgressP(const OnProgress: TInt64HashObjectListLoopProc);
     // print hash status
     procedure PrintHashReport;
 
@@ -244,7 +254,7 @@ type
     qHash: THash;
     i64: Int64;
     Data: Pointer;
-    ID: TCounter;
+    ID: TSeedCounter;
     Prev, Next: PInt64HashListPointerStruct;
   end;
 
@@ -260,7 +270,7 @@ type
   private
     FListBuffer: TListBuffer;
     FCount: NativeInt;
-    FIDCounter: TCounter;
+    FIDSeed: TSeedCounter;
     FAccessOptimization: Boolean;
     FAutoFreeData: Boolean;
     FFirst: PInt64HashListPointerStruct;
@@ -272,9 +282,10 @@ type
     function Geti64Data(i64: Int64): PInt64HashListPointerStruct;
     function Geti64Val(i64: Int64): Pointer;
 
-    procedure RebuildIDCounter;
+    procedure RebuildIDSeedCounter;
 
     procedure DoAdd(p: PInt64HashListPointerStruct);
+    procedure DoInsertBefore(p, insertTo_: PInt64HashListPointerStruct);
     procedure DoDelete(p: PInt64HashListPointerStruct);
     procedure DefaultDataFreeProc(p: Pointer);
     procedure DoDataFreeProc(p: Pointer);
@@ -286,13 +297,14 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(i64: Int64);
-    function Add(i64: Int64; _CustomData: Pointer; const OverWrite: Boolean): PInt64HashListPointerStruct;
-    procedure SetValue(i64: Int64; _CustomData: Pointer);
+    function Add(i64: Int64; Data_: Pointer; const Overwrite_: Boolean): PInt64HashListPointerStruct;
+    procedure SetValue(i64: Int64; Data_: Pointer);
+    function Insert(i64, InsertToBefore_: Int64; Data_: Pointer; const Overwrite_: Boolean): PInt64HashListPointerStruct;
     function Exists(i64: Int64): Boolean;
     procedure SetHashBlockCount(HashPoolSize_: Integer);
 
-    property FirstPtr: PInt64HashListPointerStruct read FFirst;
-    property LastPtr: PInt64HashListPointerStruct read FLast;
+    property FirstPtr: PInt64HashListPointerStruct read FFirst write FFirst;
+    property LastPtr: PInt64HashListPointerStruct read FLast write FLast;
 
     function First: Pointer;
     function Last: Pointer;
@@ -300,9 +312,9 @@ type
     function GetPrev(i64: Int64): Pointer;
     function ListBuffer: PListBuffer;
 
-    procedure ProgressC(OnProgress: TInt64HashPointerListLoopCall);
-    procedure ProgressM(OnProgress: TInt64HashPointerListLoopMethod);
-    procedure ProgressP(OnProgress: TInt64HashPointerListLoopProc);
+    procedure ProgressC(const OnProgress: TInt64HashPointerListLoopCall);
+    procedure ProgressM(const OnProgress: TInt64HashPointerListLoopMethod);
+    procedure ProgressP(const OnProgress: TInt64HashPointerListLoopProc);
     // print hash status
     procedure PrintHashReport;
 
@@ -323,7 +335,7 @@ type
     qHash: THash;
     u32: UInt32;
     Data: TCoreClassObject;
-    ID: TCounter;
+    ID: TSeedCounter;
     Prev, Next: PUInt32HashListObjectStruct;
   end;
 
@@ -339,7 +351,7 @@ type
   private
     FListBuffer: TListBuffer;
     FCount: NativeInt;
-    FIDCounter: TCounter;
+    FIDSeed: TSeedCounter;
     FAccessOptimization: Boolean;
     FAutoFreeData: Boolean;
     FFirst: PUInt32HashListObjectStruct;
@@ -349,9 +361,10 @@ type
     function Getu32Data(u32: UInt32): PUInt32HashListObjectStruct;
     function Getu32Val(u32: UInt32): TCoreClassObject;
 
-    procedure RebuildIDCounter;
+    procedure RebuildIDSeedCounter;
 
     procedure DoAdd(p: PUInt32HashListObjectStruct);
+    procedure DoInsertBefore(p, insertTo_: PUInt32HashListObjectStruct);
     procedure DoDelete(p: PUInt32HashListObjectStruct);
     procedure DoDataFreeProc(Obj: TCoreClassObject);
   public
@@ -361,22 +374,23 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     procedure Delete(u32: UInt32);
-    function Add(u32: UInt32; _CustomData: TCoreClassObject; const OverWrite: Boolean): PUInt32HashListObjectStruct;
-    procedure SetValue(u32: UInt32; _CustomData: TCoreClassObject);
+    function Add(u32: UInt32; Data_: TCoreClassObject; const Overwrite_: Boolean): PUInt32HashListObjectStruct;
+    procedure SetValue(u32: UInt32; Data_: TCoreClassObject);
+    function Insert(u32, InsertToBefore_: UInt32; Data_: TCoreClassObject; const Overwrite_: Boolean): PUInt32HashListObjectStruct;
     function Exists(u32: UInt32): Boolean;
     procedure SetHashBlockCount(HashPoolSize_: Integer);
 
-    property FirstPtr: PUInt32HashListObjectStruct read FFirst;
-    property LastPtr: PUInt32HashListObjectStruct read FLast;
+    property FirstPtr: PUInt32HashListObjectStruct read FFirst write FFirst;
+    property LastPtr: PUInt32HashListObjectStruct read FLast write FLast;
 
     function First: TCoreClassObject;
     function Last: TCoreClassObject;
     function GetNext(u32: UInt32): TCoreClassObject;
     function GetPrev(u32: UInt32): TCoreClassObject;
     function ListBuffer: PListBuffer;
-    procedure ProgressC(OnProgress: TUInt32HashObjectListLoopCall);
-    procedure ProgressM(OnProgress: TUInt32HashObjectListLoopMethod);
-    procedure ProgressP(OnProgress: TUInt32HashObjectListLoopProc);
+    procedure ProgressC(const OnProgress: TUInt32HashObjectListLoopCall);
+    procedure ProgressM(const OnProgress: TUInt32HashObjectListLoopMethod);
+    procedure ProgressP(const OnProgress: TUInt32HashObjectListLoopProc);
     //
     function ExistsObject(Obj: TCoreClassObject): Boolean;
 
@@ -397,7 +411,7 @@ type
     qHash: THash;
     u32: UInt32;
     Data: Pointer;
-    ID: TCounter;
+    ID: TSeedCounter;
     Prev, Next: PUInt32HashListPointerStruct;
   end;
 
@@ -413,7 +427,7 @@ type
   private
     FListBuffer: TListBuffer;
     FCount: NativeInt;
-    FIDCounter: TCounter;
+    FIDSeed: TSeedCounter;
     FAccessOptimization: Boolean;
     FAutoFreeData: Boolean;
     FFirst: PUInt32HashListPointerStruct;
@@ -425,9 +439,10 @@ type
     function Getu32Data(u32: UInt32): PUInt32HashListPointerStruct;
     function Getu32Val(u32: UInt32): Pointer;
 
-    procedure RebuildIDCounter;
+    procedure RebuildIDSeedCounter;
 
     procedure DoAdd(p: PUInt32HashListPointerStruct);
+    procedure DoInsertBefore(p, insertTo_: PUInt32HashListPointerStruct);
     procedure DoDelete(p: PUInt32HashListPointerStruct);
     procedure DoDataFreeProc(pData: Pointer);
     procedure DoAddDataNotifyProc(pData: Pointer);
@@ -438,22 +453,23 @@ type
     procedure Clear;
     procedure GetListData(OutputList: TCoreClassList);
     function Delete(u32: UInt32): Boolean;
-    function Add(u32: UInt32; _CustomData: Pointer; const OverWrite: Boolean): PUInt32HashListPointerStruct;
-    procedure SetValue(u32: UInt32; _CustomData: Pointer);
+    function Add(u32: UInt32; Data_: Pointer; const Overwrite_: Boolean): PUInt32HashListPointerStruct;
+    procedure SetValue(u32: UInt32; Data_: Pointer);
+    function Insert(u32, InsertToBefore_: UInt32; Data_: Pointer; const Overwrite_: Boolean): PUInt32HashListPointerStruct;
     function Exists(u32: UInt32): Boolean;
     procedure SetHashBlockCount(HashPoolSize_: Integer);
 
-    property FirstPtr: PUInt32HashListPointerStruct read FFirst;
-    property LastPtr: PUInt32HashListPointerStruct read FLast;
+    property FirstPtr: PUInt32HashListPointerStruct read FFirst write FFirst;
+    property LastPtr: PUInt32HashListPointerStruct read FLast write FLast;
 
     function First: Pointer;
     function Last: Pointer;
     function GetNext(u32: UInt32): Pointer;
     function GetPrev(u32: UInt32): Pointer;
     function ListBuffer: PListBuffer;
-    procedure ProgressC(OnProgress: TUInt32HashPointerListLoopCall);
-    procedure ProgressM(OnProgress: TUInt32HashPointerListLoopMethod);
-    procedure ProgressP(OnProgress: TUInt32HashPointerListLoopProc);
+    procedure ProgressC(const OnProgress: TUInt32HashPointerListLoopCall);
+    procedure ProgressM(const OnProgress: TUInt32HashPointerListLoopMethod);
+    procedure ProgressP(const OnProgress: TUInt32HashPointerListLoopProc);
     //
     function ExistsPointer(pData: Pointer): Boolean;
 
@@ -476,7 +492,7 @@ type
     qHash: THash;
     NPtr: Pointer;
     Data: NativeUInt;
-    ID: TCounter;
+    ID: TSeedCounter;
     Prev, Next: PPointerHashListNativeUIntStruct;
   end;
 
@@ -489,13 +505,12 @@ type
 {$ENDIF FPC}
 
   TPointerHashNativeUIntList = class(TCoreClassObject)
-  public
-    const
+  public const
     NullValue = 0;
   private
     FListBuffer: TListBuffer;
     FCount: NativeInt;
-    FIDCounter: TCounter;
+    FIDSeed: TSeedCounter;
     FAccessOptimization: Boolean;
     FFirst: PPointerHashListNativeUIntStruct;
     FLast: PPointerHashListNativeUIntStruct;
@@ -506,9 +521,10 @@ type
     function GetNPtrData(NPtr: Pointer): PPointerHashListNativeUIntStruct;
     function GetNPtrVal(NPtr: Pointer): NativeUInt;
 
-    procedure RebuildIDCounter;
+    procedure RebuildIDSeedCounter;
 
     procedure DoAdd(p: PPointerHashListNativeUIntStruct);
+    procedure DoInsertBefore(p, insertTo_: PPointerHashListNativeUIntStruct);
     procedure DoDelete(p: PPointerHashListNativeUIntStruct);
   public
     constructor Create;
@@ -518,22 +534,23 @@ type
     procedure FastClear;
     procedure GetListData(OutputList: TCoreClassList);
     function Delete(NPtr: Pointer): Boolean;
-    function Add(NPtr: Pointer; _CustomData: NativeUInt; const OverWrite: Boolean): PPointerHashListNativeUIntStruct;
-    procedure SetValue(NPtr: Pointer; _CustomData: NativeUInt);
+    function Add(NPtr: Pointer; Data_: NativeUInt; const Overwrite_: Boolean): PPointerHashListNativeUIntStruct;
+    procedure SetValue(NPtr: Pointer; Data_: NativeUInt);
+    function Insert(NPtr, InsertToBefore_: Pointer; Data_: NativeUInt; const Overwrite_: Boolean): PPointerHashListNativeUIntStruct;
     function Exists(NPtr: Pointer): Boolean;
     procedure SetHashBlockCount(HashPoolSize_: Integer);
 
-    property FirstPtr: PPointerHashListNativeUIntStruct read FFirst;
-    property LastPtr: PPointerHashListNativeUIntStruct read FLast;
+    property FirstPtr: PPointerHashListNativeUIntStruct read FFirst write FFirst;
+    property LastPtr: PPointerHashListNativeUIntStruct read FLast write FLast;
 
     function First: NativeUInt;
     function Last: NativeUInt;
     function GetNext(NPtr: Pointer): NativeUInt;
     function GetPrev(NPtr: Pointer): NativeUInt;
     function ListBuffer: PListBuffer;
-    procedure ProgressC(OnProgress: TPointerHashNativeUIntListLoopCall);
-    procedure ProgressM(OnProgress: TPointerHashNativeUIntListLoopMethod);
-    procedure ProgressP(OnProgress: TPointerHashNativeUIntListLoopProc);
+    procedure ProgressC(const OnProgress: TPointerHashNativeUIntListLoopCall);
+    procedure ProgressM(const OnProgress: TPointerHashNativeUIntListLoopMethod);
+    procedure ProgressP(const OnProgress: TPointerHashNativeUIntListLoopProc);
     //
     function ExistsNaviveUInt(Obj: NativeUInt): Boolean;
 
@@ -596,9 +613,9 @@ type
 
     procedure Assign(sour: THashObjectList);
 
-    procedure ProgressC(OnProgress: THashObjectListLoopCall);
-    procedure ProgressM(OnProgress: THashObjectListLoopMethod);
-    procedure ProgressP(OnProgress: THashObjectListLoopProc);
+    procedure ProgressC(const OnProgress: THashObjectListLoopCall);
+    procedure ProgressM(const OnProgress: THashObjectListLoopMethod);
+    procedure ProgressP(const OnProgress: THashObjectListLoopProc);
     //
     procedure Clear;
     procedure GetNameList(OutputList: TCoreClassStrings); overload;
@@ -680,9 +697,14 @@ type
     procedure Assign(sour: THashStringList);
     procedure MergeTo(dest: THashStringList);
     //
-    procedure ProgressC(OnProgress: THashStringListLoopCall);
-    procedure ProgressM(OnProgress: THashStringListLoopMethod);
-    procedure ProgressP(OnProgress: THashStringListLoopProc);
+    procedure ProgressC(const OnProgress: THashStringListLoopCall);
+    procedure ProgressM(const OnProgress: THashStringListLoopMethod);
+    procedure ProgressP(const OnProgress: THashStringListLoopProc);
+    //
+    function FirstName: SystemString;
+    function LastName: SystemString;
+    function FirstData: PHashStringListData;
+    function LastData: PHashStringListData;
     //
     procedure Clear;
     //
@@ -703,7 +725,7 @@ type
     function GetDefaultValue(const Name: SystemString; AValue: SystemString): SystemString;
     procedure SetDefaultValue(const Name: SystemString; AValue: SystemString);
 
-    function ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var output: SystemString): Boolean;
+    function ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var Output_: SystemString): Boolean;
 
     property AutoUpdateDefaultValue: Boolean read FAutoUpdateDefaultValue write FAutoUpdateDefaultValue;
     property AccessOptimization: Boolean read GetAccessOptimization write SetAccessOptimization;
@@ -721,8 +743,8 @@ type
     procedure SaveToStream(stream: TCoreClassStream);
     procedure LoadFromFile(FileName: SystemString);
     procedure SaveToFile(FileName: SystemString);
-    procedure ExportAsStrings(output: TListPascalString); overload;
-    procedure ExportAsStrings(output: TCoreClassStrings); overload;
+    procedure ExportAsStrings(Output_: TListPascalString); overload;
+    procedure ExportAsStrings(Output_: TCoreClassStrings); overload;
     procedure ImportFromStrings(input: TListPascalString); overload;
     procedure ImportFromStrings(input: TCoreClassStrings); overload;
     function GetAsText: SystemString;
@@ -760,9 +782,10 @@ type
 
     property StringList: THashStringList read FStringList write FStringList;
   end;
+
+  PHashStringList = ^THashStringList;
 {$ENDREGION 'THashStringList'}
 {$REGION 'THashVariantList'}
-
   THashVariantChangeEvent = procedure(Sender: THashVariantList; Name: SystemString; _OLD, _New: Variant) of object;
 
   THashVariantListData = record
@@ -818,9 +841,14 @@ type
     //
     procedure Assign(sour: THashVariantList);
     //
-    procedure ProgressC(OnProgress: THashVariantListLoopCall);
-    procedure ProgressM(OnProgress: THashVariantListLoopMethod);
-    procedure ProgressP(OnProgress: THashVariantListLoopProc);
+    procedure ProgressC(const OnProgress: THashVariantListLoopCall);
+    procedure ProgressM(const OnProgress: THashVariantListLoopMethod);
+    procedure ProgressP(const OnProgress: THashVariantListLoopProc);
+    //
+    function FirstName: SystemString;
+    function LastName: SystemString;
+    function FirstData: PHashVariantListData;
+    function LastData: PHashVariantListData;
     //
     procedure Clear;
     //
@@ -848,7 +876,7 @@ type
     function GetDefaultValue(const Name: SystemString; AValue: Variant): Variant;
     procedure SetDefaultValue(const Name: SystemString; AValue: Variant);
 
-    function ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var output: SystemString): Boolean;
+    function ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var Output_: SystemString): Boolean;
 
     property AutoUpdateDefaultValue: Boolean read FAutoUpdateDefaultValue write FAutoUpdateDefaultValue;
     property AccessOptimization: Boolean read GetAccessOptimization write SetAccessOptimization;
@@ -870,8 +898,8 @@ type
     procedure SaveToStream(stream: TCoreClassStream);
     procedure LoadFromFile(FileName: SystemString);
     procedure SaveToFile(FileName: SystemString);
-    procedure ExportAsStrings(output: TListPascalString); overload;
-    procedure ExportAsStrings(output: TCoreClassStrings); overload;
+    procedure ExportAsStrings(Output_: TListPascalString); overload;
+    procedure ExportAsStrings(Output_: TCoreClassStrings); overload;
     procedure ImportFromStrings(input: TListPascalString); overload;
     procedure ImportFromStrings(input: TCoreClassStrings); overload;
     function GetAsText: SystemString;
@@ -914,6 +942,8 @@ type
     property NameValue[Name_: SystemString]: Variant read GetKeyValue write SetKeyValue; default;
     property VariantList: THashVariantList read FVariantList write FVariantList;
   end;
+
+  PHashVariantList = ^THashVariantList;
 {$ENDREGION 'THashVariantList'}
 {$REGION 'TListCardinal'}
 
@@ -980,6 +1010,7 @@ type
     property Items[idx: Integer]: Int64 read GetItems write SetItems; default;
     property List: TCoreClassList read FList;
   end;
+
 {$ENDREGION 'TListInt64'}
 {$REGION 'TListNativeInt'}
 
@@ -1192,11 +1223,12 @@ type
     procedure Assign(SameObj: TListPascalString); overload;
     procedure Assign(sour: TCoreClassStrings); overload;
     procedure AssignTo(dest: TCoreClassStrings); overload;
+    procedure AssignTo(dest: TListPascalString); overload;
 
     procedure AddStrings(sour: TListPascalString); overload;
     procedure AddStrings(sour: TCoreClassStrings); overload;
 
-    procedure FillTo(var output: TArrayPascalString); overload;
+    procedure FillTo(var Output_: TArrayPascalString); overload;
     procedure FillFrom(const InData: TArrayPascalString);
 
     procedure LoadFromStream(stream: TCoreClassStream);
@@ -1204,7 +1236,7 @@ type
     procedure LoadFromFile(fn: SystemString);
     procedure SaveToFile(fn: SystemString);
 
-    property Text: SystemString read GetText write SetText;
+    property AsText: SystemString read GetText write SetText;
 
     property Items[idx: Integer]: TPascalString read GetItems write SetItems; default;
     property Items_PPascalString[idx: Integer]: PPascalString read GetItems_PPascalString;
@@ -1389,7 +1421,21 @@ type
     property Owner: TCoreClassObject read FOwner write FOwner;
   end;
 {$ENDREGION 'TBackcalls'}
+{$REGION 'Generics decl'}
 
+  TGUInt8List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Byte>;
+  TGInt8List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<ShortInt>;
+  TGUInt16List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Word>;
+  TGInt16List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<SmallInt>;
+  TGUInt32List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Cardinal>;
+  TGInt32List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Integer>;
+  TGUInt64List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<UInt64>;
+  TGInt64List = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Int64>;
+
+  TGSingleList = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Single>;
+  TGFloatList = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Single>;
+  TGDoubleList = {$IFDEF FPC}specialize {$ENDIF FPC} TGenericsList<Double>;
+{$ENDREGION 'Generics decl'}
 
 function HashMod(const h: THash; const m: Integer): Integer; {$IFDEF INLINE_ASM} inline; {$ENDIF}
 // fast hash support
@@ -1399,8 +1445,8 @@ function MakeHashI64(const i64: Int64): THash; {$IFDEF INLINE_ASM} inline; {$END
 function MakeHashU32(const c32: Cardinal): THash; {$IFDEF INLINE_ASM} inline; {$ENDIF}
 function MakeHashP(const p: Pointer): THash; {$IFDEF INLINE_ASM} inline; {$ENDIF}
 
-procedure DoStatus(const v: TListPascalString); overload;
-procedure DoStatus(const v: TListString); overload;
+procedure DoStatusL(const v: TListPascalString); overload;
+procedure DoStatusL(const v: TListString); overload;
 
 implementation
 
@@ -1445,7 +1491,7 @@ begin
   Result := umlCRC32(@p, C_Pointer_Size);
 end;
 
-procedure DoStatus(const v: TListPascalString);
+procedure DoStatusL(const v: TListPascalString);
 var
   i: Integer;
   o: TCoreClassObject;
@@ -1460,7 +1506,7 @@ begin
     end;
 end;
 
-procedure DoStatus(const v: TListString);
+procedure DoStatusL(const v: TListString);
 var
   i: Integer;
   o: TCoreClassObject;
@@ -1509,7 +1555,7 @@ begin
           begin
             Result := pData;
 
-            if (FAccessOptimization) and (pData^.ID < FIDCounter - 1) then
+            if (FAccessOptimization) and (pData^.ID < FIDSeed - 1) then
               begin
                 DoDelete(pData);
                 if i < lst.Count - 1 then
@@ -1517,14 +1563,13 @@ begin
                     lst.Delete(i);
                     lst.Add(pData);
                   end;
-                pData^.ID := FIDCounter;
+                pData^.ID := FIDSeed;
                 DoAdd(pData);
 
-                if FIDCounter > FIDCounter + 1 then
-                  // rebuild idcounter
-                    RebuildIDCounter
+                if FIDSeed > FIDSeed + 1 then
+                    RebuildIDSeedCounter // rebuild seed
                 else
-                    inc(FIDCounter);
+                    inc(FIDSeed);
               end;
 
             Exit;
@@ -1543,7 +1588,7 @@ begin
       Result := nil;
 end;
 
-procedure THashList.RebuildIDCounter;
+procedure THashList.RebuildIDSeedCounter;
 var
   i: Integer;
   p: PHashListData;
@@ -1557,7 +1602,7 @@ begin
       p := p^.Next;
     end;
 
-  FIDCounter := i + 1;
+  FIDSeed := i + 1;
 end;
 
 procedure THashList.DoAdd(p: PHashListData);
@@ -1587,15 +1632,35 @@ begin
     end;
 end;
 
+procedure THashList.DoInsertBefore(p, insertTo_: PHashListData);
+var
+  FP: PHashListData;
+begin
+  if FFirst = insertTo_ then
+      FFirst := p;
+
+  FP := insertTo_^.Prev;
+
+  if FP^.Next = insertTo_ then
+      FP^.Next := p;
+  if FP^.Prev = insertTo_ then
+      FP^.Prev := p;
+  if FP = insertTo_ then
+      insertTo_^.Prev := p;
+
+  p^.Prev := FP;
+  p^.Next := insertTo_;
+end;
+
 procedure THashList.DoDelete(p: PHashListData);
 var
-  FP, np: PHashListData;
+  FP, NP: PHashListData;
 begin
   FP := p^.Prev;
-  np := p^.Next;
+  NP := p^.Next;
 
   if p = FFirst then
-      FFirst := np;
+      FFirst := NP;
   if p = FLast then
       FLast := FP;
 
@@ -1606,8 +1671,8 @@ begin
       Exit;
     end;
 
-  FP^.Next := np;
-  np^.Prev := FP;
+  FP^.Next := NP;
+  NP^.Prev := FP;
 
   p^.Prev := nil;
   p^.Next := nil;
@@ -1636,7 +1701,7 @@ constructor THashList.CustomCreate(HashPoolSize_: Integer);
 begin
   inherited Create;
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FAutoFreeData := False;
   FIgnoreCase := True;
   FAccessOptimization := False;
@@ -1664,7 +1729,7 @@ var
   pData: PHashListData;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
   FMaxNameLen := -1;
@@ -1714,19 +1779,19 @@ begin
     end;
 end;
 
-procedure THashList.GetNameList(var output: TArrayPascalString);
+procedure THashList.GetNameList(var Output_: TArrayPascalString);
 var
   i: Integer;
   p: PHashListData;
 begin
-  SetLength(output, Count);
+  SetLength(Output_, Count);
   if FCount > 0 then
     begin
       i := 0;
       p := FFirst;
       while i < FCount do
         begin
-          output[i] := p^.OriginName;
+          Output_[i] := p^.OriginName;
           inc(i);
           p := p^.Next;
         end;
@@ -1753,6 +1818,25 @@ begin
 end;
 
 procedure THashList.GetNameList(OutputList: TListPascalString);
+var
+  i: Integer;
+  p: PHashListData;
+begin
+  OutputList.Clear;
+  if FCount > 0 then
+    begin
+      i := 0;
+      p := FFirst;
+      while i < FCount do
+        begin
+          OutputList.Add(p^.OriginName);
+          inc(i);
+          p := p^.Next;
+        end;
+    end;
+end;
+
+procedure THashList.GetNameList(OutputList: TCoreClassStrings);
 var
   i: Integer;
   p: PHashListData;
@@ -1854,13 +1938,13 @@ begin
 
   if FCount = 0 then
     begin
-      FIDCounter := 1;
+      FIDSeed := 1;
       FMaxNameLen := -1;
       FMinNameLen := -1;
     end;
 end;
 
-procedure THashList.Add(const Name: SystemString; _CustomData: Pointer; const OverWrite: Boolean);
+function THashList.Add(const Name: SystemString; Data_: Pointer; const Overwrite_: Boolean): PHashListData;
 var
   newhash: THash;
   L: NativeInt;
@@ -1890,7 +1974,7 @@ begin
     end;
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (OverWrite) then
+  if (lst.Count > 0) and (Overwrite_) then
     begin
       for i := 0 to lst.Count - 1 do
         begin
@@ -1898,31 +1982,31 @@ begin
           if (newhash = pData^.qHash) and (lName = pData^.LowerCaseName) then
             begin
               DoDelete(pData);
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
+              Result := pData;
 
               DoAdd(pData);
 
-              if (pData^.ID < FIDCounter - 1) then
+              if (pData^.ID < FIDSeed - 1) then
                 begin
                   if i < lst.Count - 1 then
                     begin
                       lst.Delete(i);
                       lst.Add(pData);
                     end;
-                  pData^.ID := FIDCounter;
+                  pData^.ID := FIDSeed;
 
-                  if FIDCounter > FIDCounter + 1 then
-                    // rebuild idcounter
-                      RebuildIDCounter
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
                   else
-                      inc(FIDCounter);
+                      inc(FIDSeed);
                 end;
 
               Exit;
@@ -1934,29 +2018,27 @@ begin
   pData^.qHash := newhash;
   pData^.LowerCaseName := lName;
   pData^.OriginName := Name;
-  pData^.Data := _CustomData;
-  pData^.ID := FIDCounter;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
   pData^.Prev := nil;
   pData^.Next := nil;
   lst.Add(pData);
+  Result := pData;
   inc(FCount);
-
   DoAdd(pData);
 
-  if FIDCounter > FIDCounter + 1 then
-    // rebuild idcounter
-      RebuildIDCounter
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
   else
-      inc(FIDCounter);
-
+      inc(FIDSeed);
 end;
 
-procedure THashList.Add(const Name: SystemString; _CustomData: Pointer);
+procedure THashList.Add(const Name: SystemString; Data_: Pointer);
 begin
-  Add(Name, _CustomData, True);
+  Add(Name, Data_, True);
 end;
 
-procedure THashList.SetValue(const Name: SystemString; const _CustomData: Pointer);
+procedure THashList.SetValue(const Name: SystemString; const Data_: Pointer);
 var
   newhash: THash;
   L: NativeInt;
@@ -1994,14 +2076,14 @@ begin
         pData := PHashListData(lst[i]);
         if (newhash = pData^.qHash) and (lName = pData^.LowerCaseName) then
           begin
-            if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+            if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
               begin
                 try
                     DoDataFreeProc(pData^.Data);
                 except
                 end;
               end;
-            pData^.Data := _CustomData;
+            pData^.Data := Data_;
             Done := True;
           end;
       end;
@@ -2012,8 +2094,8 @@ begin
       pData^.qHash := newhash;
       pData^.LowerCaseName := lName;
       pData^.OriginName := Name;
-      pData^.Data := _CustomData;
-      pData^.ID := FIDCounter;
+      pData^.Data := Data_;
+      pData^.ID := FIDSeed;
       pData^.Prev := nil;
       pData^.Next := nil;
       lst.Add(pData);
@@ -2021,12 +2103,107 @@ begin
 
       DoAdd(pData);
 
-      if FIDCounter > FIDCounter + 1 then
-        // rebuild idcounter
-          RebuildIDCounter
+      if FIDSeed > FIDSeed + 1 then
+          RebuildIDSeedCounter // rebuild seed
       else
-          inc(FIDCounter);
+          inc(FIDSeed);
     end;
+end;
+
+function THashList.Insert(Name, InsertToBefore_: SystemString; Data_: Pointer; const Overwrite_: Boolean): PHashListData;
+var
+  newhash: THash;
+  L: NativeInt;
+  lst: TCoreClassList;
+  i: Integer;
+  lName: SystemString;
+  InsertDest_, pData: PHashListData;
+begin
+  InsertDest_ := NameData[InsertToBefore_];
+  if InsertDest_ = nil then
+    begin
+      Result := Add(Name, Data_, Overwrite_);
+      Exit;
+    end;
+
+  if FIgnoreCase then
+      lName := LowerCase(Name)
+  else
+      lName := Name;
+  newhash := MakeHashS(@lName);
+
+  L := Length(lName);
+  if Count > 0 then
+    begin
+      if L > FMaxNameLen then
+          FMaxNameLen := L;
+      if L < FMinNameLen then
+          FMinNameLen := L;
+    end
+  else
+    begin
+      FMaxNameLen := L;
+      FMinNameLen := L;
+    end;
+
+  lst := GetListTable(newhash, True);
+  if (lst.Count > 0) and (Overwrite_) then
+    begin
+      for i := 0 to lst.Count - 1 do
+        begin
+          pData := PHashListData(lst[i]);
+          if (newhash = pData^.qHash) and (lName = pData^.LowerCaseName) then
+            begin
+              DoDelete(pData);
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
+                begin
+                  try
+                      DoDataFreeProc(pData^.Data);
+                  except
+                  end;
+                end;
+              pData^.Data := Data_;
+              Result := pData;
+
+              DoInsertBefore(pData, InsertDest_);
+
+              if (pData^.ID < FIDSeed - 1) then
+                begin
+                  if i < lst.Count - 1 then
+                    begin
+                      lst.Delete(i);
+                      lst.Add(pData);
+                    end;
+                  pData^.ID := FIDSeed;
+
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
+                  else
+                      inc(FIDSeed);
+                end;
+
+              Exit;
+            end;
+        end;
+    end;
+
+  new(pData);
+  pData^.qHash := newhash;
+  pData^.LowerCaseName := lName;
+  pData^.OriginName := Name;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
+  pData^.Prev := nil;
+  pData^.Next := nil;
+  lst.Add(pData);
+  Result := pData;
+  inc(FCount);
+  DoInsertBefore(pData, InsertDest_);
+
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
+  else
+      inc(FIDSeed);
 end;
 
 function THashList.Find(const Name: SystemString): Pointer;
@@ -2140,7 +2317,7 @@ begin
   Result := @FListBuffer;
 end;
 
-procedure THashList.ProgressC(OnProgress: THashListLoopCall);
+procedure THashList.ProgressC(const OnProgress: THashListLoopCall);
 var
   i: NativeInt;
   p: PHashListData;
@@ -2161,7 +2338,7 @@ begin
     end;
 end;
 
-procedure THashList.ProgressM(OnProgress: THashListLoopMethod);
+procedure THashList.ProgressM(const OnProgress: THashListLoopMethod);
 var
   i: NativeInt;
   p: PHashListData;
@@ -2182,7 +2359,7 @@ begin
     end;
 end;
 
-procedure THashList.ProgressP(OnProgress: THashListLoopProc);
+procedure THashList.ProgressP(const OnProgress: THashListLoopProc);
 var
   i: NativeInt;
   p: PHashListData;
@@ -2269,7 +2446,7 @@ begin
         if (newhash = pData^.qHash) and (i64 = pData^.i64) then
           begin
             Result := pData;
-            if (FAccessOptimization) and (pData^.ID < FIDCounter - 1) then
+            if (FAccessOptimization) and (pData^.ID < FIDSeed - 1) then
               begin
                 DoDelete(pData);
                 if i < lst.Count - 1 then
@@ -2277,14 +2454,13 @@ begin
                     lst.Delete(i);
                     lst.Add(pData);
                   end;
-                pData^.ID := FIDCounter;
+                pData^.ID := FIDSeed;
                 DoAdd(pData);
 
-                if FIDCounter > FIDCounter + 1 then
-                  // rebuild idcounter
-                    RebuildIDCounter
+                if FIDSeed > FIDSeed + 1 then
+                    RebuildIDSeedCounter // rebuild seed
                 else
-                    inc(FIDCounter);
+                    inc(FIDSeed);
               end;
             Exit;
           end;
@@ -2302,7 +2478,7 @@ begin
       Result := nil;
 end;
 
-procedure TInt64HashObjectList.RebuildIDCounter;
+procedure TInt64HashObjectList.RebuildIDSeedCounter;
 var
   i: Integer;
   p: PInt64HashListObjectStruct;
@@ -2316,7 +2492,7 @@ begin
       p := p^.Next;
     end;
 
-  FIDCounter := i + 1;
+  FIDSeed := i + 1;
 end;
 
 procedure TInt64HashObjectList.DoAdd(p: PInt64HashListObjectStruct);
@@ -2346,15 +2522,35 @@ begin
     end;
 end;
 
+procedure TInt64HashObjectList.DoInsertBefore(p, insertTo_: PInt64HashListObjectStruct);
+var
+  FP: PInt64HashListObjectStruct;
+begin
+  if FFirst = insertTo_ then
+      FFirst := p;
+
+  FP := insertTo_^.Prev;
+
+  if FP^.Next = insertTo_ then
+      FP^.Next := p;
+  if FP^.Prev = insertTo_ then
+      FP^.Prev := p;
+  if FP = insertTo_ then
+      insertTo_^.Prev := p;
+
+  p^.Prev := FP;
+  p^.Next := insertTo_;
+end;
+
 procedure TInt64HashObjectList.DoDelete(p: PInt64HashListObjectStruct);
 var
-  FP, np: PInt64HashListObjectStruct;
+  FP, NP: PInt64HashListObjectStruct;
 begin
   FP := p^.Prev;
-  np := p^.Next;
+  NP := p^.Next;
 
   if p = FFirst then
-      FFirst := np;
+      FFirst := NP;
   if p = FLast then
       FLast := FP;
 
@@ -2365,8 +2561,8 @@ begin
       Exit;
     end;
 
-  FP^.Next := np;
-  np^.Prev := FP;
+  FP^.Next := NP;
+  NP^.Prev := FP;
 
   p^.Prev := nil;
   p^.Next := nil;
@@ -2392,7 +2588,7 @@ constructor TInt64HashObjectList.CustomCreate(HashPoolSize_: Integer);
 begin
   inherited Create;
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FAccessOptimization := False;
   FAutoFreeData := False;
   FOnObjectFreeProc := {$IFDEF FPC}@{$ENDIF FPC}DefaultObjectFreeProc;
@@ -2416,7 +2612,7 @@ var
   pData: PInt64HashListObjectStruct;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
 
@@ -2505,10 +2701,10 @@ begin
     end;
 
   if FCount = 0 then
-      FIDCounter := 1;
+      FIDSeed := 1;
 end;
 
-function TInt64HashObjectList.Add(i64: Int64; _CustomData: TCoreClassObject; const OverWrite: Boolean): PInt64HashListObjectStruct;
+function TInt64HashObjectList.Add(i64: Int64; Data_: TCoreClassObject; const Overwrite_: Boolean): PInt64HashListObjectStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -2518,7 +2714,7 @@ begin
   newhash := MakeHashI64(i64);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (OverWrite) then
+  if (lst.Count > 0) and (Overwrite_) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -2526,32 +2722,31 @@ begin
           if (newhash = pData^.qHash) and (i64 = pData^.i64) then
             begin
               DoDelete(pData);
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Result := pData;
 
               DoAdd(pData);
 
-              if (pData^.ID < FIDCounter - 1) then
+              if (pData^.ID < FIDSeed - 1) then
                 begin
                   if i < lst.Count - 1 then
                     begin
                       lst.Delete(i);
                       lst.Add(pData);
                     end;
-                  pData^.ID := FIDCounter;
+                  pData^.ID := FIDSeed;
 
-                  if FIDCounter > FIDCounter + 1 then
-                    // rebuild idcounter
-                      RebuildIDCounter
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
                   else
-                      inc(FIDCounter);
+                      inc(FIDSeed);
                 end;
 
               Exit;
@@ -2562,8 +2757,8 @@ begin
   new(pData);
   pData^.qHash := newhash;
   pData^.i64 := i64;
-  pData^.Data := _CustomData;
-  pData^.ID := FIDCounter;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
   pData^.Prev := nil;
   pData^.Next := nil;
   lst.Add(pData);
@@ -2571,14 +2766,13 @@ begin
   inc(FCount);
   DoAdd(pData);
 
-  if FIDCounter > FIDCounter + 1 then
-    // rebuild idcounter
-      RebuildIDCounter
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
   else
-      inc(FIDCounter);
+      inc(FIDSeed);
 end;
 
-procedure TInt64HashObjectList.SetValue(i64: Int64; _CustomData: TCoreClassObject);
+procedure TInt64HashObjectList.SetValue(i64: Int64; Data_: TCoreClassObject);
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -2597,14 +2791,14 @@ begin
           pData := PInt64HashListObjectStruct(lst[i]);
           if (newhash = pData^.qHash) and (i64 = pData^.i64) then
             begin
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Done := True;
             end;
         end;
@@ -2615,20 +2809,94 @@ begin
       new(pData);
       pData^.qHash := newhash;
       pData^.i64 := i64;
-      pData^.Data := _CustomData;
-      pData^.ID := FIDCounter;
+      pData^.Data := Data_;
+      pData^.ID := FIDSeed;
       pData^.Prev := nil;
       pData^.Next := nil;
       lst.Add(pData);
       inc(FCount);
       DoAdd(pData);
 
-      if FIDCounter > FIDCounter + 1 then
-        // rebuild idcounter
-          RebuildIDCounter
+      if FIDSeed > FIDSeed + 1 then
+          RebuildIDSeedCounter // rebuild seed
       else
-          inc(FIDCounter);
+          inc(FIDSeed);
     end;
+end;
+
+function TInt64HashObjectList.Insert(i64, InsertToBefore_: Int64; Data_: TCoreClassObject; const Overwrite_: Boolean): PInt64HashListObjectStruct;
+var
+  newhash: THash;
+  lst: TCoreClassList;
+  i: Integer;
+  InsertDest_, pData: PInt64HashListObjectStruct;
+begin
+  InsertDest_ := i64Data[InsertToBefore_];
+  if InsertDest_ = nil then
+    begin
+      Result := Add(i64, Data_, Overwrite_);
+      Exit;
+    end;
+
+  newhash := MakeHashI64(i64);
+
+  lst := GetListTable(newhash, True);
+  if (lst.Count > 0) and (Overwrite_) then
+    begin
+      for i := lst.Count - 1 downto 0 do
+        begin
+          pData := PInt64HashListObjectStruct(lst[i]);
+          if (newhash = pData^.qHash) and (i64 = pData^.i64) then
+            begin
+              DoDelete(pData);
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
+                begin
+                  try
+                      DoDataFreeProc(pData^.Data);
+                  except
+                  end;
+                end;
+              pData^.Data := Data_;
+              Result := pData;
+
+              DoInsertBefore(pData, InsertDest_);
+
+              if (pData^.ID < FIDSeed - 1) then
+                begin
+                  if i < lst.Count - 1 then
+                    begin
+                      lst.Delete(i);
+                      lst.Add(pData);
+                    end;
+                  pData^.ID := FIDSeed;
+
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
+                  else
+                      inc(FIDSeed);
+                end;
+
+              Exit;
+            end;
+        end;
+    end;
+
+  new(pData);
+  pData^.qHash := newhash;
+  pData^.i64 := i64;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
+  pData^.Prev := nil;
+  pData^.Next := nil;
+  lst.Add(pData);
+  Result := pData;
+  inc(FCount);
+  DoInsertBefore(pData, InsertDest_);
+
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
+  else
+      inc(FIDSeed);
 end;
 
 function TInt64HashObjectList.Exists(i64: Int64): Boolean;
@@ -2720,7 +2988,7 @@ begin
   Result := @FListBuffer;
 end;
 
-procedure TInt64HashObjectList.ProgressC(OnProgress: TInt64HashObjectListLoopCall);
+procedure TInt64HashObjectList.ProgressC(const OnProgress: TInt64HashObjectListLoopCall);
 var
   i: NativeInt;
   p: PInt64HashListObjectStruct;
@@ -2741,7 +3009,7 @@ begin
     end;
 end;
 
-procedure TInt64HashObjectList.ProgressM(OnProgress: TInt64HashObjectListLoopMethod);
+procedure TInt64HashObjectList.ProgressM(const OnProgress: TInt64HashObjectListLoopMethod);
 var
   i: NativeInt;
   p: PInt64HashListObjectStruct;
@@ -2762,7 +3030,7 @@ begin
     end;
 end;
 
-procedure TInt64HashObjectList.ProgressP(OnProgress: TInt64HashObjectListLoopProc);
+procedure TInt64HashObjectList.ProgressP(const OnProgress: TInt64HashObjectListLoopProc);
 var
   i: NativeInt;
   p: PInt64HashListObjectStruct;
@@ -2849,7 +3117,7 @@ begin
         if (newhash = pData^.qHash) and (i64 = pData^.i64) then
           begin
             Result := pData;
-            if (FAccessOptimization) and (pData^.ID < FIDCounter - 1) then
+            if (FAccessOptimization) and (pData^.ID < FIDSeed - 1) then
               begin
                 DoDelete(pData);
                 if i < lst.Count - 1 then
@@ -2857,14 +3125,13 @@ begin
                     lst.Delete(i);
                     lst.Add(pData);
                   end;
-                pData^.ID := FIDCounter;
+                pData^.ID := FIDSeed;
                 DoAdd(pData);
 
-                if FIDCounter > FIDCounter + 1 then
-                  // rebuild idcounter
-                    RebuildIDCounter
+                if FIDSeed > FIDSeed + 1 then
+                    RebuildIDSeedCounter // rebuild seed
                 else
-                    inc(FIDCounter);
+                    inc(FIDSeed);
               end;
             Exit;
           end;
@@ -2882,7 +3149,7 @@ begin
       Result := nil;
 end;
 
-procedure TInt64HashPointerList.RebuildIDCounter;
+procedure TInt64HashPointerList.RebuildIDSeedCounter;
 var
   i: Integer;
   p: PInt64HashListPointerStruct;
@@ -2896,7 +3163,7 @@ begin
       p := p^.Next;
     end;
 
-  FIDCounter := i + 1;
+  FIDSeed := i + 1;
 end;
 
 procedure TInt64HashPointerList.DoAdd(p: PInt64HashListPointerStruct);
@@ -2926,15 +3193,35 @@ begin
     end;
 end;
 
+procedure TInt64HashPointerList.DoInsertBefore(p, insertTo_: PInt64HashListPointerStruct);
+var
+  FP: PInt64HashListPointerStruct;
+begin
+  if FFirst = insertTo_ then
+      FFirst := p;
+
+  FP := insertTo_^.Prev;
+
+  if FP^.Next = insertTo_ then
+      FP^.Next := p;
+  if FP^.Prev = insertTo_ then
+      FP^.Prev := p;
+  if FP = insertTo_ then
+      insertTo_^.Prev := p;
+
+  p^.Prev := FP;
+  p^.Next := insertTo_;
+end;
+
 procedure TInt64HashPointerList.DoDelete(p: PInt64HashListPointerStruct);
 var
-  FP, np: PInt64HashListPointerStruct;
+  FP, NP: PInt64HashListPointerStruct;
 begin
   FP := p^.Prev;
-  np := p^.Next;
+  NP := p^.Next;
 
   if p = FFirst then
-      FFirst := np;
+      FFirst := NP;
   if p = FLast then
       FLast := FP;
 
@@ -2945,8 +3232,8 @@ begin
       Exit;
     end;
 
-  FP^.Next := np;
-  np^.Prev := FP;
+  FP^.Next := NP;
+  NP^.Prev := FP;
 
   p^.Prev := nil;
   p^.Next := nil;
@@ -2981,7 +3268,7 @@ constructor TInt64HashPointerList.CustomCreate(HashPoolSize_: Integer);
 begin
   inherited Create;
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FAccessOptimization := False;
   FAutoFreeData := False;
   FFirst := nil;
@@ -3006,7 +3293,7 @@ var
   pData: PInt64HashListPointerStruct;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
 
@@ -3095,10 +3382,10 @@ begin
     end;
 
   if FCount = 0 then
-      FIDCounter := 1;
+      FIDSeed := 1;
 end;
 
-function TInt64HashPointerList.Add(i64: Int64; _CustomData: Pointer; const OverWrite: Boolean): PInt64HashListPointerStruct;
+function TInt64HashPointerList.Add(i64: Int64; Data_: Pointer; const Overwrite_: Boolean): PInt64HashListPointerStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -3108,7 +3395,7 @@ begin
   newhash := MakeHashI64(i64);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (OverWrite) then
+  if (lst.Count > 0) and (Overwrite_) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -3116,35 +3403,34 @@ begin
           if (newhash = pData^.qHash) and (i64 = pData^.i64) then
             begin
               DoDelete(pData);
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Result := pData;
 
               DoAdd(pData);
 
-              if (pData^.ID < FIDCounter - 1) then
+              if (pData^.ID < FIDSeed - 1) then
                 begin
                   if i < lst.Count - 1 then
                     begin
                       lst.Delete(i);
                       lst.Add(pData);
                     end;
-                  pData^.ID := FIDCounter;
+                  pData^.ID := FIDSeed;
 
-                  if FIDCounter > FIDCounter + 1 then
-                    // rebuild idcounter
-                      RebuildIDCounter
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
                   else
-                      inc(FIDCounter);
+                      inc(FIDSeed);
                 end;
 
-              DoAddDataNotifyProc(_CustomData);
+              DoAddDataNotifyProc(Data_);
 
               Exit;
             end;
@@ -3154,8 +3440,8 @@ begin
   new(pData);
   pData^.qHash := newhash;
   pData^.i64 := i64;
-  pData^.Data := _CustomData;
-  pData^.ID := FIDCounter;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
   pData^.Prev := nil;
   pData^.Next := nil;
   lst.Add(pData);
@@ -3163,16 +3449,15 @@ begin
   inc(FCount);
   DoAdd(pData);
 
-  if FIDCounter > FIDCounter + 1 then
-    // rebuild idcounter
-      RebuildIDCounter
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
   else
-      inc(FIDCounter);
+      inc(FIDSeed);
 
-  DoAddDataNotifyProc(_CustomData);
+  DoAddDataNotifyProc(Data_);
 end;
 
-procedure TInt64HashPointerList.SetValue(i64: Int64; _CustomData: Pointer);
+procedure TInt64HashPointerList.SetValue(i64: Int64; Data_: Pointer);
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -3191,14 +3476,14 @@ begin
           pData := PInt64HashListPointerStruct(lst[i]);
           if (newhash = pData^.qHash) and (i64 = pData^.i64) then
             begin
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Done := True;
               DoAddDataNotifyProc(pData^.Data);
             end;
@@ -3210,22 +3495,100 @@ begin
       new(pData);
       pData^.qHash := newhash;
       pData^.i64 := i64;
-      pData^.Data := _CustomData;
-      pData^.ID := FIDCounter;
+      pData^.Data := Data_;
+      pData^.ID := FIDSeed;
       pData^.Prev := nil;
       pData^.Next := nil;
       lst.Add(pData);
       inc(FCount);
       DoAdd(pData);
 
-      if FIDCounter > FIDCounter + 1 then
-        // rebuild idcounter
-          RebuildIDCounter
+      if FIDSeed > FIDSeed + 1 then
+          RebuildIDSeedCounter // rebuild seed
       else
-          inc(FIDCounter);
+          inc(FIDSeed);
 
-      DoAddDataNotifyProc(_CustomData);
+      DoAddDataNotifyProc(Data_);
     end;
+end;
+
+function TInt64HashPointerList.Insert(i64, InsertToBefore_: Int64; Data_: Pointer; const Overwrite_: Boolean): PInt64HashListPointerStruct;
+var
+  newhash: THash;
+  lst: TCoreClassList;
+  i: Integer;
+  InsertDest_, pData: PInt64HashListPointerStruct;
+begin
+  InsertDest_ := i64Data[InsertToBefore_];
+  if InsertDest_ = nil then
+    begin
+      Result := Add(i64, Data_, Overwrite_);
+      Exit;
+    end;
+
+  newhash := MakeHashI64(i64);
+
+  lst := GetListTable(newhash, True);
+  if (lst.Count > 0) and (Overwrite_) then
+    begin
+      for i := lst.Count - 1 downto 0 do
+        begin
+          pData := PInt64HashListPointerStruct(lst[i]);
+          if (newhash = pData^.qHash) and (i64 = pData^.i64) then
+            begin
+              DoDelete(pData);
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
+                begin
+                  try
+                      DoDataFreeProc(pData^.Data);
+                  except
+                  end;
+                end;
+              pData^.Data := Data_;
+              Result := pData;
+
+              DoInsertBefore(pData, InsertDest_);
+
+              if (pData^.ID < FIDSeed - 1) then
+                begin
+                  if i < lst.Count - 1 then
+                    begin
+                      lst.Delete(i);
+                      lst.Add(pData);
+                    end;
+                  pData^.ID := FIDSeed;
+
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
+                  else
+                      inc(FIDSeed);
+                end;
+
+              DoAddDataNotifyProc(Data_);
+
+              Exit;
+            end;
+        end;
+    end;
+
+  new(pData);
+  pData^.qHash := newhash;
+  pData^.i64 := i64;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
+  pData^.Prev := nil;
+  pData^.Next := nil;
+  lst.Add(pData);
+  Result := pData;
+  inc(FCount);
+  DoInsertBefore(pData, InsertDest_);
+
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
+  else
+      inc(FIDSeed);
+
+  DoAddDataNotifyProc(Data_);
 end;
 
 function TInt64HashPointerList.Exists(i64: Int64): Boolean;
@@ -3305,7 +3668,7 @@ begin
   Result := @FListBuffer;
 end;
 
-procedure TInt64HashPointerList.ProgressC(OnProgress: TInt64HashPointerListLoopCall);
+procedure TInt64HashPointerList.ProgressC(const OnProgress: TInt64HashPointerListLoopCall);
 var
   i: NativeInt;
   p: PInt64HashListPointerStruct;
@@ -3326,7 +3689,7 @@ begin
     end;
 end;
 
-procedure TInt64HashPointerList.ProgressM(OnProgress: TInt64HashPointerListLoopMethod);
+procedure TInt64HashPointerList.ProgressM(const OnProgress: TInt64HashPointerListLoopMethod);
 var
   i: NativeInt;
   p: PInt64HashListPointerStruct;
@@ -3347,7 +3710,7 @@ begin
     end;
 end;
 
-procedure TInt64HashPointerList.ProgressP(OnProgress: TInt64HashPointerListLoopProc);
+procedure TInt64HashPointerList.ProgressP(const OnProgress: TInt64HashPointerListLoopProc);
 var
   i: NativeInt;
   p: PInt64HashListPointerStruct;
@@ -3434,7 +3797,7 @@ begin
         if (newhash = pData^.qHash) and (u32 = pData^.u32) then
           begin
             Result := pData;
-            if (FAccessOptimization) and (pData^.ID < FIDCounter - 1) then
+            if (FAccessOptimization) and (pData^.ID < FIDSeed - 1) then
               begin
                 DoDelete(pData);
                 if i < lst.Count - 1 then
@@ -3442,14 +3805,13 @@ begin
                     lst.Delete(i);
                     lst.Add(pData);
                   end;
-                pData^.ID := FIDCounter;
+                pData^.ID := FIDSeed;
                 DoAdd(pData);
 
-                if FIDCounter > FIDCounter + 1 then
-                  // rebuild idcounter
-                    RebuildIDCounter
+                if FIDSeed > FIDSeed + 1 then
+                    RebuildIDSeedCounter // rebuild seed
                 else
-                    inc(FIDCounter);
+                    inc(FIDSeed);
               end;
             Exit;
           end;
@@ -3467,7 +3829,7 @@ begin
       Result := nil;
 end;
 
-procedure TUInt32HashObjectList.RebuildIDCounter;
+procedure TUInt32HashObjectList.RebuildIDSeedCounter;
 var
   i: Integer;
   p: PUInt32HashListObjectStruct;
@@ -3481,7 +3843,7 @@ begin
       p := p^.Next;
     end;
 
-  FIDCounter := i + 1;
+  FIDSeed := i + 1;
 end;
 
 procedure TUInt32HashObjectList.DoAdd(p: PUInt32HashListObjectStruct);
@@ -3511,15 +3873,35 @@ begin
     end;
 end;
 
+procedure TUInt32HashObjectList.DoInsertBefore(p, insertTo_: PUInt32HashListObjectStruct);
+var
+  FP: PUInt32HashListObjectStruct;
+begin
+  if FFirst = insertTo_ then
+      FFirst := p;
+
+  FP := insertTo_^.Prev;
+
+  if FP^.Next = insertTo_ then
+      FP^.Next := p;
+  if FP^.Prev = insertTo_ then
+      FP^.Prev := p;
+  if FP = insertTo_ then
+      insertTo_^.Prev := p;
+
+  p^.Prev := FP;
+  p^.Next := insertTo_;
+end;
+
 procedure TUInt32HashObjectList.DoDelete(p: PUInt32HashListObjectStruct);
 var
-  FP, np: PUInt32HashListObjectStruct;
+  FP, NP: PUInt32HashListObjectStruct;
 begin
   FP := p^.Prev;
-  np := p^.Next;
+  NP := p^.Next;
 
   if p = FFirst then
-      FFirst := np;
+      FFirst := NP;
   if p = FLast then
       FLast := FP;
 
@@ -3530,8 +3912,8 @@ begin
       Exit;
     end;
 
-  FP^.Next := np;
-  np^.Prev := FP;
+  FP^.Next := NP;
+  NP^.Prev := FP;
 
   p^.Prev := nil;
   p^.Next := nil;
@@ -3551,7 +3933,7 @@ constructor TUInt32HashObjectList.CustomCreate(HashPoolSize_: Integer);
 begin
   inherited Create;
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FAccessOptimization := False;
   FAutoFreeData := False;
   FFirst := nil;
@@ -3574,7 +3956,7 @@ var
   pData: PUInt32HashListObjectStruct;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
 
@@ -3663,10 +4045,10 @@ begin
     end;
 
   if FCount = 0 then
-      FIDCounter := 1;
+      FIDSeed := 1;
 end;
 
-function TUInt32HashObjectList.Add(u32: UInt32; _CustomData: TCoreClassObject; const OverWrite: Boolean): PUInt32HashListObjectStruct;
+function TUInt32HashObjectList.Add(u32: UInt32; Data_: TCoreClassObject; const Overwrite_: Boolean): PUInt32HashListObjectStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -3676,7 +4058,7 @@ begin
   newhash := MakeHashU32(u32);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (OverWrite) then
+  if (lst.Count > 0) and (Overwrite_) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -3684,32 +4066,31 @@ begin
           if (newhash = pData^.qHash) and (u32 = pData^.u32) then
             begin
               DoDelete(pData);
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Result := pData;
 
               DoAdd(pData);
 
-              if (pData^.ID < FIDCounter - 1) then
+              if (pData^.ID < FIDSeed - 1) then
                 begin
                   if i < lst.Count - 1 then
                     begin
                       lst.Delete(i);
                       lst.Add(pData);
                     end;
-                  pData^.ID := FIDCounter;
+                  pData^.ID := FIDSeed;
 
-                  if FIDCounter > FIDCounter + 1 then
-                    // rebuild idcounter
-                      RebuildIDCounter
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
                   else
-                      inc(FIDCounter);
+                      inc(FIDSeed);
                 end;
 
               Exit;
@@ -3720,8 +4101,8 @@ begin
   new(pData);
   pData^.qHash := newhash;
   pData^.u32 := u32;
-  pData^.Data := _CustomData;
-  pData^.ID := FIDCounter;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
   pData^.Prev := nil;
   pData^.Next := nil;
   lst.Add(pData);
@@ -3729,14 +4110,13 @@ begin
   inc(FCount);
   DoAdd(pData);
 
-  if FIDCounter > FIDCounter + 1 then
-    // rebuild idcounter
-      RebuildIDCounter
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
   else
-      inc(FIDCounter);
+      inc(FIDSeed);
 end;
 
-procedure TUInt32HashObjectList.SetValue(u32: UInt32; _CustomData: TCoreClassObject);
+procedure TUInt32HashObjectList.SetValue(u32: UInt32; Data_: TCoreClassObject);
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -3755,14 +4135,14 @@ begin
           pData := PUInt32HashListObjectStruct(lst[i]);
           if (newhash = pData^.qHash) and (u32 = pData^.u32) then
             begin
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Done := True;
             end;
         end;
@@ -3773,20 +4153,91 @@ begin
       new(pData);
       pData^.qHash := newhash;
       pData^.u32 := u32;
-      pData^.Data := _CustomData;
-      pData^.ID := FIDCounter;
+      pData^.Data := Data_;
+      pData^.ID := FIDSeed;
       pData^.Prev := nil;
       pData^.Next := nil;
       lst.Add(pData);
       inc(FCount);
       DoAdd(pData);
 
-      if FIDCounter > FIDCounter + 1 then
-        // rebuild idcounter
-          RebuildIDCounter
+      if FIDSeed > FIDSeed + 1 then
+          RebuildIDSeedCounter // rebuild seed
       else
-          inc(FIDCounter);
+          inc(FIDSeed);
     end;
+end;
+
+function TUInt32HashObjectList.Insert(u32, InsertToBefore_: UInt32; Data_: TCoreClassObject; const Overwrite_: Boolean): PUInt32HashListObjectStruct;
+var
+  newhash: THash;
+  lst: TCoreClassList;
+  i: Integer;
+  InsertDest_, pData: PUInt32HashListObjectStruct;
+begin
+  InsertDest_ := u32Data[InsertToBefore_];
+  if InsertDest_ = nil then
+    begin
+      Result := Add(u32, Data_, Overwrite_);
+      Exit;
+    end;
+
+  newhash := MakeHashU32(u32);
+
+  lst := GetListTable(newhash, True);
+  if (lst.Count > 0) and (Overwrite_) then
+    begin
+      for i := lst.Count - 1 downto 0 do
+        begin
+          pData := PUInt32HashListObjectStruct(lst[i]);
+          if (newhash = pData^.qHash) and (u32 = pData^.u32) then
+            begin
+              DoDelete(pData);
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
+                begin
+                  DoDataFreeProc(pData^.Data);
+                end;
+              pData^.Data := Data_;
+              Result := pData;
+
+              DoInsertBefore(pData, InsertDest_);
+
+              if (pData^.ID < FIDSeed - 1) then
+                begin
+                  if i < lst.Count - 1 then
+                    begin
+                      lst.Delete(i);
+                      lst.Add(pData);
+                    end;
+                  pData^.ID := FIDSeed;
+
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
+                  else
+                      inc(FIDSeed);
+                end;
+
+              Exit;
+            end;
+        end;
+    end;
+
+  new(pData);
+  pData^.qHash := newhash;
+  pData^.u32 := u32;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
+  pData^.Prev := nil;
+  pData^.Next := nil;
+  lst.Add(pData);
+  Result := pData;
+  inc(FCount);
+  DoInsertBefore(pData, InsertDest_);
+
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
+  else
+      inc(FIDSeed);
 end;
 
 function TUInt32HashObjectList.Exists(u32: UInt32): Boolean;
@@ -3866,7 +4317,7 @@ begin
   Result := @FListBuffer;
 end;
 
-procedure TUInt32HashObjectList.ProgressC(OnProgress: TUInt32HashObjectListLoopCall);
+procedure TUInt32HashObjectList.ProgressC(const OnProgress: TUInt32HashObjectListLoopCall);
 var
   i: NativeInt;
   p: PUInt32HashListObjectStruct;
@@ -3887,7 +4338,7 @@ begin
     end;
 end;
 
-procedure TUInt32HashObjectList.ProgressM(OnProgress: TUInt32HashObjectListLoopMethod);
+procedure TUInt32HashObjectList.ProgressM(const OnProgress: TUInt32HashObjectListLoopMethod);
 var
   i: NativeInt;
   p: PUInt32HashListObjectStruct;
@@ -3908,7 +4359,7 @@ begin
     end;
 end;
 
-procedure TUInt32HashObjectList.ProgressP(OnProgress: TUInt32HashObjectListLoopProc);
+procedure TUInt32HashObjectList.ProgressP(const OnProgress: TUInt32HashObjectListLoopProc);
 var
   i: NativeInt;
   p: PUInt32HashListObjectStruct;
@@ -4018,7 +4469,7 @@ begin
         if (newhash = pData^.qHash) and (u32 = pData^.u32) then
           begin
             Result := pData;
-            if (FAccessOptimization) and (pData^.ID < FIDCounter - 1) then
+            if (FAccessOptimization) and (pData^.ID < FIDSeed - 1) then
               begin
                 DoDelete(pData);
                 if i < lst.Count - 1 then
@@ -4026,14 +4477,13 @@ begin
                     lst.Delete(i);
                     lst.Add(pData);
                   end;
-                pData^.ID := FIDCounter;
+                pData^.ID := FIDSeed;
                 DoAdd(pData);
 
-                if FIDCounter > FIDCounter + 1 then
-                  // rebuild idcounter
-                    RebuildIDCounter
+                if FIDSeed > FIDSeed + 1 then
+                    RebuildIDSeedCounter // rebuild seed
                 else
-                    inc(FIDCounter);
+                    inc(FIDSeed);
               end;
             Exit;
           end;
@@ -4051,7 +4501,7 @@ begin
       Result := nil;
 end;
 
-procedure TUInt32HashPointerList.RebuildIDCounter;
+procedure TUInt32HashPointerList.RebuildIDSeedCounter;
 var
   i: Integer;
   p: PUInt32HashListPointerStruct;
@@ -4065,7 +4515,7 @@ begin
       p := p^.Next;
     end;
 
-  FIDCounter := i + 1;
+  FIDSeed := i + 1;
 end;
 
 procedure TUInt32HashPointerList.DoAdd(p: PUInt32HashListPointerStruct);
@@ -4095,15 +4545,35 @@ begin
     end;
 end;
 
+procedure TUInt32HashPointerList.DoInsertBefore(p, insertTo_: PUInt32HashListPointerStruct);
+var
+  FP: PUInt32HashListPointerStruct;
+begin
+  if FFirst = insertTo_ then
+      FFirst := p;
+
+  FP := insertTo_^.Prev;
+
+  if FP^.Next = insertTo_ then
+      FP^.Next := p;
+  if FP^.Prev = insertTo_ then
+      FP^.Prev := p;
+  if FP = insertTo_ then
+      insertTo_^.Prev := p;
+
+  p^.Prev := FP;
+  p^.Next := insertTo_;
+end;
+
 procedure TUInt32HashPointerList.DoDelete(p: PUInt32HashListPointerStruct);
 var
-  FP, np: PUInt32HashListPointerStruct;
+  FP, NP: PUInt32HashListPointerStruct;
 begin
   FP := p^.Prev;
-  np := p^.Next;
+  NP := p^.Next;
 
   if p = FFirst then
-      FFirst := np;
+      FFirst := NP;
   if p = FLast then
       FLast := FP;
 
@@ -4114,8 +4584,8 @@ begin
       Exit;
     end;
 
-  FP^.Next := np;
-  np^.Prev := FP;
+  FP^.Next := NP;
+  NP^.Prev := FP;
 
   p^.Prev := nil;
   p^.Next := nil;
@@ -4142,7 +4612,7 @@ constructor TUInt32HashPointerList.CustomCreate(HashPoolSize_: Integer);
 begin
   inherited Create;
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FAccessOptimization := False;
   FAutoFreeData := False;
   FFirst := nil;
@@ -4167,7 +4637,7 @@ var
   pData: PUInt32HashListPointerStruct;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
 
@@ -4258,10 +4728,10 @@ begin
     end;
 
   if FCount = 0 then
-      FIDCounter := 1;
+      FIDSeed := 1;
 end;
 
-function TUInt32HashPointerList.Add(u32: UInt32; _CustomData: Pointer; const OverWrite: Boolean): PUInt32HashListPointerStruct;
+function TUInt32HashPointerList.Add(u32: UInt32; Data_: Pointer; const Overwrite_: Boolean): PUInt32HashListPointerStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -4271,7 +4741,7 @@ begin
   newhash := MakeHashU32(u32);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (OverWrite) then
+  if (lst.Count > 0) and (Overwrite_) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -4279,29 +4749,28 @@ begin
           if (newhash = pData^.qHash) and (u32 = pData^.u32) then
             begin
               DoDelete(pData);
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   DoDataFreeProc(pData^.Data);
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Result := pData;
 
               DoAdd(pData);
 
-              if (pData^.ID < FIDCounter - 1) then
+              if (pData^.ID < FIDSeed - 1) then
                 begin
                   if i < lst.Count - 1 then
                     begin
                       lst.Delete(i);
                       lst.Add(pData);
                     end;
-                  pData^.ID := FIDCounter;
+                  pData^.ID := FIDSeed;
 
-                  if FIDCounter > FIDCounter + 1 then
-                    // rebuild idcounter
-                      RebuildIDCounter
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
                   else
-                      inc(FIDCounter);
+                      inc(FIDSeed);
                 end;
               DoAddDataNotifyProc(pData^.Data);
 
@@ -4313,8 +4782,8 @@ begin
   new(pData);
   pData^.qHash := newhash;
   pData^.u32 := u32;
-  pData^.Data := _CustomData;
-  pData^.ID := FIDCounter;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
   pData^.Prev := nil;
   pData^.Next := nil;
   lst.Add(pData);
@@ -4322,16 +4791,15 @@ begin
   inc(FCount);
   DoAdd(pData);
 
-  if FIDCounter > FIDCounter + 1 then
-    // rebuild idcounter
-      RebuildIDCounter
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
   else
-      inc(FIDCounter);
+      inc(FIDSeed);
 
   DoAddDataNotifyProc(pData^.Data);
 end;
 
-procedure TUInt32HashPointerList.SetValue(u32: UInt32; _CustomData: Pointer);
+procedure TUInt32HashPointerList.SetValue(u32: UInt32; Data_: Pointer);
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -4350,16 +4818,16 @@ begin
           pData := PUInt32HashListPointerStruct(lst[i]);
           if (newhash = pData^.qHash) and (u32 = pData^.u32) then
             begin
-              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> _CustomData) then
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
                 begin
                   try
                       DoDataFreeProc(pData^.Data);
                   except
                   end;
                 end;
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Done := True;
-              DoAddDataNotifyProc(_CustomData);
+              DoAddDataNotifyProc(Data_);
             end;
         end;
     end;
@@ -4369,21 +4837,95 @@ begin
       new(pData);
       pData^.qHash := newhash;
       pData^.u32 := u32;
-      pData^.Data := _CustomData;
-      pData^.ID := FIDCounter;
+      pData^.Data := Data_;
+      pData^.ID := FIDSeed;
       pData^.Prev := nil;
       pData^.Next := nil;
       lst.Add(pData);
       inc(FCount);
       DoAdd(pData);
 
-      if FIDCounter > FIDCounter + 1 then
-        // rebuild idcounter
-          RebuildIDCounter
+      if FIDSeed > FIDSeed + 1 then
+          RebuildIDSeedCounter // rebuild seed
       else
-          inc(FIDCounter);
+          inc(FIDSeed);
       DoAddDataNotifyProc(pData^.Data);
     end;
+end;
+
+function TUInt32HashPointerList.Insert(u32, InsertToBefore_: UInt32; Data_: Pointer; const Overwrite_: Boolean): PUInt32HashListPointerStruct;
+var
+  newhash: THash;
+  lst: TCoreClassList;
+  i: Integer;
+  InsertDest_, pData: PUInt32HashListPointerStruct;
+begin
+  InsertDest_ := u32Data[InsertToBefore_];
+  if InsertDest_ = nil then
+    begin
+      Result := Add(u32, Data_, Overwrite_);
+      Exit;
+    end;
+
+  newhash := MakeHashU32(u32);
+
+  lst := GetListTable(newhash, True);
+  if (lst.Count > 0) and (Overwrite_) then
+    begin
+      for i := lst.Count - 1 downto 0 do
+        begin
+          pData := PUInt32HashListPointerStruct(lst[i]);
+          if (newhash = pData^.qHash) and (u32 = pData^.u32) then
+            begin
+              DoDelete(pData);
+              if (FAutoFreeData) and (pData^.Data <> nil) and (pData^.Data <> Data_) then
+                begin
+                  DoDataFreeProc(pData^.Data);
+                end;
+              pData^.Data := Data_;
+              Result := pData;
+
+              DoInsertBefore(pData, InsertDest_);
+
+              if (pData^.ID < FIDSeed - 1) then
+                begin
+                  if i < lst.Count - 1 then
+                    begin
+                      lst.Delete(i);
+                      lst.Add(pData);
+                    end;
+                  pData^.ID := FIDSeed;
+
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
+                  else
+                      inc(FIDSeed);
+                end;
+              DoAddDataNotifyProc(pData^.Data);
+
+              Exit;
+            end;
+        end;
+    end;
+
+  new(pData);
+  pData^.qHash := newhash;
+  pData^.u32 := u32;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
+  pData^.Prev := nil;
+  pData^.Next := nil;
+  lst.Add(pData);
+  Result := pData;
+  inc(FCount);
+  DoInsertBefore(pData, InsertDest_);
+
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
+  else
+      inc(FIDSeed);
+
+  DoAddDataNotifyProc(pData^.Data);
 end;
 
 function TUInt32HashPointerList.Exists(u32: UInt32): Boolean;
@@ -4463,7 +5005,7 @@ begin
   Result := @FListBuffer;
 end;
 
-procedure TUInt32HashPointerList.ProgressC(OnProgress: TUInt32HashPointerListLoopCall);
+procedure TUInt32HashPointerList.ProgressC(const OnProgress: TUInt32HashPointerListLoopCall);
 var
   i: NativeInt;
   p: PUInt32HashListPointerStruct;
@@ -4484,7 +5026,7 @@ begin
     end;
 end;
 
-procedure TUInt32HashPointerList.ProgressM(OnProgress: TUInt32HashPointerListLoopMethod);
+procedure TUInt32HashPointerList.ProgressM(const OnProgress: TUInt32HashPointerListLoopMethod);
 var
   i: NativeInt;
   p: PUInt32HashListPointerStruct;
@@ -4505,7 +5047,7 @@ begin
     end;
 end;
 
-procedure TUInt32HashPointerList.ProgressP(OnProgress: TUInt32HashPointerListLoopProc);
+procedure TUInt32HashPointerList.ProgressP(const OnProgress: TUInt32HashPointerListLoopProc);
 var
   i: NativeInt;
   p: PUInt32HashListPointerStruct;
@@ -4615,7 +5157,7 @@ begin
         if (newhash = pData^.qHash) and (NPtr = pData^.NPtr) then
           begin
             Result := pData;
-            if (FAccessOptimization) and (pData^.ID < FIDCounter - 1) then
+            if (FAccessOptimization) and (pData^.ID < FIDSeed - 1) then
               begin
                 DoDelete(pData);
                 if i < lst.Count - 1 then
@@ -4623,14 +5165,13 @@ begin
                     lst.Delete(i);
                     lst.Add(pData);
                   end;
-                pData^.ID := FIDCounter;
+                pData^.ID := FIDSeed;
                 DoAdd(pData);
 
-                if FIDCounter > FIDCounter + 1 then
-                  // rebuild idcounter
-                    RebuildIDCounter
+                if FIDSeed > FIDSeed + 1 then
+                    RebuildIDSeedCounter // rebuild seed
                 else
-                    inc(FIDCounter);
+                    inc(FIDSeed);
               end;
             Exit;
           end;
@@ -4648,7 +5189,7 @@ begin
       Result := NullValue;
 end;
 
-procedure TPointerHashNativeUIntList.RebuildIDCounter;
+procedure TPointerHashNativeUIntList.RebuildIDSeedCounter;
 var
   i: Integer;
   p: PPointerHashListNativeUIntStruct;
@@ -4662,7 +5203,7 @@ begin
       p := p^.Next;
     end;
 
-  FIDCounter := i + 1;
+  FIDSeed := i + 1;
 end;
 
 procedure TPointerHashNativeUIntList.DoAdd(p: PPointerHashListNativeUIntStruct);
@@ -4692,15 +5233,35 @@ begin
     end;
 end;
 
+procedure TPointerHashNativeUIntList.DoInsertBefore(p, insertTo_: PPointerHashListNativeUIntStruct);
+var
+  FP: PPointerHashListNativeUIntStruct;
+begin
+  if FFirst = insertTo_ then
+      FFirst := p;
+
+  FP := insertTo_^.Prev;
+
+  if FP^.Next = insertTo_ then
+      FP^.Next := p;
+  if FP^.Prev = insertTo_ then
+      FP^.Prev := p;
+  if FP = insertTo_ then
+      insertTo_^.Prev := p;
+
+  p^.Prev := FP;
+  p^.Next := insertTo_;
+end;
+
 procedure TPointerHashNativeUIntList.DoDelete(p: PPointerHashListNativeUIntStruct);
 var
-  FP, np: PPointerHashListNativeUIntStruct;
+  FP, NP: PPointerHashListNativeUIntStruct;
 begin
   FP := p^.Prev;
-  np := p^.Next;
+  NP := p^.Next;
 
   if p = FFirst then
-      FFirst := np;
+      FFirst := NP;
   if p = FLast then
       FLast := FP;
 
@@ -4711,8 +5272,8 @@ begin
       Exit;
     end;
 
-  FP^.Next := np;
-  np^.Prev := FP;
+  FP^.Next := NP;
+  NP^.Prev := FP;
 
   p^.Prev := nil;
   p^.Next := nil;
@@ -4727,7 +5288,7 @@ constructor TPointerHashNativeUIntList.CustomCreate(HashPoolSize_: Integer);
 begin
   inherited Create;
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FAccessOptimization := False;
   FFirst := nil;
   FLast := nil;
@@ -4752,7 +5313,7 @@ var
   pData: PPointerHashListNativeUIntStruct;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
   FTotal := 0;
@@ -4789,7 +5350,7 @@ var
   pData: PPointerHashListNativeUIntStruct;
 begin
   FCount := 0;
-  FIDCounter := 0;
+  FIDSeed := 0;
   FFirst := nil;
   FLast := nil;
   FTotal := 0;
@@ -4871,14 +5432,14 @@ begin
 
   if FCount = 0 then
     begin
-      FIDCounter := 1;
+      FIDSeed := 1;
       FTotal := 0;
       FMinimizePtr := nil;
       FMaximumPtr := nil;
     end;
 end;
 
-function TPointerHashNativeUIntList.Add(NPtr: Pointer; _CustomData: NativeUInt; const OverWrite: Boolean): PPointerHashListNativeUIntStruct;
+function TPointerHashNativeUIntList.Add(NPtr: Pointer; Data_: NativeUInt; const Overwrite_: Boolean): PPointerHashListNativeUIntStruct;
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -4888,7 +5449,7 @@ begin
   newhash := MakeHashP(NPtr);
 
   lst := GetListTable(newhash, True);
-  if (lst.Count > 0) and (OverWrite) then
+  if (lst.Count > 0) and (Overwrite_) then
     begin
       for i := lst.Count - 1 downto 0 do
         begin
@@ -4897,25 +5458,24 @@ begin
             begin
               dec(FTotal, pData^.Data);
               DoDelete(pData);
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               Result := pData;
 
               DoAdd(pData);
 
-              if (pData^.ID < FIDCounter - 1) then
+              if (pData^.ID < FIDSeed - 1) then
                 begin
                   if i < lst.Count - 1 then
                     begin
                       lst.Delete(i);
                       lst.Add(pData);
                     end;
-                  pData^.ID := FIDCounter;
+                  pData^.ID := FIDSeed;
 
-                  if FIDCounter > FIDCounter + 1 then
-                    // rebuild idcounter
-                      RebuildIDCounter
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
                   else
-                      inc(FIDCounter);
+                      inc(FIDSeed);
                 end;
 
               inc(FTotal, pData^.Data);
@@ -4927,8 +5487,8 @@ begin
   new(pData);
   pData^.qHash := newhash;
   pData^.NPtr := NPtr;
-  pData^.Data := _CustomData;
-  pData^.ID := FIDCounter;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
   pData^.Prev := nil;
   pData^.Next := nil;
   lst.Add(pData);
@@ -4936,11 +5496,10 @@ begin
   inc(FCount);
   DoAdd(pData);
 
-  if FIDCounter > FIDCounter + 1 then
-    // rebuild idcounter
-      RebuildIDCounter
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
   else
-      inc(FIDCounter);
+      inc(FIDSeed);
 
   inc(FTotal, pData^.Data);
 
@@ -4950,7 +5509,7 @@ begin
       FMaximumPtr := NPtr;
 end;
 
-procedure TPointerHashNativeUIntList.SetValue(NPtr: Pointer; _CustomData: NativeUInt);
+procedure TPointerHashNativeUIntList.SetValue(NPtr: Pointer; Data_: NativeUInt);
 var
   newhash: THash;
   lst: TCoreClassList;
@@ -4970,7 +5529,7 @@ begin
           if (newhash = pData^.qHash) and (NPtr = pData^.NPtr) then
             begin
               dec(FTotal, pData^.Data);
-              pData^.Data := _CustomData;
+              pData^.Data := Data_;
               inc(FTotal, pData^.Data);
               Done := True;
             end;
@@ -4982,19 +5541,18 @@ begin
       new(pData);
       pData^.qHash := newhash;
       pData^.NPtr := NPtr;
-      pData^.Data := _CustomData;
-      pData^.ID := FIDCounter;
+      pData^.Data := Data_;
+      pData^.ID := FIDSeed;
       pData^.Prev := nil;
       pData^.Next := nil;
       lst.Add(pData);
       inc(FCount);
       DoAdd(pData);
 
-      if FIDCounter > FIDCounter + 1 then
-        // rebuild idcounter
-          RebuildIDCounter
+      if FIDSeed > FIDSeed + 1 then
+          RebuildIDSeedCounter // rebuild seed
       else
-          inc(FIDCounter);
+          inc(FIDSeed);
 
       inc(FTotal, pData^.Data);
 
@@ -5003,6 +5561,83 @@ begin
       if (NativeUInt(NPtr) > NativeUInt(FMaximumPtr)) or (FMaximumPtr = nil) then
           FMaximumPtr := NPtr;
     end;
+end;
+
+function TPointerHashNativeUIntList.Insert(NPtr, InsertToBefore_: Pointer; Data_: NativeUInt; const Overwrite_: Boolean): PPointerHashListNativeUIntStruct;
+var
+  newhash: THash;
+  lst: TCoreClassList;
+  i: Integer;
+  InsertDest_, pData: PPointerHashListNativeUIntStruct;
+begin
+  InsertDest_ := NPtrData[InsertToBefore_];
+  if InsertDest_ = nil then
+    begin
+      Result := Add(NPtr, Data_, Overwrite_);
+      Exit;
+    end;
+
+  newhash := MakeHashP(NPtr);
+
+  lst := GetListTable(newhash, True);
+  if (lst.Count > 0) and (Overwrite_) then
+    begin
+      for i := lst.Count - 1 downto 0 do
+        begin
+          pData := PPointerHashListNativeUIntStruct(lst[i]);
+          if (newhash = pData^.qHash) and (NPtr = pData^.NPtr) then
+            begin
+              dec(FTotal, pData^.Data);
+              DoDelete(pData);
+              pData^.Data := Data_;
+              Result := pData;
+
+              DoInsertBefore(pData, InsertDest_);
+
+              if (pData^.ID < FIDSeed - 1) then
+                begin
+                  if i < lst.Count - 1 then
+                    begin
+                      lst.Delete(i);
+                      lst.Add(pData);
+                    end;
+                  pData^.ID := FIDSeed;
+
+                  if FIDSeed > FIDSeed + 1 then
+                      RebuildIDSeedCounter // rebuild seed
+                  else
+                      inc(FIDSeed);
+                end;
+
+              inc(FTotal, pData^.Data);
+              Exit;
+            end;
+        end;
+    end;
+
+  new(pData);
+  pData^.qHash := newhash;
+  pData^.NPtr := NPtr;
+  pData^.Data := Data_;
+  pData^.ID := FIDSeed;
+  pData^.Prev := nil;
+  pData^.Next := nil;
+  lst.Add(pData);
+  Result := pData;
+  inc(FCount);
+  DoInsertBefore(pData, InsertDest_);
+
+  if FIDSeed > FIDSeed + 1 then
+      RebuildIDSeedCounter // rebuild seed
+  else
+      inc(FIDSeed);
+
+  inc(FTotal, pData^.Data);
+
+  if (NativeUInt(NPtr) < NativeUInt(FMinimizePtr)) or (FMinimizePtr = nil) then
+      FMinimizePtr := NPtr;
+  if (NativeUInt(NPtr) > NativeUInt(FMaximumPtr)) or (FMaximumPtr = nil) then
+      FMaximumPtr := NPtr;
 end;
 
 function TPointerHashNativeUIntList.Exists(NPtr: Pointer): Boolean;
@@ -5082,7 +5717,7 @@ begin
   Result := @FListBuffer;
 end;
 
-procedure TPointerHashNativeUIntList.ProgressC(OnProgress: TPointerHashNativeUIntListLoopCall);
+procedure TPointerHashNativeUIntList.ProgressC(const OnProgress: TPointerHashNativeUIntListLoopCall);
 var
   i: Integer;
   p: PPointerHashListNativeUIntStruct;
@@ -5103,7 +5738,7 @@ begin
     end;
 end;
 
-procedure TPointerHashNativeUIntList.ProgressM(OnProgress: TPointerHashNativeUIntListLoopMethod);
+procedure TPointerHashNativeUIntList.ProgressM(const OnProgress: TPointerHashNativeUIntListLoopMethod);
 var
   i: Integer;
   p: PPointerHashListNativeUIntStruct;
@@ -5124,7 +5759,7 @@ begin
     end;
 end;
 
-procedure TPointerHashNativeUIntList.ProgressP(OnProgress: TPointerHashNativeUIntListLoopProc);
+procedure TPointerHashNativeUIntList.ProgressP(const OnProgress: TPointerHashNativeUIntListLoopProc);
 var
   i: Integer;
   p: PPointerHashListNativeUIntStruct;
@@ -5321,7 +5956,7 @@ begin
     end;
 end;
 
-procedure THashObjectList.ProgressC(OnProgress: THashObjectListLoopCall);
+procedure THashObjectList.ProgressC(const OnProgress: THashObjectListLoopCall);
 var
   i: Integer;
   p: PHashListData;
@@ -5342,7 +5977,7 @@ begin
     end;
 end;
 
-procedure THashObjectList.ProgressM(OnProgress: THashObjectListLoopMethod);
+procedure THashObjectList.ProgressM(const OnProgress: THashObjectListLoopMethod);
 var
   i: Integer;
   p: PHashListData;
@@ -5363,7 +5998,7 @@ begin
     end;
 end;
 
-procedure THashObjectList.ProgressP(OnProgress: THashObjectListLoopProc);
+procedure THashObjectList.ProgressP(const OnProgress: THashObjectListLoopProc);
 var
   i: Integer;
   p: PHashListData;
@@ -5886,7 +6521,7 @@ begin
     end;
 end;
 
-procedure THashStringList.ProgressC(OnProgress: THashStringListLoopCall);
+procedure THashStringList.ProgressC(const OnProgress: THashStringListLoopCall);
 var
   i: Integer;
   p: PHashListData;
@@ -5907,7 +6542,7 @@ begin
     end;
 end;
 
-procedure THashStringList.ProgressM(OnProgress: THashStringListLoopMethod);
+procedure THashStringList.ProgressM(const OnProgress: THashStringListLoopMethod);
 var
   i: Integer;
   p: PHashListData;
@@ -5928,7 +6563,7 @@ begin
     end;
 end;
 
-procedure THashStringList.ProgressP(OnProgress: THashStringListLoopProc);
+procedure THashStringList.ProgressP(const OnProgress: THashStringListLoopProc);
 var
   i: Integer;
   p: PHashListData;
@@ -5947,6 +6582,38 @@ begin
           p := p^.Next;
         end;
     end;
+end;
+
+function THashStringList.FirstName: SystemString;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.FirstPtr^.OriginName
+  else
+      Result := '';
+end;
+
+function THashStringList.LastName: SystemString;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.LastPtr^.OriginName
+  else
+      Result := '';
+end;
+
+function THashStringList.FirstData: PHashStringListData;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.FirstPtr^.Data
+  else
+      Result := nil;
+end;
+
+function THashStringList.LastData: PHashStringListData;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.LastPtr^.Data
+  else
+      Result := nil;
 end;
 
 procedure THashStringList.Clear;
@@ -6201,7 +6868,7 @@ begin
   SetKeyValue(Name, AValue);
 end;
 
-function THashStringList.ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var output: SystemString): Boolean;
+function THashStringList.ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var Output_: SystemString): Boolean;
 var
   sour: U_String;
   h, t: U_String;
@@ -6209,7 +6876,7 @@ var
   KeyText: SystemString;
   i: Integer;
 begin
-  output := '';
+  Output_ := '';
   sour.Text := Text_;
   h.Text := HeadToken;
   t.Text := TailToken;
@@ -6229,7 +6896,7 @@ begin
 
               if Exists(KeyText) then
                 begin
-                  output := output + GetKeyValue(KeyText);
+                  Output_ := Output_ + GetKeyValue(KeyText);
                   i := ePos + t.Len;
                   Continue;
                 end
@@ -6240,7 +6907,7 @@ begin
             end;
         end;
 
-      output := output + sour[i];
+      Output_ := Output_ + sour[i];
       inc(i);
     end;
 end;
@@ -6281,21 +6948,21 @@ begin
   DisposeObject(VT);
 end;
 
-procedure THashStringList.ExportAsStrings(output: TListPascalString);
+procedure THashStringList.ExportAsStrings(Output_: TListPascalString);
 var
   VT: THashStringTextStream;
 begin
   VT := THashStringTextStream.Create(Self);
-  VT.DataExport(output);
+  VT.DataExport(Output_);
   DisposeObject(VT);
 end;
 
-procedure THashStringList.ExportAsStrings(output: TCoreClassStrings);
+procedure THashStringList.ExportAsStrings(Output_: TCoreClassStrings);
 var
   VT: THashStringTextStream;
 begin
   VT := THashStringTextStream.Create(Self);
-  VT.DataExport(output);
+  VT.DataExport(Output_);
   DisposeObject(VT);
 end;
 
@@ -6556,7 +7223,7 @@ begin
   if FStringList = nil then
       Exit;
   n := TListPascalString.Create;
-  n.Text := Text_;
+  n.AsText := Text_;
   DataImport(n);
   DisposeObject(n);
 end;
@@ -6569,7 +7236,7 @@ begin
       Exit;
   n := TListPascalString.Create;
   DataExport(n);
-  Text_ := n.Text;
+  Text_ := n.AsText;
   DisposeObject(n);
 end;
 
@@ -6779,7 +7446,7 @@ begin
     end;
 end;
 
-procedure THashVariantList.ProgressC(OnProgress: THashVariantListLoopCall);
+procedure THashVariantList.ProgressC(const OnProgress: THashVariantListLoopCall);
 var
   i: Integer;
   p: PHashListData;
@@ -6800,7 +7467,7 @@ begin
     end;
 end;
 
-procedure THashVariantList.ProgressM(OnProgress: THashVariantListLoopMethod);
+procedure THashVariantList.ProgressM(const OnProgress: THashVariantListLoopMethod);
 var
   i: Integer;
   p: PHashListData;
@@ -6821,7 +7488,7 @@ begin
     end;
 end;
 
-procedure THashVariantList.ProgressP(OnProgress: THashVariantListLoopProc);
+procedure THashVariantList.ProgressP(const OnProgress: THashVariantListLoopProc);
 var
   i: Integer;
   p: PHashListData;
@@ -6840,6 +7507,38 @@ begin
           p := p^.Next;
         end;
     end;
+end;
+
+function THashVariantList.FirstName: SystemString;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.FirstPtr^.OriginName
+  else
+      Result := '';
+end;
+
+function THashVariantList.LastName: SystemString;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.LastPtr^.OriginName
+  else
+      Result := '';
+end;
+
+function THashVariantList.FirstData: PHashVariantListData;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.FirstPtr^.Data
+  else
+      Result := nil;
+end;
+
+function THashVariantList.LastData: PHashVariantListData;
+begin
+  if HashList.Count > 0 then
+      Result := HashList.LastPtr^.Data
+  else
+      Result := nil;
 end;
 
 procedure THashVariantList.Clear;
@@ -7224,7 +7923,7 @@ begin
   SetKeyValue(Name, AValue);
 end;
 
-function THashVariantList.ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var output: SystemString): Boolean;
+function THashVariantList.ProcessMacro(const Text_, HeadToken, TailToken: SystemString; var Output_: SystemString): Boolean;
 var
   sour: U_String;
   h, t: U_String;
@@ -7232,7 +7931,7 @@ var
   KeyText: SystemString;
   i: Integer;
 begin
-  output := '';
+  Output_ := '';
   sour.Text := Text_;
   h.Text := HeadToken;
   t.Text := TailToken;
@@ -7252,7 +7951,7 @@ begin
 
               if Exists(KeyText) then
                 begin
-                  output := output + VarToStr(GetKeyValue(KeyText));
+                  Output_ := Output_ + VarToStr(GetKeyValue(KeyText));
                   i := ePos + t.Len;
                   Continue;
                 end
@@ -7263,7 +7962,7 @@ begin
             end;
         end;
 
-      output := output + sour[i];
+      Output_ := Output_ + sour[i];
       inc(i);
     end;
 end;
@@ -7304,21 +8003,21 @@ begin
   DisposeObject(VT);
 end;
 
-procedure THashVariantList.ExportAsStrings(output: TListPascalString);
+procedure THashVariantList.ExportAsStrings(Output_: TListPascalString);
 var
   VT: THashVariantTextStream;
 begin
   VT := THashVariantTextStream.Create(Self);
-  VT.DataExport(output);
+  VT.DataExport(Output_);
   DisposeObject(VT);
 end;
 
-procedure THashVariantList.ExportAsStrings(output: TCoreClassStrings);
+procedure THashVariantList.ExportAsStrings(Output_: TCoreClassStrings);
 var
   VT: THashVariantTextStream;
 begin
   VT := THashVariantTextStream.Create(Self);
-  VT.DataExport(output);
+  VT.DataExport(Output_);
   DisposeObject(VT);
 end;
 
@@ -7638,7 +8337,7 @@ begin
   if FVariantList = nil then
       Exit;
   n := TListPascalString.Create;
-  n.Text := Text_;
+  n.AsText := Text_;
   DataImport(n);
   DisposeObject(n);
 end;
@@ -7651,7 +8350,7 @@ begin
       Exit;
   n := TListPascalString.Create;
   DataExport(n);
-  Text_ := n.Text;
+  Text_ := n.AsText;
   DisposeObject(n);
 end;
 
@@ -8433,15 +9132,15 @@ end;
 procedure TListString.Assign(SameObj: TListString);
 var
   i: Integer;
-  p1, p2: PListStringData;
+  P1, P2: PListStringData;
 begin
   Clear;
   for i := 0 to SameObj.Count - 1 do
     begin
-      p2 := PListStringData(SameObj.FList[i]);
-      new(p1);
-      p1^ := p2^;
-      FList.Add(p1);
+      P2 := PListStringData(SameObj.FList[i]);
+      new(P1);
+      P1^ := P2^;
+      FList.Add(P1);
     end;
 end;
 
@@ -8707,15 +9406,15 @@ end;
 procedure TListPascalString.Assign(SameObj: TListPascalString);
 var
   i: Integer;
-  p1, p2: PListPascalStringData;
+  P1, P2: PListPascalStringData;
 begin
   Clear;
   for i := 0 to SameObj.Count - 1 do
     begin
-      p2 := PListPascalStringData(SameObj.FList[i]);
-      new(p1);
-      p1^ := p2^;
-      FList.Add(p1);
+      P2 := PListPascalStringData(SameObj.FList[i]);
+      new(P1);
+      P1^ := P2^;
+      FList.Add(P1);
     end;
 end;
 
@@ -8737,6 +9436,11 @@ begin
       dest.AddObject(Items[i], Objects[i]);
 end;
 
+procedure TListPascalString.AssignTo(dest: TListPascalString);
+begin
+  dest.Assign(Self);
+end;
+
 procedure TListPascalString.AddStrings(sour: TListPascalString);
 var
   i: Integer;
@@ -8753,13 +9457,13 @@ begin
       Add(sour[i]);
 end;
 
-procedure TListPascalString.FillTo(var output: TArrayPascalString);
+procedure TListPascalString.FillTo(var Output_: TArrayPascalString);
 var
   i: Integer;
 begin
-  SetLength(output, Count);
+  SetLength(Output_, Count);
   for i := 0 to Count - 1 do
-      output[i] := Items[i];
+      Output_[i] := Items[i];
 end;
 
 procedure TListPascalString.FillFrom(const InData: TArrayPascalString);

@@ -86,6 +86,7 @@ var
   IDEOutput: Boolean;
   ConsoleOutput: Boolean;
   OnDoStatusHook: TDoStatusCall;
+  StatusThreadID: Boolean;
 
 implementation
 
@@ -245,6 +246,7 @@ type
     s: SystemString;
     th: TCoreClassThread;
     TriggerTime: TTimeTick;
+    ID: Integer;
   end;
 
   PStatusStruct = ^TStatusStruct;
@@ -333,6 +335,7 @@ begin
                 pSS^.s := StatusNoLnData^.s.Text;
                 pSS^.th := TCoreClassThread.CurrentThread;
                 pSS^.TriggerTime := GetTimeTick;
+                pSS^.ID := 0;
                 StatusStructList.Add(pSS);
                 StatusNoLnData^.s := '';
               end;
@@ -359,15 +362,15 @@ end;
 procedure DoStatusNoLn;
 var
   StatusNoLnData: PStatusNoLnStruct;
-  a: SystemString;
+  s: SystemString;
 begin
   StatusCritical.Acquire;
   StatusNoLnData := GetOrCreateStatusNoLnData();
-  a := StatusNoLnData^.s;
+  s := StatusNoLnData^.s;
   StatusNoLnData^.s := '';
   StatusCritical.Release;
-  if Length(a) > 0 then
-      DoStatus(a);
+  if Length(s) > 0 then
+      DoStatus(s);
 end;
 
 function StrInfo(s: TPascalString): string;
@@ -385,11 +388,20 @@ begin
   Result := umlStringOf(s);
 end;
 
-procedure _InternalOutput(const Text_: SystemString; const ID: Integer);
+procedure _InternalOutput(const Text_: U_String; const ID: Integer);
 var
   i: Integer;
   p: PStatusProcStruct;
+  n: U_String;
 begin
+  if Text_.Exists(#10) then
+    begin
+      n := Text_.DeleteChar(#13);
+      _InternalOutput(umlGetFirstStr_Discontinuity(n, #10), ID);
+      n := umlDeleteFirstStr_Discontinuity(n, #10);
+      _InternalOutput(n, ID);
+      exit;
+    end;
   if (StatusActive) and (HookStatusProcs.Count > 0) then
     begin
       LastDoStatus := Text_;
@@ -409,7 +421,7 @@ begin
     end;
 
 {$IFNDEF FPC}
-  if ((IDEOutput) or (ID = 2)) and (DebugHook <> 0) then
+  if (StatusActive) and ((IDEOutput) or (ID = 2)) and (DebugHook <> 0) then
     begin
 {$IF Defined(WIN32) or Defined(WIN64)}
       OutputDebugString(PWideChar('"' + Text_ + '"'));
@@ -418,8 +430,8 @@ begin
 {$IFEND}
     end;
 {$IFEND FPC}
-  if ((ConsoleOutput) or (ID = 2)) and (IsConsole) then
-      Writeln(Text_);
+  if (StatusActive) and ((ConsoleOutput) or (ID = 2)) and (IsConsole) then
+      Writeln(Text_.Text);
 end;
 
 procedure CheckDoStatus(th: TCoreClassThread);
@@ -438,7 +450,7 @@ begin
         for i := 0 to StatusStructList.Count - 1 do
           begin
             pSS := StatusStructList[i];
-            _InternalOutput(pSS^.s, 0);
+            _InternalOutput(pSS^.s, pSS^.ID);
             pSS^.s := '';
             Dispose(pSS);
           end;
@@ -463,9 +475,13 @@ begin
   if (th = nil) or (th.ThreadID <> MainThreadID) then
     begin
       new(pSS);
-      pSS^.s := '[' + IntToStr(th.ThreadID) + '] ' + Text_;;
+      if StatusThreadID then
+          pSS^.s := '[' + IntToStr(th.ThreadID) + '] ' + Text_
+      else
+          pSS^.s := Text_;
       pSS^.th := th;
       pSS^.TriggerTime := GetTimeTick();
+      pSS^.ID := ID;
       StatusCritical.Acquire;
       StatusStructList.Add(pSS);
       StatusCritical.Release;
@@ -565,6 +581,7 @@ begin
   IDEOutput := False;
   ConsoleOutput := True;
   OnDoStatusHook := {$IFDEF FPC}@{$ENDIF FPC}InternalDoStatus;
+  StatusThreadID := True;
 
   Hooked_OnCheckThreadSynchronize := CoreClasses.OnCheckThreadSynchronize;
   CoreClasses.OnCheckThreadSynchronize := {$IFDEF FPC}@{$ENDIF FPC}DoCheckThreadSynchronize;
