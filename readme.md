@@ -56,6 +56,14 @@
 
 ## 更新日志
 
+### 2021-9-22
+
+- 在NumberBase库内置了zExpression驱动，详见zCloud的网络变量服务 https://github.com/PassByYou888/zCloud
+- 修复OpCache没有初始化的问题
+- 优化OpRunTime
+- 支持delphi 11
+- 支持fpc for IOT设备
+
 ### 2021-7
 
 - 修复字符表达式-2.0E-3这类识别问题

@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<ActiveMobileDevice>
-		<P192.168.3.88 iOSSimulator="iPhone5"/>  <NoProfile iOSSimulator="iPhone5"/>
+		<P192.168.3.88 iOSSimulator="iPhone5"/>
+		<NoProfile iOSSimulator="iPhone5"/>  <P192.168.2.89 iOSSimulator="iPhone5"/>
   </ActiveMobileDevice>
 </BorlandProject>
